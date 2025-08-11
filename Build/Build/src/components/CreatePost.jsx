@@ -48,16 +48,15 @@ export default function CreatePost() {
 
     function CreatedPost(data){
 
-    }
-  
+    } 
     return (
     <div>
-      <div>
+      <div className='flex flex-col items-center justify-center gap-2 h-screen'>
         <h2 className='text-2xl font-bold'>Create a New Post</h2>
-        <p>Share your thoughts with the world</p>
-        <input type="text" name="postTitle" id="postTitle" placeholder="Post Title" value={inputValue} onChange={handleinputChange}/><br /><br />
-        <textarea name="postBody" id="postBody" placeholder='post description' value={textareaValue} onChange={handletextareaChange}></textarea>
-        <br /><br />    
+        <p>Share your thoughts with the world</p><br />
+        <input type="text" name="postTitle" id="postTitle" placeholder="Post Title" value={inputValue} onChange={handleinputChange} className='border border-gray-300 p-2 rounded-md w-72'/>
+        <textarea name="postBody" id="postBody" placeholder='post description' value={textareaValue} onChange={handletextareaChange} className='border border-gray-300 py-2 px-3 rounded-md w-72'></textarea>
+        <br />   
         <button onClick={handleSubmit}>Create Post </button>
       </div>
     </div>

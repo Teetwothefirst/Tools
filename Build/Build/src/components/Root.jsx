@@ -10,8 +10,8 @@ export default function Root() {
         <div>
             
             <div>
-                {/* <CreatePost /> */}
-                <ViewPost /> 
+                <CreatePost />
+                {/* <ViewPost />  */}
             </div>
         </div>
     </div>
