@@ -36,13 +36,15 @@
 
 
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor'
+// import { HeadingButton } from '@/components/ui/heading-button'
 
 export default function App() {
   return( 
     <>
       <SimpleEditor />
       <div>
-        <button className=''>Submit</button>/
+        {/* <button className=''>Submit</button>/ */}
+        {/* <HeadingButton level={1}>Heading 1</HeadingButton> */}
       </div>
       
     </>
