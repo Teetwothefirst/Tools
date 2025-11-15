@@ -67,3 +67,5 @@ export default tseslint.config([
   },
 ])
 ```
+
+<!-- Before you get into coding, let's say the designers just gave you access to I  -->
