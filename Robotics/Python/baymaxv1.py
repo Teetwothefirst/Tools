@@ -1,7 +1,4 @@
-# Ask for the username
-print('Please Enter your name:')
-name = input()
-
-#Greets the user
-
-print(f'Welcome {name} my name is baymax')
+# Week One Code
+# Write a script that asks for a user's name and prints "Hello, I am Baymax, your personal healthcare companion"
+name = input('Please Enter your name: ')
+print(f"Hello {name}, I am Baymax, your personal healthcare companion")
