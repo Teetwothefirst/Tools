@@ -1,3 +1,7 @@
+import csv
+from datetime import datetime
+import os
+
 # Wrap the code in a function
 def baymax():
     
@@ -80,6 +84,15 @@ def baymax():
     "Joint changes"]
 
     symptom_name = input("Please enter your symptom: ")
+
+    # Log the entry for persistence
+    file_path = 'symptom_history.csv'
+    file_exists = os.path.isfile(file_path)
+    with open(file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        if not file_exists:
+            writer.writerow(['Timestamp', 'Symptom Entered'])
+        writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), symptom_name])
 
     symptom_found = False
     for symptom in symptoms:
