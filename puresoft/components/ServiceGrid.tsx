@@ -16,7 +16,7 @@ const services = [
     title: "Software Solutions",
     description: "Custom ERP, Healthcare EHR, and bespoke business systems designed for Nigeria's unique market needs.",
     icon: <Terminal size={32} />,
-    span: "col-span-8",
+    span: "col-span-4",
     color: "var(--gradient-vibrant)",
     textColor: "white"
   },

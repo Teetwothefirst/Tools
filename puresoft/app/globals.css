@@ -23,12 +23,26 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --background: #050505;
     --foreground: #f0f0f0;
     --glass-bg: rgba(0, 0, 0, 0.6);
     --glass-border: rgba(255, 255, 255, 0.1);
   }
+}
+
+[data-theme='dark'] {
+  --background: #050505;
+  --foreground: #f0f0f0;
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='light'] {
+  --background: #ffffff;
+  --foreground: #111111;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
 }
 
 * {
