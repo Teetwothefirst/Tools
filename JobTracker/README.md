@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JobTracker
 
-## Getting Started
+JobTracker is a modern, AI-powered Kanban-style job application tracking system designed to streamline the job hunt process. Built with speed and usability in mind, it allows users to visually organize their applications, import data in bulk, and leverage AI to instantly extract key insights from dense job descriptions.
 
-First, run the development server:
+## 🚀 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*   **Interactive Kanban Board:** Visually manage job applications through customizable columns (`Saved`, `Applied`, `Interviewing`, `Offer`, `Rejected`) with smooth drag-and-drop interactions.
+*   **AI-Powered Summarization:** Paste a job description into a card and use the integrated Gemini AI to instantly extract a concise 3-bullet-point summary and the top 5 technical skills required for the role.
+*   **Bulk Excel/CSV Import:** Quickly onboard your existing job hunt data by importing `.xlsx`, `.xls`, or `.csv` files directly into your board.
+*   **Google Calendar Integration:** Never miss a follow-up. Generate and schedule one-click follow-up reminders directly to your Google Calendar.
+*   **Cloud Synchronization:** Powered by Supabase, ensuring all your job cards, statuses, and notes are securely stored and synced across devices in real-time.
+*   **Mobile Responsive:** A clean, tailored layout that ensures a seamless experience on both desktop and mobile devices.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Technology Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+*   **Frontend:** [Next.js (App Router)](https://nextjs.org/) & [React](https://react.dev/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/) & [Lucide Icons](https://lucide.dev/)
+*   **Drag & Drop:** [@hello-pangea/dnd](https://github.com/hello-pangea/dnd)
+*   **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL + Row-Level Security)
+*   **AI Integration:** [Google Gemini API](https://ai.google.dev/) (`@google/genai`)
+*   **Testing:** [Playwright](https://playwright.dev/) for End-to-End Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Local Development Setup
 
-## Learn More
+1. **Clone the repository and install dependencies:**
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Set up Environment Variables:**
+   Create a `.env.local` file in the root directory and add your credentials:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Database Migration:**
+   Run the SQL script located at `supabase/migrations/001_initial_schema.sql` in your Supabase SQL Editor to set up the necessary `jobs` table and Row-Level Security (RLS) policies.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Run the Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Navigate to `http://localhost:3000`. You will be prompted to create an account or log in.
 
-## Deploy on Vercel
+## 🧪 End-to-End Testing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To ensure reliability, the application uses Playwright for E2E testing. 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Install required browsers:
+   ```bash
+   npx playwright install
+   ```
+2. Run the test suite:
+   ```bash
+   npx playwright test
+   ```
+
+## 📋 Excel Import Format
+When importing an Excel or CSV file, ensure your columns are named exactly as follows:
+`Company`, `Title`, `Status`, `Priority`, `Notes`, `Description`, `Contacts`, `DateAdded`
