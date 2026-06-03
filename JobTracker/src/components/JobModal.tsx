@@ -149,6 +149,65 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
             />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Mail Used to Apply</label>
+              <input 
+                name="mailUsed"
+                type="email"
+                placeholder="e.g., personal@mail.com"
+                value={editedJob.mailUsed || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Amount / Pay</label>
+              <input 
+                name="payAmount"
+                type="text"
+                placeholder="e.g., $120,000/yr"
+                value={editedJob.payAmount || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Job Link</label>
+              <input 
+                name="jobLink"
+                type="text"
+                placeholder="e.g., https://careers.company.com/..."
+                value={editedJob.jobLink || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Offer Letter Received Date</label>
+              <input 
+                name="offerReceivedDate"
+                type="date"
+                value={editedJob.offerReceivedDate || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Employment End Date</label>
+              <input 
+                name="employmentEndDate"
+                type="date"
+                value={editedJob.employmentEndDate || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
             <textarea 

@@ -5,7 +5,8 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Job, JobStatus } from '@/types/job';
 import { JobCard } from './JobCard';
 import { JobModal } from './JobModal';
-import { Plus, Upload, Info, Briefcase, LogOut } from 'lucide-react';
+import { CvBuilderModal } from './CvBuilderModal';
+import { Plus, Upload, Info, Briefcase, LogOut, FileText } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
 import { createClient } from '@/utils/supabase/client';
@@ -23,6 +24,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isCvBuilderOpen, setIsCvBuilderOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const supabase = createClient();
@@ -50,6 +52,11 @@ export function KanbanBoard({ userId }: { userId: string }) {
         notes: dbJob.notes || undefined,
         description: dbJob.description || undefined,
         contacts: dbJob.contacts || undefined,
+        mailUsed: dbJob.mail_used || undefined,
+        payAmount: dbJob.pay_amount || undefined,
+        jobLink: dbJob.job_link || undefined,
+        offerReceivedDate: dbJob.offer_received_date || undefined,
+        employmentEndDate: dbJob.employment_end_date || undefined,
       }));
       setJobs(mappedJobs);
     }
@@ -109,6 +116,11 @@ export function KanbanBoard({ userId }: { userId: string }) {
       description: updatedJob.description,
       contacts: updatedJob.contacts,
       date_added: updatedJob.dateAdded,
+      mail_used: updatedJob.mailUsed,
+      pay_amount: updatedJob.payAmount,
+      job_link: updatedJob.jobLink,
+      offer_received_date: updatedJob.offerReceivedDate,
+      employment_end_date: updatedJob.employmentEndDate,
     };
 
     if (exists) {
@@ -150,6 +162,11 @@ export function KanbanBoard({ userId }: { userId: string }) {
         notes: row.Notes || '',
         description: row.Description || '',
         contacts: row.Contacts || '',
+        mailUsed: row.MailUsed || '',
+        payAmount: row.PayAmount || '',
+        jobLink: row.JobLink || '',
+        offerReceivedDate: row.OfferReceivedDate || '',
+        employmentEndDate: row.EmploymentEndDate || '',
       }));
 
       // Optimistic
@@ -167,6 +184,11 @@ export function KanbanBoard({ userId }: { userId: string }) {
         description: j.description,
         contacts: j.contacts,
         date_added: j.dateAdded,
+        mail_used: j.mailUsed,
+        pay_amount: j.payAmount,
+        job_link: j.jobLink,
+        offer_received_date: j.offerReceivedDate,
+        employment_end_date: j.employmentEndDate,
       }));
       await supabase.from('jobs').insert(dbJobs);
     };
@@ -198,6 +220,15 @@ export function KanbanBoard({ userId }: { userId: string }) {
             onChange={handleFileUpload}
           />
           <button 
+            onClick={() => setIsCvBuilderOpen(true)}
+            className="flex items-center space-x-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium shadow-sm transition-all text-sm"
+            title="Build CV"
+          >
+            <FileText className="w-4 h-4 text-indigo-600" />
+            <span className="hidden sm:inline">Build CV</span>
+          </button>
+
+          <button 
             onClick={() => fileInputRef.current?.click()}
             className="flex items-center space-x-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium shadow-sm transition-colors text-sm"
           >
@@ -227,13 +258,48 @@ export function KanbanBoard({ userId }: { userId: string }) {
       <div className="flex-1 overflow-x-auto overflow-y-hidden bg-gray-50/50 p-4 sm:p-6">
         <div className="mb-4 flex items-center space-x-2 text-xs sm:text-sm text-gray-500 bg-white px-3 sm:px-4 py-2 rounded-lg border shadow-sm w-max max-w-full overflow-hidden">
           <Info className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-          <span className="truncate">Excel Format: <strong>Company, Title, Status, Priority, Notes, Description, Contacts, DateAdded</strong></span>
+          <span className="truncate">Excel Format: <strong>Company, Title, Status, Priority, Notes, Description, Contacts, MailUsed, PayAmount, JobLink, OfferReceivedDate, EmploymentEndDate, DateAdded</strong></span>
         </div>
 
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex space-x-4 sm:space-x-6 min-w-max h-[calc(100vh-140px)] pb-4">
             {COLUMNS.map((col) => {
-              const columnJobs = jobs.filter(j => j.status === col.id);
+              let columnJobs = jobs.filter(j => j.status === col.id);
+              
+              // Custom sorting for Interviewing and Offer based on start and end dates
+              if (col.id === 'Interviewing' || col.id === 'Offer') {
+                columnJobs = [...columnJobs].sort((a, b) => {
+                  const hasDatesA = !!(a.offerReceivedDate || a.employmentEndDate);
+                  const hasDatesB = !!(b.offerReceivedDate || b.employmentEndDate);
+                  
+                  if (hasDatesA && !hasDatesB) return -1;
+                  if (!hasDatesA && hasDatesB) return 1;
+                  
+                  if (hasDatesA && hasDatesB) {
+                    if (a.offerReceivedDate && b.offerReceivedDate) {
+                      const dateA = new Date(a.offerReceivedDate).getTime();
+                      const dateB = new Date(b.offerReceivedDate).getTime();
+                      if (dateA !== dateB) return dateB - dateA; // Most recent first
+                    } else if (a.offerReceivedDate) {
+                      return -1;
+                    } else if (b.offerReceivedDate) {
+                      return 1;
+                    }
+                    
+                    if (a.employmentEndDate && b.employmentEndDate) {
+                      const dateA = new Date(a.employmentEndDate).getTime();
+                      const dateB = new Date(b.employmentEndDate).getTime();
+                      return dateB - dateA; // Most recent first
+                    }
+                  }
+                  
+                  // Default fallback
+                  return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+                });
+              } else {
+                // Default sorting for other columns: by date added descending
+                columnJobs = [...columnJobs].sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
+              }
               
               return (
                 <div key={col.id} className="w-72 sm:w-80 flex flex-col bg-gray-100/80 rounded-2xl p-3 sm:p-4 shadow-sm border border-gray-200/60 h-full">
@@ -286,6 +352,13 @@ export function KanbanBoard({ userId }: { userId: string }) {
           onClose={() => setSelectedJob(null)} 
           onUpdate={handleUpdateJob}
           onDelete={handleDeleteJob}
+        />
+      )}
+
+      {isCvBuilderOpen && (
+        <CvBuilderModal 
+          jobs={jobs} 
+          onClose={() => setIsCvBuilderOpen(false)} 
         />
       )}
     </div>

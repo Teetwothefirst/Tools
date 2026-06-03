@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('JobTracker E2E', () => {
   test('should redirect to login if not authenticated', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/dashboard');
     await expect(page).toHaveURL(/.*login/);
   });
 

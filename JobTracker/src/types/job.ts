@@ -11,4 +11,9 @@ export interface Job {
   notes?: string;
   description?: string;
   contacts?: string;
+  mailUsed?: string;
+  payAmount?: string;
+  jobLink?: string;
+  offerReceivedDate?: string;
+  employmentEndDate?: string;
 }
