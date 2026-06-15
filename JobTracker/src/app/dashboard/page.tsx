@@ -1,5 +1,5 @@
-import { KanbanBoard } from "@/components/KanbanBoard";
-import { createClient } from "@/utils/supabase/server";
+import { KanbanBoard } from "@/components/features/KanbanBoard";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
@@ -11,7 +11,7 @@ export default async function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col font-sans">
+    <main className="flex-1 flex flex-col h-screen overflow-hidden">
       <KanbanBoard userId={user.id} />
     </main>
   );

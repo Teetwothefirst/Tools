@@ -16,4 +16,6 @@ export interface Job {
   jobLink?: string;
   offerReceivedDate?: string;
   employmentEndDate?: string;
+  category?: string;
 }
+

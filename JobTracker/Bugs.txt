@@ -1,0 +1,6 @@
+Few things to note 
+1. the download PDF downloads an empty page.
+2. The Light Dark mode doesn't work
+3. Then on the preview it shows the note I.e I saw this "Note: Document Requested - Waec, NYSC Cert, Birth Cert, University Degree and CV" which I feel should be in a CV
+4. I also want it to be possible in other formats aside PDF
+5. Also I think it is only jobs you have received offer for and are already working should be what would be aailable for you to choose from on the CV builder.

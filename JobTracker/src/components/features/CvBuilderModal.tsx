@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
-import { X, Printer, CheckSquare, Square, FileText, User, Mail, Phone, Globe, Sparkles, Briefcase } from 'lucide-react';
+import { X, Printer, CheckSquare, Square, FileText, User, Mail, Phone, Globe, Sparkles, Briefcase, ChevronDown, Download } from 'lucide-react';
+
 import { format } from 'date-fns';
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 
 const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -39,7 +41,7 @@ interface PersonalInfo {
 }
 
 export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
-  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
+  const [personalInfo, setPersonalInfo] = useLocalStorageState<PersonalInfo>('jobtracker-cv-info', {
     name: 'Jane Doe',
     title: 'Senior Software Engineer',
     email: 'jane.doe@example.com',
@@ -51,16 +53,14 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
   });
 
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([]);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
-  // Automatically select jobs that have 'Offer' status as a starting point
+  // Filter jobs to only include jobs with 'Offer' status
+  const offerJobs = jobs.filter(j => j.status === 'Offer');
+
+  // Automatically select all offer jobs by default
   useEffect(() => {
-    const offerJobs = jobs.filter(j => j.status === 'Offer').map(j => j.id);
-    if (offerJobs.length > 0) {
-      setSelectedJobIds(offerJobs);
-    } else if (jobs.length > 0) {
-      // Otherwise select the 2 most recent jobs
-      setSelectedJobIds(jobs.slice(0, 2).map(j => j.id));
-    }
+    setSelectedJobIds(offerJobs.map(j => j.id));
   }, [jobs]);
 
   const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -80,7 +80,217 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
     window.print();
   };
 
-  const selectedJobs = jobs.filter(j => selectedJobIds.includes(j.id));
+  const selectedJobs = offerJobs.filter(j => selectedJobIds.includes(j.id));
+
+  const downloadFile = (content: string, filename: string, contentType: string) => {
+    const blob = new Blob([content], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = (formatType: 'txt' | 'html' | 'json') => {
+    setShowExportMenu(false);
+    
+    if (formatType === 'json') {
+      const exportData = {
+        personalInfo,
+        skills: getSkillsList(),
+        experience: selectedJobs.map(job => ({
+          title: job.title,
+          company: job.company,
+          dates: formatJobDates(job),
+          description: cleanDescription(job.description)
+        }))
+      };
+      const content = JSON.stringify(exportData, null, 2);
+      downloadFile(content, `${personalInfo.name.replace(/\s+/g, '_')}_CV.json`, 'application/json');
+    } 
+    else if (formatType === 'txt') {
+      let content = `${personalInfo.name.toUpperCase()}\n`;
+      content += `${personalInfo.title}\n`;
+      content += `${personalInfo.email} | ${personalInfo.phone}\n`;
+      if (personalInfo.website) content += `Portfolio: ${personalInfo.website}\n`;
+      if (personalInfo.linkedin) content += `LinkedIn: ${personalInfo.linkedin}\n`;
+      content += `\n========================================\n\n`;
+      
+      if (personalInfo.summary) {
+        content += `PROFESSIONAL SUMMARY\n`;
+        content += `--------------------\n`;
+        content += `${personalInfo.summary}\n\n`;
+      }
+      
+      if (personalInfo.skills) {
+        content += `CORE SKILLS\n`;
+        content += `-----------\n`;
+        content += `${getSkillsList().join(', ')}\n\n`;
+      }
+      
+      if (selectedJobs.length > 0) {
+        content += `WORK EXPERIENCE\n`;
+        content += `---------------\n`;
+        selectedJobs.forEach(job => {
+          content += `${job.title} at ${job.company}\n`;
+          content += `${formatJobDates(job)}\n`;
+          const points = cleanDescription(job.description);
+          points.slice(0, 4).forEach(pt => {
+            content += `- ${pt}\n`;
+          });
+          content += `\n`;
+        });
+      }
+      
+      downloadFile(content, `${personalInfo.name.replace(/\s+/g, '_')}_CV.txt`, 'text/plain');
+    }
+    else if (formatType === 'html') {
+      const skillsHtml = getSkillsList().map(s => `<span class="skill-tag">${s}</span>`).join('\n');
+      const experienceHtml = selectedJobs.map(job => {
+        const points = cleanDescription(job.description).slice(0, 4).map(pt => `<li>${pt}</li>`).join('\n');
+        return `
+          <div class="job">
+            <div class="job-header">
+              <span class="job-title">${job.title}</span>
+              <span class="job-dates">${formatJobDates(job)}</span>
+            </div>
+            <div class="job-company">${job.company}</div>
+            <ul class="job-points">
+              ${points}
+            </ul>
+          </div>
+        `;
+      }).join('\n');
+
+      const content = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${personalInfo.name} - CV</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+      font-size: 28px;
+    }
+    .title {
+      text-align: center;
+      font-family: sans-serif;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: #4f46e5;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .contact {
+      text-align: center;
+      font-family: sans-serif;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 15px;
+    }
+    .contact a {
+      color: #666;
+      text-decoration: none;
+    }
+    .section-title {
+      font-family: sans-serif;
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 12px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    .skill-tag {
+      background: #f3f4f6;
+      color: #1f2937;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      display: inline-block;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      font-family: sans-serif;
+    }
+    .job {
+      margin-bottom: 20px;
+    }
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .job-company {
+      font-style: italic;
+      font-size: 12px;
+      color: #444;
+    }
+    .job-dates {
+      font-family: sans-serif;
+      font-size: 11px;
+      color: #666;
+    }
+    .job-points {
+      margin-top: 5px;
+      padding-left: 20px;
+      font-size: 12px;
+      color: #555;
+    }
+    .job-points li {
+      margin-bottom: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>${personalInfo.name}</h1>
+  <div class="title">${personalInfo.title}</div>
+  <div class="contact">
+    \${personalInfo.email ? \`<span>Email: \${personalInfo.email}</span>\` : ''}
+    \${personalInfo.phone ? \`<span> | Phone: \${personalInfo.phone}</span>\` : ''}
+    \${personalInfo.website ? \`<span> | Portfolio: <a href="\${personalInfo.website}">\${personalInfo.website.replace(/^https?:\\/\\//, '')}</a></span>\` : ''}
+    \${personalInfo.linkedin ? \`<span> | LinkedIn: \${personalInfo.linkedin}</span>\` : ''}
+  </div>
+
+  \${personalInfo.summary ? \`
+    <div class="section-title">Professional Summary</div>
+    <p style="font-size: 12px; color: #444;">\${personalInfo.summary}</p>
+  \` : ''}
+
+  \${personalInfo.skills ? \`
+    <div class="section-title">Core Skills</div>
+    <div style="margin-top: 5px;">
+      \${skillsHtml}
+    </div>
+  \` : ''}
+
+  <div class="section-title">Work Experience</div>
+  \${experienceHtml || '<p style="font-style: italic; font-size: 11px; color: #888;">No work experience selected.</p>'}
+</body>
+</html>`;
+      
+      downloadFile(content, `${personalInfo.name.replace(/\s+/g, '_')}_CV.html`, 'text/html');
+    }
+  };
 
   // Helper to format dates for work experience
   const formatJobDates = (job: Job) => {
@@ -117,36 +327,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-hidden">
-      {/* Print-specific style override */}
-      <style jsx global>{`
-        @media print {
-          body * {
-            visibility: hidden !important;
-          }
-          #cv-print-area, #cv-print-area * {
-            visibility: visible !important;
-          }
-          #cv-print-area {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            border: none !important;
-            background: white !important;
-            color: black !important;
-          }
-          .no-print {
-            display: none !important;
-          }
-        }
-      `}</style>
-
+    <div id="cv-builder-modal-overlay" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-hidden">
       <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
         
         {/* Header */}
@@ -164,11 +345,50 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
             <button
               onClick={handlePrint}
               disabled={selectedJobs.length === 0}
-              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-505 text-white font-semibold rounded-xl text-sm shadow-md shadow-indigo-600/10 transition-colors disabled:opacity-50"
+              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-indigo-600/10 transition-colors disabled:opacity-50"
             >
               <Printer className="w-4 h-4" />
               <span>Download PDF</span>
             </button>
+
+            {/* Export As... Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                disabled={selectedJobs.length === 0}
+                className="flex items-center space-x-2 px-4 py-2 bg-slate-850 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl text-sm transition-colors disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export As...</span>
+                <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+              {showExportMenu && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowExportMenu(false)} />
+                  <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden divide-y divide-slate-800/80 animate-in fade-in slide-in-from-top-2 duration-150">
+                    <button 
+                      onClick={() => handleExport('txt')} 
+                      className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-350 hover:bg-slate-800 hover:text-white transition-colors"
+                    >
+                      Plain Text (.txt)
+                    </button>
+                    <button 
+                      onClick={() => handleExport('html')} 
+                      className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-350 hover:bg-slate-800 hover:text-white transition-colors"
+                    >
+                      Standalone HTML (.html)
+                    </button>
+                    <button 
+                      onClick={() => handleExport('json')} 
+                      className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-350 hover:bg-slate-800 hover:text-white transition-colors"
+                    >
+                      Structured JSON (.json)
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
             <button 
               onClick={onClose}
               className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition-all"
@@ -283,11 +503,16 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
             {/* Job Experience Selector */}
             <div className="space-y-4 pt-4 border-t border-slate-850">
               <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-wider flex items-center"><Briefcase className="w-4 h-4 mr-1.5" /> Select Experience to Include</h3>
-              {jobs.length === 0 ? (
-                <p className="text-xs text-slate-500 italic">No job applications added yet.</p>
+              {offerJobs.length === 0 ? (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-1">
+                  <p className="text-xs text-amber-400 font-semibold">No offer/working jobs found.</p>
+                  <p className="text-[10px] text-slate-400 leading-normal">
+                    Only jobs you have received offers for are available in the CV builder. Go to the Kanban board or Grid view and change a job's status to <strong>Offer</strong> to include it.
+                  </p>
+                </div>
               ) : (
                 <div className="space-y-2">
-                  {jobs.map(job => {
+                  {offerJobs.map(job => {
                     const isSelected = selectedJobIds.includes(job.id);
                     return (
                       <div 
@@ -310,10 +535,11 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
                 </div>
               )}
             </div>
+
           </div>
 
           {/* Right Panel: CV Preview */}
-          <div className="hidden md:block w-1/2 p-6 bg-slate-950 overflow-y-auto flex justify-center items-start">
+          <div id="cv-preview-container" className="hidden md:block w-1/2 p-6 bg-slate-950 overflow-y-auto flex justify-center items-start">
             <div 
               id="cv-print-area"
               className="bg-white text-slate-900 p-8 shadow-2xl w-full max-w-[210mm] min-h-[297mm] font-serif border border-gray-100 flex flex-col"
@@ -385,12 +611,6 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
                               </ul>
                             )}
 
-                            {/* Optional notes/summary as extra item if present */}
-                            {job.notes && !job.notes.includes('--- AI Analysis ---') && (
-                              <p className="text-[10px] text-slate-500 italic mt-1 font-sans">
-                                Note: {job.notes}
-                              </p>
-                            )}
                           </div>
                         );
                       })}
