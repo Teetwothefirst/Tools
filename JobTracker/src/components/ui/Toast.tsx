@@ -1,9 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { CheckCircle, XCircle, Info, X } from 'lucide-react';
+import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { CheckCircle, XCircle, Info, X } from "lucide-react";
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = "success" | "error" | "info";
 
 interface Toast {
   id: string;
@@ -17,43 +17,91 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+const toastStyles: Record<ToastType, React.CSSProperties> = {
+  success: {
+    backgroundColor: "var(--success-bg)",
+    color: "var(--success-text)",
+    border: "0.5px solid var(--success-border)",
+  },
+  error: {
+    backgroundColor: "var(--danger-bg)",
+    color: "var(--danger-text)",
+    border: "0.5px solid var(--danger-border)",
+  },
+  info: {
+    backgroundColor: "var(--bg-raised)",
+    color: "var(--text-primary)",
+    border: "0.5px solid var(--border)",
+  },
+};
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = useCallback((message: string, type: ToastType = 'info') => {
+  const addToast = useCallback((message: string, type: ToastType = "info") => {
     const id = Math.random().toString(36).substr(2, 9);
-    setToasts(prev => [...prev, { id, message, type }]);
-
+    setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
+      setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 5000);
   }, []);
 
   const removeToast = (id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
   return (
     <ToastContext.Provider value={{ toast: addToast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col space-y-2 pointer-events-none">
-        {toasts.map(t => (
+      <div
+        style={{
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          zIndex: 9999,
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          pointerEvents: "none",
+        }}
+      >
+        {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto flex items-center p-4 rounded-xl shadow-lg animate-in slide-in-from-right-5 fade-in duration-300 min-w-[300px] border
-              ${t.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800' :
-                t.type === 'error' ? 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-800' :
-                'bg-white text-slate-800 border-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:border-slate-800'}
-            `}
+            style={{
+              pointerEvents: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "12px 14px",
+              borderRadius: 8,
+              minWidth: 280,
+              maxWidth: 380,
+              ...toastStyles[t.type],
+            }}
           >
-            {t.type === 'success' && <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />}
-            {t.type === 'error' && <XCircle className="w-5 h-5 mr-3 flex-shrink-0" />}
-            {t.type === 'info' && <Info className="w-5 h-5 mr-3 flex-shrink-0 text-indigo-500" />}
-            
-            <span className="text-sm font-medium flex-1">{t.message}</span>
-            
-            <button onClick={() => removeToast(t.id)} className="ml-4 opacity-50 hover:opacity-100 transition-opacity">
-              <X className="w-4 h-4" />
+            {t.type === "success" && <CheckCircle size={16} style={{ flexShrink: 0 }} />}
+            {t.type === "error" && <XCircle size={16} style={{ flexShrink: 0 }} />}
+            {t.type === "info" && <Info size={16} style={{ flexShrink: 0, color: "var(--accent-text)" }} />}
+
+            <span style={{ fontSize: "0.8125rem", fontWeight: 400, flex: 1 }}>{t.message}</span>
+
+            <button
+              onClick={() => removeToast(t.id)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 2,
+                opacity: 0.5,
+                color: "inherit",
+                display: "flex",
+                alignItems: "center",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "0.5"; }}
+            >
+              <X size={14} />
             </button>
           </div>
         ))}
@@ -65,7 +113,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 export function useToast() {
   const context = useContext(ToastContext);
   if (context === undefined) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
 }

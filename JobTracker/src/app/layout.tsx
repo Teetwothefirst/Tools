@@ -1,20 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "JobTracker - Track and Organize Your Job Applications",
-  description: "Simplify your job hunt with visual Kanban boards, AI-powered job summaries and skill extraction, interview reminders, and instant resume exports to PDF.",
+  description:
+    "Simplify your job hunt with visual Kanban boards, AI-powered job summaries and skill extraction, interview reminders, and instant resume exports to PDF.",
 };
 
 export default function RootLayout({
@@ -25,9 +24,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      </head>
+      <body className="min-h-full flex flex-col" style={{ fontFamily: "var(--font-inter, 'Inter', sans-serif)" }}>
         <ToastProvider>
           {children}
         </ToastProvider>

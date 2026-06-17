@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Job } from '@/types/job';
-import { X, Calendar as CalendarIcon, Save, Loader2, Sparkles, Trash2, PlusCircle } from 'lucide-react';
-import { generateGoogleCalendarLink } from '@/lib/calendar';
-import { api } from '@/lib/api';
-import { useToast } from '@/components/ui/Toast';
+"use client";
+
+import { useState, useEffect } from "react";
+import { Job } from "@/types/job";
+import {
+  X, Calendar as CalendarIcon, Save, Loader2, Sparkles,
+  Trash2, PlusCircle,
+} from "lucide-react";
+// import { generateGoogleCalendarLink } from "@/lib/calendar";
+import { api } from "@/lib/api";
+import { useToast } from "@/components/ui/Toast";
 
 interface JobModalProps {
   job: Job | null;
@@ -12,15 +17,36 @@ interface JobModalProps {
   onDelete?: (jobId: string) => void;
 }
 
+// Shared input style
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "8px 12px",
+  border: "0.5px solid var(--border-strong)",
+  borderRadius: 6,
+  backgroundColor: "var(--bg-raised)",
+  color: "var(--text-primary)",
+  fontSize: "0.875rem",
+  fontWeight: 400,
+  outline: "none",
+  transition: "border-color 120ms ease",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "0.75rem",
+  fontWeight: 500,
+  color: "var(--text-secondary)",
+  marginBottom: 6,
+};
+
 export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
   const [editedJob, setEditedJob] = useState<Job | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
   const [showAiAutofill, setShowAiAutofill] = useState(false);
-  const [autofillText, setAutofillText] = useState('');
-  const [aiResult, setAiResult] = useState<{ summary: string[], skills: string[] } | null>(null);
-  const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [autofillText, setAutofillText] = useState("");
+  const [aiResult, setAiResult] = useState<{ summary: string[]; skills: string[] } | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -29,9 +55,11 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
 
   if (!job || !editedJob) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setEditedJob(prev => prev ? { ...prev, [name]: value } : null);
+    setEditedJob((prev) => (prev ? { ...prev, [name]: value } : null));
   };
 
   const handleExtractDetails = async () => {
@@ -39,27 +67,32 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
     setIsExtracting(true);
     try {
       const data = await api.extractDetails(autofillText);
-
-      const aiText = `\n\n--- AI Analysis ---\nSummary:\n${data.summary.map((s: string) => '- ' + s).join('\n')}\n\nTop Skills:\n${data.skills.join(', ')}`;
-
-      setEditedJob(prev => prev ? {
-        ...prev,
-        company: data.company || prev.company,
-        title: data.title || prev.title,
-        priority: data.priority || prev.priority,
-        payAmount: data.payAmount || prev.payAmount,
-        contacts: data.contacts || prev.contacts,
-        category: data.category || prev.category || 'Other',
-        description: autofillText,
-        notes: (prev.notes || '') + aiText,
-      } : null);
-
+      const aiText = `\n\n--- AI Analysis ---\nSummary:\n${data.summary
+        .map((s: string) => "- " + s)
+        .join("\n")}\n\nTop Skills:\n${data.skills.join(", ")}`;
+      setEditedJob((prev) =>
+        prev
+          ? {
+              ...prev,
+              company: data.company || prev.company,
+              title: data.title || prev.title,
+              priority: data.priority || prev.priority,
+              payAmount: data.payAmount || prev.payAmount,
+              contacts: data.contacts || prev.contacts,
+              category: data.category || prev.category || "Other",
+              description: autofillText,
+              notes: (prev.notes || "") + aiText,
+            }
+          : null
+      );
       setShowAiAutofill(false);
-      setAutofillText('');
-      toast('Extracted job details successfully!', 'success');
+      setAutofillText("");
+      toast("Extracted job details successfully!", "success");
     } catch (err: any) {
-      console.error(err);
-      toast(err.message || "Error extracting details. Please make sure the Gemini API key is configured.", 'error');
+      toast(
+        err.message || "Error extracting details. Please check your Gemini API key.",
+        "error"
+      );
     } finally {
       setIsExtracting(false);
     }
@@ -69,15 +102,16 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
     setIsSaving(true);
     let finalJob = { ...editedJob };
     if (aiResult) {
-      const aiText = `\n\n--- AI Analysis ---\nSummary:\n${aiResult.summary.map(s => '- ' + s).join('\n')}\n\nTop Skills:\n${aiResult.skills.join(', ')}`;
-      finalJob.notes = (finalJob.notes || '') + aiText;
+      const aiText = `\n\n--- AI Analysis ---\nSummary:\n${aiResult.summary
+        .map((s) => "- " + s)
+        .join("\n")}\n\nTop Skills:\n${aiResult.skills.join(", ")}`;
+      finalJob.notes = (finalJob.notes || "") + aiText;
     }
-
     setTimeout(() => {
       onUpdate(finalJob as Job);
       setIsSaving(false);
       onClose();
-    }, 400); // Simulate network delay for UX
+    }, 300);
   };
 
   const handleSummarize = async () => {
@@ -86,117 +120,191 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
     try {
       const data = await api.summarizeJob(editedJob.description);
       setAiResult(data);
-      toast('Job summarized successfully!', 'success');
+      toast("Job summarized successfully!", "success");
     } catch (err: any) {
-      console.error(err);
-      toast(err.message || "Error summarizing job description.", 'error');
+      toast(err.message || "Error summarizing job description.", "error");
     } finally {
       setIsSummarizing(false);
     }
   };
 
-  const handleAddCalendarEvent = async () => {
-    setIsAddingEvent(true);
+  const handleDownloadIcs = () => {
     try {
-      // 1 hour event starting 7 days from now
-      const start = new Date();
-      start.setDate(start.getDate() + 7);
-      const end = new Date(start.getTime() + 60 * 60 * 1000);
+      const followUpDate = new Date();
+      followUpDate.setDate(followUpDate.getDate() + 7);
+      
+      const yyyy = followUpDate.getUTCFullYear();
+      const mm = String(followUpDate.getUTCMonth() + 1).padStart(2, '0');
+      const dd = String(followUpDate.getUTCDate()).padStart(2, '0');
+      
+      const dateStr = `${yyyy}${mm}${dd}`;
+      const title = `Follow up: ${editedJob.title} @ ${editedJob.company}`;
+      const description = `Follow up on your application for the ${editedJob.title} role at ${editedJob.company}.\n\nNotes:\n${editedJob.notes || "None"}`;
 
-      const res = await fetch('/api/calendar/event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          summary: `Follow up: ${editedJob.title} @ ${editedJob.company}`,
-          description: `Remember to follow up on your job application.\n\nNotes:\n${editedJob.notes || 'None'}`,
-          start: start.toISOString(),
-          end: end.toISOString()
-        })
-      });
+      const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//JobTracker//Calendar Event//EN",
+        "BEGIN:VEVENT",
+        `DTSTART;VALUE=DATE:${dateStr}`,
+        `DTEND;VALUE=DATE:${dateStr}`,
+        `SUMMARY:${title}`,
+        `DESCRIPTION:${description.replace(/\n/g, '\\n')}`,
+        "STATUS:CONFIRMED",
+        "SEQUENCE:0",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
 
-      const data = await res.json();
-      if (!res.ok) {
-        if (res.status === 401) {
-          // Not authenticated with Google
-          window.location.href = '/api/calendar/auth';
-          return;
-        }
-        throw new Error(data.error || 'Failed to add event');
-      }
-
-      toast('Added to Google Calendar!', 'success');
-      if (data.eventLink) {
-        window.open(data.eventLink, '_blank');
-      }
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `follow_up_${editedJob.company.replace(/\s+/g, '_')}.ics`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      toast("Downloaded .ics event file successfully!", "success");
     } catch (err: any) {
-      console.error(err);
-      toast(err.message || 'Error adding event to calendar', 'error');
-    } finally {
-      setIsAddingEvent(false);
+      toast("Error generating calendar event file", "error");
     }
   };
 
-  const calendarLink = generateGoogleCalendarLink(job);
+  // const calendarLink = generateGoogleCalendarLink(job);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div 
-        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-100 dark:border-slate-800 animate-in fade-in zoom-in duration-200"
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+        backgroundColor: "rgba(0,0,0,0.45)",
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        style={{
+          backgroundColor: "var(--bg-raised)",
+          border: "0.5px solid var(--border)",
+          borderRadius: 10,
+          width: "100%",
+          maxWidth: 680,
+          maxHeight: "92vh",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            padding: "20px 24px",
+            borderBottom: "0.5px solid var(--border)",
+            backgroundColor: "var(--bg-subtle)",
+            flexShrink: 0,
+          }}
+        >
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editedJob.title || 'Add New Job'}</h2>
-            <p className="text-sm text-gray-500 dark:text-slate-400 font-medium">{editedJob.company || 'Enter details below'}</p>
+            <h2
+              style={{
+                fontSize: "1.0625rem",
+                fontWeight: 500,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.01em",
+                marginBottom: 2,
+              }}
+            >
+              {editedJob.title || "Add New Job"}
+            </h2>
+            <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
+              {editedJob.company || "Enter details below"}
+            </p>
           </div>
-          <button 
+          <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 6,
+              borderRadius: 6,
+              color: "var(--text-tertiary)",
+              display: "flex",
+              alignItems: "center",
+              transition: "color 120ms ease",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--text-primary)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--text-tertiary)"; }}
           >
-            <X className="w-5 h-5" />
+            <X size={18} />
           </button>
         </div>
 
-        {/* AI Autofill Banner/Panel */}
-        <div className="bg-gradient-to-r from-indigo-50/70 to-violet-50/70 dark:from-indigo-950/20 dark:to-violet-950/20 p-4 border-b border-indigo-100/50 dark:border-slate-850 flex flex-col space-y-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Sparkles className="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
-              <span className="font-bold text-sm text-indigo-950 dark:text-indigo-300">Autofill form with AI</span>
+        {/* AI Autofill strip */}
+        <div
+          style={{
+            padding: "14px 24px",
+            borderBottom: "0.5px solid var(--border)",
+            backgroundColor: "var(--accent-subtle)",
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <Sparkles size={14} style={{ color: "var(--accent-text)" }} />
+              <span style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--accent-text)" }}>
+                AI Autofill
+              </span>
             </div>
             <button
               onClick={() => setShowAiAutofill(!showAiAutofill)}
-              className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline bg-transparent border-0 cursor-pointer"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "0.75rem",
+                fontWeight: 500,
+                color: "var(--accent-text)",
+                padding: "2px 0",
+              }}
             >
-              {showAiAutofill ? 'Hide Text Area' : 'Paste Job Description'}
+              {showAiAutofill ? "Hide" : "Paste job description"}
             </button>
           </div>
-          
+
           {showAiAutofill && (
-            <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
               <textarea
-                placeholder="Paste the job description here..."
+                placeholder="Paste the full job description here…"
                 rows={4}
                 value={autofillText}
                 onChange={(e) => setAutofillText(e.target.value)}
-                className="w-full text-xs p-3 border border-indigo-200/60 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none font-sans"
+                style={{
+                  ...inputStyle,
+                  resize: "none",
+                  fontFamily: "inherit",
+                }}
+                onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
               />
-              <div className="flex justify-end">
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button
                   onClick={handleExtractDetails}
                   disabled={isExtracting || !autofillText.trim()}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow-sm shadow-indigo-600/10 transition-all disabled:opacity-50"
+                  className="btn-primary"
+                  style={{ padding: "7px 14px", fontSize: "0.8125rem" }}
                 >
                   {isExtracting ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Extracting...</span>
-                    </>
+                    <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /><span>Extracting…</span></>
                   ) : (
-                    <>
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Extract & Fill</span>
-                    </>
+                    <><Sparkles size={14} /><span>Extract & Fill</span></>
                   )}
                 </button>
               </div>
@@ -204,263 +312,414 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
           )}
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Company</label>
-              <input 
-                name="company"
-                value={editedJob.company}
-                onChange={handleChange}
-                placeholder="e.g. Google"
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Job Title</label>
-              <input 
-                name="title"
-                value={editedJob.title}
-                onChange={handleChange}
-                placeholder="e.g. Senior Software Engineer"
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-              />
-            </div>
-          </div>
+        {/* Body (scrollable) */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Status</label>
-              <select
-                name="status"
-                value={editedJob.status}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-              >
-                <option value="Saved">Saved</option>
-                <option value="Applied">Applied</option>
-                <option value="Interviewing">Interviewing</option>
-                <option value="Offer">Offer</option>
-                <option value="Rejected">Rejected</option>
-              </select>
+            {/* Company + Title */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Company</label>
+                <input
+                  name="company"
+                  value={editedJob.company}
+                  onChange={handleChange}
+                  placeholder="e.g. Google"
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Job Title</label>
+                <input
+                  name="title"
+                  value={editedJob.title}
+                  onChange={handleChange}
+                  placeholder="e.g. Senior Software Engineer"
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Priority</label>
-              <select
-                name="priority"
-                value={editedJob.priority}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-              >
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Category</label>
-              <select
-                name="category"
-                value={editedJob.category || 'Other'}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-              >
-                <option value="Engineering">Engineering</option>
-                <option value="Design">Design</option>
-                <option value="Product">Product</option>
-                <option value="Marketing">Marketing</option>
-                <option value="Sales">Sales</option>
-                <option value="HR">HR</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Contacts</label>
-            <input 
-              name="contacts"
-              placeholder="e.g., Jane Doe (Recruiter) - jane@example.com"
-              value={editedJob.contacts || ''}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-            />
-          </div>
+            {/* Status + Priority + Category */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+              {(["status", "priority", "category"] as const).map((field) => (
+                <div key={field}>
+                  <label style={labelStyle}>
+                    {field === "status" ? "Status" : field === "priority" ? "Priority" : "Category"}
+                  </label>
+                  <select
+                    name={field}
+                    value={
+                      field === "status"
+                        ? editedJob.status
+                        : field === "priority"
+                        ? editedJob.priority
+                        : editedJob.category || "Other"
+                    }
+                    onChange={handleChange}
+                    style={inputStyle}
+                    onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                    onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                  >
+                    {field === "status" && (
+                      <>
+                        <option value="Saved">Saved</option>
+                        <option value="Applied">Applied</option>
+                        <option value="Interviewing">Interviewing</option>
+                        <option value="Offer">Offer</option>
+                        <option value="Rejected">Rejected</option>
+                      </>
+                    )}
+                    {field === "priority" && (
+                      <>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                      </>
+                    )}
+                    {field === "category" && (
+                      <>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Design">Design</option>
+                        <option value="Product">Product</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Sales">Sales</option>
+                        <option value="HR">HR</option>
+                        <option value="Other">Other</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+              ))}
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Contacts */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Mail Used to Apply</label>
-              <input 
-                name="mailUsed"
-                type="email"
-                placeholder="e.g., personal@mail.com"
-                value={editedJob.mailUsed || ''}
+              <label style={labelStyle}>Contacts</label>
+              <input
+                name="contacts"
+                placeholder="e.g. Jane Doe (Recruiter) — jane@example.com"
+                value={editedJob.contacts || ""}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
+                style={inputStyle}
+                onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Amount / Pay</label>
-              <input 
-                name="payAmount"
-                type="text"
-                placeholder="e.g., $120,000/yr"
-                value={editedJob.payAmount || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Job Link</label>
-              <input 
-                name="jobLink"
-                type="text"
-                placeholder="e.g., https://careers.company.com/..."
-                value={editedJob.jobLink || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
-              />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Mail + Pay + Job Link */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Mail used to apply</label>
+                <input
+                  name="mailUsed"
+                  type="email"
+                  placeholder="personal@mail.com"
+                  value={editedJob.mailUsed || ""}
+                  onChange={handleChange}
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Amount / Pay</label>
+                <input
+                  name="payAmount"
+                  placeholder="e.g. £60,000/yr"
+                  value={editedJob.payAmount || ""}
+                  onChange={handleChange}
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Job link</label>
+                <input
+                  name="jobLink"
+                  placeholder="https://..."
+                  value={editedJob.jobLink || ""}
+                  onChange={handleChange}
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
+            </div>
+
+            {/* Offer date + End date */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Offer letter received</label>
+                <input
+                  name="offerReceivedDate"
+                  type="date"
+                  value={editedJob.offerReceivedDate || ""}
+                  onChange={handleChange}
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Employment end date</label>
+                <input
+                  name="employmentEndDate"
+                  type="date"
+                  value={editedJob.employmentEndDate || ""}
+                  onChange={handleChange}
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
+            </div>
+
+            {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Offer Letter Received Date</label>
-              <input 
-                name="offerReceivedDate"
-                type="date"
-                value={editedJob.offerReceivedDate || ''}
+              <label style={labelStyle}>Notes</label>
+              <textarea
+                name="notes"
+                rows={3}
+                placeholder="Your personal notes…"
+                value={editedJob.notes || ""}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
+                style={{ ...inputStyle, resize: "none", fontFamily: "inherit" }}
+                onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
               />
             </div>
+
+            {/* Job description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Employment End Date</label>
-              <input 
-                name="employmentEndDate"
-                type="date"
-                value={editedJob.employmentEndDate || ''}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <label style={{ ...labelStyle, marginBottom: 0 }}>Job description</label>
+                <button
+                  onClick={handleSummarize}
+                  disabled={isSummarizing || !editedJob.description}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    color: "var(--accent-text)",
+                    padding: 0,
+                    opacity: isSummarizing || !editedJob.description ? 0.45 : 1,
+                  }}
+                >
+                  {isSummarizing
+                    ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} />
+                    : <Sparkles size={12} />
+                  }
+                  Summarise & key skills
+                </button>
+              </div>
+              <textarea
+                name="description"
+                rows={6}
+                placeholder="Paste the full job description here…"
+                value={editedJob.description || ""}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all"
+                style={{
+                  ...inputStyle,
+                  resize: "none",
+                  fontFamily: "ui-monospace, SFMono-Regular, monospace",
+                  fontSize: "0.8125rem",
+                  lineHeight: 1.6,
+                }}
+                onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
               />
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Notes</label>
-            <textarea 
-              name="notes"
-              rows={3}
-              placeholder="Add your personal notes here..."
-              value={editedJob.notes || ''}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all resize-none"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Job Description</label>
-              <button 
-                onClick={handleSummarize}
-                disabled={isSummarizing || !editedJob.description}
-                className="text-xs flex items-center space-x-1 bg-indigo-550/10 text-indigo-650 hover:bg-indigo-500/20 px-2 py-1 rounded-md font-medium transition-colors disabled:opacity-50"
-                title="AI Summary"
-              >
-                {isSummarizing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                <span>Summarize & Key Skills</span>
-              </button>
-            </div>
-            <textarea 
-              name="description"
-              rows={6}
-              placeholder="Paste the full job description here..."
-              value={editedJob.description || ''}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-all resize-none font-mono text-xs leading-normal"
-            />
-            
-            {aiResult && (
-              <div className="mt-4 p-4 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-lg border border-indigo-100 dark:border-indigo-900/40 animate-in fade-in slide-in-from-top-2 duration-300">
-                <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 text-sm mb-2 flex items-center"><Sparkles className="w-3.5 h-3.5 mr-1.5" /> AI Analysis</h4>
-                <div className="text-sm text-gray-700 dark:text-slate-300 space-y-3">
-                  <div>
-                    <strong className="block text-xs uppercase tracking-wider text-indigo-800/70 dark:text-indigo-400 mb-1">Role Summary</strong>
-                    <ul className="list-disc pl-4 space-y-0.5 text-xs">
-                      {aiResult.summary.map((point, i) => <li key={i}>{point}</li>)}
-                    </ul>
-                  </div>
-                  <div>
-                    <strong className="block text-xs uppercase tracking-wider text-indigo-800/70 dark:text-indigo-400 mb-1">Key Skills</strong>
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      {aiResult.skills.map((skill, i) => (
-                        <span key={i} className="px-2 py-0.5 bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-950 text-indigo-750 dark:text-indigo-300 rounded-md text-xs font-medium shadow-sm">
-                          {skill}
-                        </span>
-                      ))}
+              {/* AI results */}
+              {aiResult && (
+                <div
+                  style={{
+                    marginTop: 12,
+                    padding: "14px 16px",
+                    borderRadius: 6,
+                    border: "0.5px solid var(--accent-border)",
+                    backgroundColor: "var(--accent-subtle)",
+                  }}
+                >
+                  <h4
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: "var(--accent-text)",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <Sparkles size={12} />
+                    AI Analysis
+                  </h4>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div>
+                      <p
+                        style={{
+                          fontSize: "0.6875rem",
+                          fontWeight: 500,
+                          color: "var(--text-tertiary)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          marginBottom: 6,
+                        }}
+                      >
+                        Role summary
+                      </p>
+                      <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 3 }}>
+                        {aiResult.summary.map((point, i) => (
+                          <li key={i} style={{ fontSize: "0.8125rem", color: "var(--text-primary)" }}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p
+                        style={{
+                          fontSize: "0.6875rem",
+                          fontWeight: 500,
+                          color: "var(--text-tertiary)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          marginBottom: 6,
+                        }}
+                      >
+                        Key skills
+                      </p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        {aiResult.skills.map((skill, i) => (
+                          <span
+                            key={i}
+                            className="chip"
+                            style={{
+                              backgroundColor: "var(--bg-raised)",
+                              color: "var(--accent-text)",
+                              borderColor: "var(--accent-border)",
+                            }}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                  <p style={{ fontSize: "0.6875rem", color: "var(--text-tertiary)", marginTop: 10 }}>
+                    This analysis will be appended to your notes when you save.
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-slate-400 mt-3 italic">This analysis will be automatically appended to your notes when you save.</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-
         </div>
 
         {/* Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20">
-          <div className="flex items-center space-x-2">
-            <a 
-              href={calendarLink}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: "14px 24px",
+            borderTop: "0.5px solid var(--border)",
+            backgroundColor: "var(--bg-subtle)",
+            flexShrink: 0,
+          }}
+        >
+          {/* Calendar links */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <a
+              // href={calendarLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center space-x-2 text-xs text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-              title="Manual Google Calendar Add"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                fontSize: "0.8125rem",
+                color: "var(--accent-text)",
+                fontWeight: 500,
+                textDecoration: "none",
+                transition: "color 120ms ease",
+              }}
             >
-              <CalendarIcon className="w-3.5 h-3.5" />
-              <span>Manual Add</span>
+              <PlusCircle size={13} />
+              Add to Google Calendar
             </a>
-            <span className="text-gray-300 dark:text-slate-700">|</span>
-            <button 
-              onClick={handleAddCalendarEvent}
-              disabled={isAddingEvent}
-              className="flex items-center space-x-1.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors disabled:opacity-50"
+            <span style={{ color: "var(--border-strong)" }}>·</span>
+            <button
+              onClick={handleDownloadIcs}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                fontSize: "0.8125rem",
+                fontWeight: 500,
+                color: "var(--text-secondary)",
+                padding: 0,
+                transition: "color 120ms ease",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--text-primary)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)"; }}
             >
-              {isAddingEvent ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
-              <span>Sync to Google Calendar</span>
+              <CalendarIcon size={13} />
+              Download Apple/Outlook Event (.ics)
             </button>
           </div>
-          
-          <div className="flex items-center space-x-3">
+
+          {/* Action buttons */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {onDelete && (
-              <button 
+              <button
                 onClick={() => onDelete(editedJob.id)}
-                className="px-4 py-2 text-sm font-medium text-rose-600 dark:text-rose-455 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors flex items-center space-x-2"
+                className="btn-danger"
+                style={{ padding: "8px 12px", fontSize: "0.8125rem" }}
               >
-                <Trash2 className="w-4 h-4" />
-                <span>Delete</span>
+                <Trash2 size={14} />
+                Delete
               </button>
             )}
-            <button 
+            <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              className="btn-ghost"
+              style={{ padding: "8px 12px", fontSize: "0.8125rem" }}
             >
               Cancel
             </button>
-            <button 
+            <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-70"
+              className="btn-primary"
+              style={{ padding: "8px 16px", fontSize: "0.8125rem" }}
             >
-              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>Save Changes</span>
+              {isSaving
+                ? <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
+                : <Save size={14} />
+              }
+              Save changes
             </button>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </div>
   );
 }

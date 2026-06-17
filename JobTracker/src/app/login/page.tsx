@@ -11,18 +11,16 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
-    // Check for error parameters in URL on mount
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const urlError = params.get("error");
-      if (urlError) {
-        setError(urlError);
-      }
+      if (urlError) setError(urlError);
     }
   }, []);
 
@@ -30,25 +28,21 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccessMsg(null);
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push("/");
+        router.push("/dashboard");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
         });
         if (error) throw error;
-        alert("Check your email for the confirmation link!");
+        setSuccessMsg("Check your email for the confirmation link.");
       }
     } catch (err: any) {
       setError(err.message);
@@ -58,88 +52,181 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <div className="bg-indigo-600 p-3 rounded-xl shadow-sm">
-            <Briefcase className="w-8 h-8 text-white" />
-          </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "var(--bg)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+      }}
+    >
+      {/* Logo mark */}
+      <div style={{ marginBottom: 32, textAlign: "center" }}>
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 8,
+            backgroundColor: "var(--accent)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 12px",
+          }}
+        >
+          <Briefcase size={18} color="#fff" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-          {isLogin ? "Sign in to your account" : "Create a new account"}
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          {isLogin ? "The simple tool to track your job applications" : "The simple tool to track your job applications"}
+        <h1
+          style={{
+            fontSize: "1.375rem",
+            fontWeight: 500,
+            letterSpacing: "-0.02em",
+            color: "var(--text-primary)",
+            marginBottom: 4,
+          }}
+        >
+          {isLogin ? "Welcome back" : "Create your account"}
+        </h1>
+        <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", margin: 0 }}>
+          {isLogin
+            ? "Sign in to continue to JobTracker"
+            : "Start tracking your job applications"}
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-gray-200/50 sm:rounded-2xl sm:px-10 border border-gray-100">
-          <form className="space-y-6" onSubmit={handleAuth}>
-            {error && (
-              <div className="bg-rose-50 text-rose-600 p-3 rounded-lg text-sm font-medium border border-rose-100">
-                {error}
-              </div>
-            )}
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email address</label>
-              <div className="mt-1">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
+      {/* Card */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 400,
+          backgroundColor: "var(--bg-raised)",
+          border: "0.5px solid var(--border)",
+          borderRadius: 10,
+          padding: 28,
+        }}
+      >
+        <form onSubmit={handleAuth} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Error */}
+          {error && (
+            <div
+              style={{
+                padding: "10px 14px",
+                borderRadius: 6,
+                border: "0.5px solid var(--danger-border)",
+                backgroundColor: "var(--danger-bg)",
+                color: "var(--danger-text)",
+                fontSize: "0.8125rem",
+                fontWeight: 400,
+              }}
+            >
+              {error}
             </div>
+          )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <div className="mt-1">
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
+          {/* Success */}
+          {successMsg && (
+            <div
+              style={{
+                padding: "10px 14px",
+                borderRadius: 6,
+                border: "0.5px solid var(--success-border)",
+                backgroundColor: "var(--success-bg)",
+                color: "var(--success-text)",
+                fontSize: "0.8125rem",
+                fontWeight: 400,
+              }}
+            >
+              {successMsg}
             </div>
+          )}
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 transition-colors"
-              >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? "Sign in" : "Sign up")}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or</span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="w-full flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                {isLogin ? "Create a new account" : "Sign in to existing account"}
-              </button>
-            </div>
+          {/* Email */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label
+              htmlFor="email"
+              style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--text-secondary)" }}
+            >
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="input-base focus-ring"
+              placeholder="you@example.com"
+            />
           </div>
+
+          {/* Password */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label
+              htmlFor="password"
+              style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--text-secondary)" }}
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              autoComplete={isLogin ? "current-password" : "new-password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input-base focus-ring"
+              placeholder="••••••••"
+            />
+          </div>
+
+          {/* Submit */}
+          <button
+            id="auth-submit-btn"
+            type="submit"
+            disabled={loading}
+            className="btn-primary"
+            style={{ width: "100%", justifyContent: "center", padding: "10px 16px", marginTop: 4 }}
+          >
+            {loading ? (
+              <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
+            ) : (
+              isLogin ? "Sign in" : "Create account"
+            )}
+          </button>
+        </form>
+
+        {/* Divider */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            margin: "20px 0",
+          }}
+        >
+          <div style={{ flex: 1, height: "0.5px", backgroundColor: "var(--border)" }} />
+          <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>or</span>
+          <div style={{ flex: 1, height: "0.5px", backgroundColor: "var(--border)" }} />
         </div>
+
+        {/* Toggle */}
+        <button
+          id="auth-toggle-btn"
+          onClick={() => { setIsLogin(!isLogin); setError(null); setSuccessMsg(null); }}
+          className="btn-ghost"
+          style={{ width: "100%", justifyContent: "center", padding: "10px 16px" }}
+        >
+          {isLogin ? "Create a new account" : "Sign in to existing account"}
+        </button>
       </div>
+
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </div>
   );
 }

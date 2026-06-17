@@ -1,49 +1,442 @@
 @import "tailwindcss";
 
+/* ─── Dark mode: manual class OR system preference ─── */
 @custom-variant dark (&:where(.dark, .dark *));
 
-
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
+/* ─── Design Tokens ─── */
 @layer base {
+
+  :root {
+    /* Surface */
+    --bg:          #FAFAF9;
+    --bg-raised:   #FFFFFF;
+    --bg-subtle:   #F5F5F4;
+    --bg-inset:    #EDEDED;
+
+    /* Borders */
+    --border:      #E5E5E3;
+    --border-strong: #D4D4D0;
+
+    /* Text */
+    --text-primary:   #1C1C1A;
+    --text-secondary: #6B6B66;
+    --text-tertiary:  #A8A8A3;
+    --text-disabled:  #C8C8C3;
+
+    /* Accent — warm indigo */
+    --accent:         #4338CA;
+    --accent-hover:   #3730A3;
+    --accent-subtle:  #EEF2FF;
+    --accent-text:    #4338CA;
+    --accent-border:  #C7D2FE;
+
+    /* Semantic */
+    --success-bg:    #F0FDF4;
+    --success-text:  #15803D;
+    --success-border:#BBF7D0;
+
+    --warn-bg:       #FFFBEB;
+    --warn-text:     #B45309;
+    --warn-border:   #FDE68A;
+
+    --danger-bg:     #FFF1F2;
+    --danger-text:   #BE123C;
+    --danger-border: #FECDD3;
+
+    --info-bg:       #EFF6FF;
+    --info-text:     #1D4ED8;
+    --info-border:   #BFDBFE;
+
+    /* Status chips */
+    --status-saved-bg:     #F5F5F4;
+    --status-saved-text:   #44403C;
+    --status-saved-border: #D6D3D1;
+
+    --status-applied-bg:     #EFF6FF;
+    --status-applied-text:   #1D4ED8;
+    --status-applied-border: #BFDBFE;
+
+    --status-interviewing-bg:     #F5F3FF;
+    --status-interviewing-text:   #6D28D9;
+    --status-interviewing-border: #DDD6FE;
+
+    --status-offer-bg:     #F0FDF4;
+    --status-offer-text:   #15803D;
+    --status-offer-border: #BBF7D0;
+
+    --status-rejected-bg:     #FFF1F2;
+    --status-rejected-text:   #BE123C;
+    --status-rejected-border: #FECDD3;
+
+    /* Priority */
+    --priority-high-bg:     #FFF1F2;
+    --priority-high-text:   #BE123C;
+    --priority-high-border: #FECDD3;
+
+    --priority-medium-bg:     #FFFBEB;
+    --priority-medium-text:   #B45309;
+    --priority-medium-border: #FDE68A;
+
+    --priority-low-bg:     #F0FDF4;
+    --priority-low-text:   #15803D;
+    --priority-low-border: #BBF7D0;
+  }
+
+  /* ─── Dark mode overrides ─── */
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+      --bg:          #111110;
+      --bg-raised:   #1C1C1A;
+      --bg-subtle:   #252523;
+      --bg-inset:    #2E2E2B;
+
+      --border:      #2E2E2B;
+      --border-strong: #3D3D3A;
+
+      --text-primary:   #F2F2EF;
+      --text-secondary: #A8A8A3;
+      --text-tertiary:  #6B6B66;
+      --text-disabled:  #44443F;
+
+      --accent:         #818CF8;
+      --accent-hover:   #A5B4FC;
+      --accent-subtle:  #1E1B4B;
+      --accent-text:    #A5B4FC;
+      --accent-border:  #3730A3;
+
+      --success-bg:    #052E16;
+      --success-text:  #4ADE80;
+      --success-border:#166534;
+
+      --warn-bg:       #1C1400;
+      --warn-text:     #FCD34D;
+      --warn-border:   #92400E;
+
+      --danger-bg:     #1F0A0D;
+      --danger-text:   #FB7185;
+      --danger-border: #9F1239;
+
+      --info-bg:       #0D1B3E;
+      --info-text:     #93C5FD;
+      --info-border:   #1E3A8A;
+
+      --status-saved-bg:     #252523;
+      --status-saved-text:   #A8A8A3;
+      --status-saved-border: #3D3D3A;
+
+      --status-applied-bg:     #0D1B3E;
+      --status-applied-text:   #93C5FD;
+      --status-applied-border: #1E3A8A;
+
+      --status-interviewing-bg:     #1E1B4B;
+      --status-interviewing-text:   #C4B5FD;
+      --status-interviewing-border: #3730A3;
+
+      --status-offer-bg:     #052E16;
+      --status-offer-text:   #4ADE80;
+      --status-offer-border: #166534;
+
+      --status-rejected-bg:     #1F0A0D;
+      --status-rejected-text:   #FB7185;
+      --status-rejected-border: #9F1239;
+
+      --priority-high-bg:     #1F0A0D;
+      --priority-high-text:   #FB7185;
+      --priority-high-border: #9F1239;
+
+      --priority-medium-bg:     #1C1400;
+      --priority-medium-text:   #FCD34D;
+      --priority-medium-border: #92400E;
+
+      --priority-low-bg:     #052E16;
+      --priority-low-text:   #4ADE80;
+      --priority-low-border: #166534;
+    }
+  }
+
+  /* Manual dark class — always wins */
+  .dark {
+    --bg:          #111110;
+    --bg-raised:   #1C1C1A;
+    --bg-subtle:   #252523;
+    --bg-inset:    #2E2E2B;
+
+    --border:      #2E2E2B;
+    --border-strong: #3D3D3A;
+
+    --text-primary:   #F2F2EF;
+    --text-secondary: #A8A8A3;
+    --text-tertiary:  #6B6B66;
+    --text-disabled:  #44443F;
+
+    --accent:         #818CF8;
+    --accent-hover:   #A5B4FC;
+    --accent-subtle:  #1E1B4B;
+    --accent-text:    #A5B4FC;
+    --accent-border:  #3730A3;
+
+    --success-bg:    #052E16;
+    --success-text:  #4ADE80;
+    --success-border:#166534;
+
+    --warn-bg:       #1C1400;
+    --warn-text:     #FCD34D;
+    --warn-border:   #92400E;
+
+    --danger-bg:     #1F0A0D;
+    --danger-text:   #FB7185;
+    --danger-border: #9F1239;
+
+    --info-bg:       #0D1B3E;
+    --info-text:     #93C5FD;
+    --info-border:   #1E3A8A;
+
+    --status-saved-bg:     #252523;
+    --status-saved-text:   #A8A8A3;
+    --status-saved-border: #3D3D3A;
+
+    --status-applied-bg:     #0D1B3E;
+    --status-applied-text:   #93C5FD;
+    --status-applied-border: #1E3A8A;
+
+    --status-interviewing-bg:     #1E1B4B;
+    --status-interviewing-text:   #C4B5FD;
+    --status-interviewing-border: #3730A3;
+
+    --status-offer-bg:     #052E16;
+    --status-offer-text:   #4ADE80;
+    --status-offer-border: #166534;
+
+    --status-rejected-bg:     #1F0A0D;
+    --status-rejected-text:   #FB7185;
+    --status-rejected-border: #9F1239;
+
+    --priority-high-bg:     #1F0A0D;
+    --priority-high-text:   #FB7185;
+    --priority-high-border: #9F1239;
+
+    --priority-medium-bg:     #1C1400;
+    --priority-medium-text:   #FCD34D;
+    --priority-medium-border: #92400E;
+
+    --priority-low-bg:     #052E16;
+    --priority-low-text:   #4ADE80;
+    --priority-low-border: #166534;
+  }
+
+  /* ─── Base resets ─── */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
-    @apply antialiased bg-slate-50 text-gray-900;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-weight: 400;
+    line-height: 1.6;
+    min-height: 100vh;
   }
 
-  .dark body {
-    @apply bg-slate-950 text-slate-100;
+  /* Only 400 and 500 — enforce this globally */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+  strong, b {
+    font-weight: 500;
   }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+
+  /* Minimal scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 rounded-full;
-  }
-  .dark ::-webkit-scrollbar-thumb {
-    @apply bg-slate-700;
+    background: var(--border-strong);
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400;
+    background: var(--text-tertiary);
+  }
+
+  /* Select option theming */
+  select option {
+    background-color: var(--bg-raised);
+    color: var(--text-primary);
   }
 }
 
+/* ─── Utility component classes (design system primitives) ─── */
 @layer utilities {
-  /* Print override for CV builder */
+
+  /* Borders */
+  .border-ds      { border: 0.5px solid var(--border); }
+  .border-ds-strong { border: 0.5px solid var(--border-strong); }
+
+  /* Text */
+  .text-primary   { color: var(--text-primary); }
+  .text-secondary { color: var(--text-secondary); }
+  .text-tertiary  { color: var(--text-tertiary); }
+
+  /* Surfaces */
+  .bg-ds          { background-color: var(--bg); }
+  .bg-ds-raised   { background-color: var(--bg-raised); }
+  .bg-ds-subtle   { background-color: var(--bg-subtle); }
+  .bg-ds-inset    { background-color: var(--bg-inset); }
+
+  /* Interactive base */
+  .interactive {
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+
+  /* Focus ring */
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Input base */
+  .input-base {
+    width: 100%;
+    padding: 8px 12px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: 6px;
+    background-color: var(--bg-raised);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 400;
+    transition: border-color 120ms ease;
+    outline: none;
+  }
+  .input-base::placeholder {
+    color: var(--text-tertiary);
+  }
+  .input-base:focus {
+    border-color: var(--accent);
+  }
+
+  /* Button: primary */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 0.5px solid var(--accent);
+    background-color: var(--accent);
+    color: #FFFFFF;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease;
+    white-space: nowrap;
+  }
+  .btn-primary:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Button: ghost */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border);
+    background-color: var(--bg-raised);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+    white-space: nowrap;
+  }
+  .btn-ghost:hover {
+    background-color: var(--bg-subtle);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  .btn-ghost:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Button: danger ghost */
+  .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 0.5px solid var(--danger-border);
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+  .btn-danger:hover {
+    filter: brightness(0.95);
+  }
+
+  /* Chip: status */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    border: 0.5px solid;
+    white-space: nowrap;
+  }
+
+  /* Nav item */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color 120ms ease, color 120ms ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover {
+    background-color: var(--bg-subtle);
+    color: var(--text-primary);
+  }
+  .nav-item.active {
+    background-color: var(--accent-subtle);
+    color: var(--accent-text);
+    font-weight: 500;
+  }
+
+  /* ─── Print styles ─── */
   @media print {
-    /* Hide the entire main app / background contents */
     body > *:not(#cv-builder-modal-overlay) {
       display: none !important;
     }
-    
-    /* Reset the overlay styles for printing */
+
     #cv-builder-modal-overlay {
       position: absolute !important;
       left: 0 !important;
@@ -56,11 +449,9 @@
       overflow: visible !important;
       display: block !important;
     }
-    
-    /* Reset the modal inner card container */
+
     #cv-builder-modal-overlay > div {
       border: none !important;
-      box-shadow: none !important;
       background: white !important;
       width: 100% !important;
       max-width: 100% !important;
@@ -69,7 +460,6 @@
       display: block !important;
     }
 
-    /* Reset the body wrapper inside the card */
     #cv-builder-modal-overlay > div > div {
       display: block !important;
       overflow: visible !important;
@@ -77,7 +467,6 @@
       background: white !important;
     }
 
-    /* Force preview container to be visible and take up full page width */
     #cv-preview-container {
       display: block !important;
       width: 100% !important;
@@ -86,15 +475,12 @@
       background: white !important;
     }
 
-    /* Hide anything with .no-print class */
     .no-print {
       display: none !important;
     }
 
-    /* Style the printable area */
     #cv-print-area {
       border: none !important;
-      box-shadow: none !important;
       width: 100% !important;
       max-width: 100% !important;
       min-height: auto !important;
@@ -103,12 +489,5 @@
       background: white !important;
       color: black !important;
     }
-  }
-
-
-  /* Dark colour variables for select elements */
-  .dark select option {
-    background-color: #0f172a;
-    color: #e2e8f0;
   }
 }

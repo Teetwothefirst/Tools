@@ -30,11 +30,11 @@ export async function POST(req: Request) {
 
         const refreshData = await refreshRes.json();
         if (refreshRes.ok && refreshData.access_token) {
-          accessToken = refreshData.access_token;
+          accessToken = refreshData.access_token as string;
           cookieStore.set('google_access_token', accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: refreshData.expires_in,
+            maxAge: Number(refreshData.expires_in) || 3600,
             path: '/'
           });
         }
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
       method: 'POST',
       headers: {
-        'Authorization': \`Bearer \${accessToken}\`,
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(event),
