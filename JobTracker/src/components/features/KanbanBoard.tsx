@@ -10,7 +10,7 @@ import {
   Plus, Upload, Briefcase, LogOut, FileText, LayoutDashboard,
   Kanban, Grid3X3, Calendar as CalendarIcon, Sun, Moon,
   ChevronLeft, ChevronRight, Search, Filter, TrendingUp,
-  CheckCircle2, Clock, XCircle, BookmarkCheck, Star,
+  CheckCircle2, Clock, XCircle, BookmarkCheck, Star, Menu,
 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import * as XLSX from "xlsx";
@@ -22,7 +22,8 @@ import {
 } from "date-fns";
 import { useToast } from "@/components/ui/Toast";
 
-type ViewType = "overview" | "kanban" | "grid" | "calendar" | "cv";
+type ViewType = "overview" | "board" | "cv";
+type BoardTab = "kanban" | "grid" | "calendar";
 
 const COLUMNS: { id: JobStatus; title: string }[] = [
   { id: "Saved",        title: "Saved"        },
@@ -40,7 +41,6 @@ const STATUS_ICONS: Record<JobStatus, any> = {
   Rejected:     XCircle,
 };
 
-// CSS variable names per status for inline styles
 const STATUS_VARS: Record<JobStatus, { bg: string; text: string; border: string }> = {
   Saved:        { bg: "var(--status-saved-bg)",        text: "var(--status-saved-text)",        border: "var(--status-saved-border)"        },
   Applied:      { bg: "var(--status-applied-bg)",      text: "var(--status-applied-text)",      border: "var(--status-applied-border)"      },
@@ -60,45 +60,16 @@ const CATEGORY_BAR: Record<string, string> = {
 };
 
 // ─── Stat card ───
-function StatCard({
-  label, value, icon: Icon, status,
-}: {
-  label: string; value: number; icon: any; status: JobStatus;
-}) {
+function StatCard({ label, value, icon: Icon, status }: { label: string; value: number; icon: any; status: JobStatus }) {
   const vars = STATUS_VARS[status];
   return (
-    <div
-      style={{
-        backgroundColor: vars.bg,
-        border: `0.5px solid ${vars.border}`,
-        borderRadius: 8,
-        padding: "16px 20px",
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-      }}
-    >
-      <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 6,
-          backgroundColor: "var(--bg-raised)",
-          border: `0.5px solid ${vars.border}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: vars.text,
-          flexShrink: 0,
-        }}
-      >
+    <div style={{ backgroundColor: vars.bg, border: `0.5px solid ${vars.border}`, borderRadius: 8, padding: "16px 20px", display: "flex", alignItems: "center", gap: 14 }}>
+      <div style={{ width: 36, height: 36, borderRadius: 6, backgroundColor: "var(--bg-raised)", border: `0.5px solid ${vars.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: vars.text, flexShrink: 0 }}>
         <Icon size={16} />
       </div>
       <div>
         <p style={{ fontSize: "1.5rem", fontWeight: 500, color: vars.text, lineHeight: 1 }}>{value}</p>
-        <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: vars.text, opacity: 0.7, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-          {label}
-        </p>
+        <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: vars.text, opacity: 0.7, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</p>
       </div>
     </div>
   );
@@ -110,6 +81,8 @@ export function KanbanBoard({ userId }: { userId: string }) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isCvBuilderOpen, setIsCvBuilderOpen] = useState(false);
   const [view, setView] = useState<ViewType>("overview");
+  const [boardTab, setBoardTab] = useState<BoardTab>("kanban");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<JobStatus | "All">("All");
@@ -123,8 +96,13 @@ export function KanbanBoard({ userId }: { userId: string }) {
   useEffect(() => {
     setIsClient(true);
     fetchJobs();
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setDarkMode(prefersDark);
+    // Restore dark mode from localStorage, fall back to system preference
+    const stored = localStorage.getItem("jt-dark-mode");
+    if (stored !== null) {
+      setDarkMode(stored === "true");
+    } else {
+      setDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
   }, []);
 
   useEffect(() => {
@@ -135,32 +113,22 @@ export function KanbanBoard({ userId }: { userId: string }) {
       document.documentElement.classList.remove("dark");
       document.documentElement.classList.add("light");
     }
+    localStorage.setItem("jt-dark-mode", String(darkMode));
   }, [darkMode]);
 
   const fetchJobs = async () => {
     try {
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("*")
-        .order("date_added", { ascending: false });
+      const { data, error } = await supabase.from("jobs").select("*").order("date_added", { ascending: false });
       if (error) throw error;
       if (data) {
         const mapped: Job[] = data.map((d: any) => ({
-          id: d.id,
-          company: d.company,
-          title: d.title,
-          status: d.status as JobStatus,
-          priority: d.priority,
-          dateAdded: d.date_added,
-          notes: d.notes || undefined,
-          description: d.description || undefined,
-          contacts: d.contacts || undefined,
-          mailUsed: d.mail_used || undefined,
-          payAmount: d.pay_amount || undefined,
-          jobLink: d.job_link || undefined,
-          offerReceivedDate: d.offer_received_date || undefined,
-          employmentEndDate: d.employment_end_date || undefined,
-          category: d.category || undefined,
+          id: d.id, company: d.company, title: d.title,
+          status: d.status as JobStatus, priority: d.priority,
+          dateAdded: d.date_added, notes: d.notes || undefined,
+          description: d.description || undefined, contacts: d.contacts || undefined,
+          mailUsed: d.mail_used || undefined, payAmount: d.pay_amount || undefined,
+          jobLink: d.job_link || undefined, offerReceivedDate: d.offer_received_date || undefined,
+          employmentEndDate: d.employment_end_date || undefined, category: d.category || undefined,
         }));
         setJobs(mapped);
       }
@@ -189,43 +157,27 @@ export function KanbanBoard({ userId }: { userId: string }) {
     try {
       const { error } = await supabase.from("jobs").update({ status: newStatus }).eq("id", draggableId);
       if (error) throw error;
-    } catch (err: any) {
+    } catch {
       toast("Failed to move job", "error");
       setJobs(jobs);
     }
   };
 
   const handleAddJob = () => {
-    setSelectedJob({
-      id: uuidv4(),
-      company: "",
-      title: "",
-      status: "Saved",
-      priority: "Medium",
-      dateAdded: new Date().toISOString(),
-      category: "Other",
-    });
+    setSelectedJob({ id: uuidv4(), company: "", title: "", status: "Saved", priority: "Medium", dateAdded: new Date().toISOString(), category: "Other" });
   };
 
   const handleUpdateJob = async (updatedJob: Job) => {
     const exists = jobs.some((j) => j.id === updatedJob.id);
     const dbJob = {
-      id: updatedJob.id,
-      user_id: userId,
-      company: updatedJob.company,
-      title: updatedJob.title,
-      status: updatedJob.status,
-      priority: updatedJob.priority,
-      notes: updatedJob.notes,
-      description: updatedJob.description,
-      contacts: updatedJob.contacts,
-      date_added: updatedJob.dateAdded,
-      mail_used: updatedJob.mailUsed,
-      pay_amount: updatedJob.payAmount,
-      job_link: updatedJob.jobLink,
-      offer_received_date: updatedJob.offerReceivedDate,
-      employment_end_date: updatedJob.employmentEndDate,
-      category: updatedJob.category || "Other",
+      id: updatedJob.id, user_id: userId,
+      company: updatedJob.company, title: updatedJob.title,
+      status: updatedJob.status, priority: updatedJob.priority,
+      notes: updatedJob.notes, description: updatedJob.description,
+      contacts: updatedJob.contacts, date_added: updatedJob.dateAdded,
+      mail_used: updatedJob.mailUsed, pay_amount: updatedJob.payAmount,
+      job_link: updatedJob.jobLink, offer_received_date: updatedJob.offerReceivedDate,
+      employment_end_date: updatedJob.employmentEndDate, category: updatedJob.category || "Other",
     };
     try {
       if (exists) {
@@ -252,7 +204,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
       const { error } = await supabase.from("jobs").delete().eq("id", jobId);
       if (error) throw error;
       toast("Job deleted", "success");
-    } catch (err: any) {
+    } catch {
       toast("Failed to delete job", "error");
       fetchJobs();
     }
@@ -268,36 +220,28 @@ export function KanbanBoard({ userId }: { userId: string }) {
       const ws = wb.Sheets[wb.SheetNames[0]];
       const data = XLSX.utils.sheet_to_json(ws);
       const importedJobs: Job[] = (data as any[]).map((row) => ({
-        id: uuidv4(),
-        company: row.Company || "Unknown Company",
-        title: row.Title || "Unknown Title",
-        status: ["Saved", "Applied", "Interviewing", "Offer", "Rejected"].includes(row.Status) ? row.Status : "Saved",
-        priority: ["Low", "Medium", "High"].includes(row.Priority) ? row.Priority : "Medium",
+        id: uuidv4(), company: row.Company || "Unknown Company", title: row.Title || "Unknown Title",
+        status: ["Saved","Applied","Interviewing","Offer","Rejected"].includes(row.Status) ? row.Status : "Saved",
+        priority: ["Low","Medium","High"].includes(row.Priority) ? row.Priority : "Medium",
         dateAdded: row.DateAdded ? new Date(row.DateAdded).toISOString() : new Date().toISOString(),
-        notes: row.Notes || "",
-        description: row.Description || "",
-        contacts: row.Contacts || "",
-        mailUsed: row.MailUsed || "",
-        payAmount: row.PayAmount || "",
-        jobLink: row.JobLink || "",
-        offerReceivedDate: row.OfferReceivedDate || "",
-        employmentEndDate: row.EmploymentEndDate || "",
+        notes: row.Notes || "", description: row.Description || "", contacts: row.Contacts || "",
+        mailUsed: row.MailUsed || "", payAmount: row.PayAmount || "", jobLink: row.JobLink || "",
+        offerReceivedDate: row.OfferReceivedDate || "", employmentEndDate: row.EmploymentEndDate || "",
         category: row.Category || "Other",
       }));
       setJobs((prev) => [...prev, ...importedJobs]);
       const dbJobs = importedJobs.map((j) => ({
         id: j.id, user_id: userId, company: j.company, title: j.title,
-        status: j.status, priority: j.priority, notes: j.notes,
-        description: j.description, contacts: j.contacts, date_added: j.dateAdded,
-        mail_used: j.mailUsed, pay_amount: j.payAmount, job_link: j.jobLink,
-        offer_received_date: j.offerReceivedDate, employment_end_date: j.employmentEndDate,
-        category: j.category || "Other",
+        status: j.status, priority: j.priority, notes: j.notes, description: j.description,
+        contacts: j.contacts, date_added: j.dateAdded, mail_used: j.mailUsed,
+        pay_amount: j.payAmount, job_link: j.jobLink, offer_received_date: j.offerReceivedDate,
+        employment_end_date: j.employmentEndDate, category: j.category || "Other",
       }));
       try {
         const { error } = await supabase.from("jobs").insert(dbJobs);
         if (error) throw error;
         toast(`Imported ${importedJobs.length} jobs`, "success");
-      } catch (err: any) {
+      } catch {
         toast("Failed to import jobs to database", "error");
       }
     };
@@ -305,7 +249,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // ─── Stats ───
+  // ─── Computed values ───
   const stats = useMemo(() => {
     const byStatus: Record<JobStatus, number> = { Saved: 0, Applied: 0, Interviewing: 0, Offer: 0, Rejected: 0 };
     const byCategory: Record<string, number> = {};
@@ -316,9 +260,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
       byCategory[cat] = (byCategory[cat] || 0) + 1;
       byPriority[j.priority] = (byPriority[j.priority] || 0) + 1;
     }
-    const successRate = jobs.length > 0
-      ? Math.round(((byStatus.Offer + byStatus.Interviewing) / jobs.length) * 100)
-      : 0;
+    const successRate = jobs.length > 0 ? Math.round(((byStatus.Offer + byStatus.Interviewing) / jobs.length) * 100) : 0;
     return { byStatus, byCategory, byPriority, successRate, total: jobs.length };
   }, [jobs]);
 
@@ -335,8 +277,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
   const calendarDays = useMemo(() => {
     const start = startOfMonth(calendarDate);
     const end = endOfMonth(calendarDate);
-    const days = eachDayOfInterval({ start, end });
-    return { days, startPad: getDay(start) };
+    return { days: eachDayOfInterval({ start, end }), startPad: getDay(start) };
   }, [calendarDate]);
 
   const jobsByDate = useMemo(() => {
@@ -358,71 +299,44 @@ export function KanbanBoard({ userId }: { userId: string }) {
   }, [jobs]);
 
   const navItems: { id: ViewType; label: string; icon: any }[] = [
-    { id: "overview",  label: "Overview",   icon: LayoutDashboard },
-    { id: "kanban",    label: "Kanban",     icon: Kanban          },
-    { id: "grid",      label: "Grid",       icon: Grid3X3         },
-    { id: "calendar",  label: "Calendar",   icon: CalendarIcon    },
-    { id: "cv",        label: "CV Builder", icon: FileText        },
+    { id: "overview", label: "Overview",   icon: LayoutDashboard },
+    { id: "board",    label: "Board",      icon: Kanban          },
+    { id: "cv",       label: "CV Builder", icon: FileText        },
+  ];
+
+  const boardTabItems: { id: BoardTab; label: string; icon: any }[] = [
+    { id: "kanban",   label: "Kanban",   icon: Kanban       },
+    { id: "grid",     label: "Grid",     icon: Grid3X3      },
+    { id: "calendar", label: "Calendar", icon: CalendarIcon },
   ];
 
   const viewTitle =
     view === "overview" ? "Overview" :
-    view === "kanban"   ? "Kanban board" :
-    view === "grid"     ? "Grid view" :
-    view === "calendar" ? "Calendar" : "CV Builder";
+    view === "board" && boardTab === "kanban"   ? "Kanban board" :
+    view === "board" && boardTab === "grid"     ? "Grid view" :
+    view === "board" && boardTab === "calendar" ? "Calendar" : "CV Builder";
 
   if (!isClient) return null;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        backgroundColor: "var(--bg)",
-        color: "var(--text-primary)",
-        overflow: "hidden",
-      }}
-    >
-      {/* ── Sidebar ── */}
-      <aside
-        style={{
-          width: 220,
-          flexShrink: 0,
-          backgroundColor: "var(--bg-raised)",
-          borderRight: "0.5px solid var(--border)",
-          display: "flex",
-          flexDirection: "column",
-          padding: "20px 12px",
-          zIndex: 20,
-        }}
-      >
-        {/* Logo */}
+    <div style={{ display: "flex", height: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", overflow: "hidden" }}>
+
+      {/* ── Mobile sidebar backdrop ── */}
+      {sidebarOpen && (
         <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "0 8px",
-            marginBottom: 28,
-          }}
-        >
-          <div
-            style={{
-              width: 26,
-              height: 26,
-              borderRadius: 5,
-              backgroundColor: "var(--accent)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 29 }}
+        />
+      )}
+
+      {/* ── Sidebar ── */}
+      <aside className={`jt-sidebar${sidebarOpen ? " open" : ""}`}>
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px", marginBottom: 28 }}>
+          <div style={{ width: 26, height: 26, borderRadius: 5, backgroundColor: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <Briefcase size={13} color="#fff" />
           </div>
-          <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-            JobTracker
-          </span>
+          <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>JobTracker</span>
         </div>
 
         {/* Nav */}
@@ -433,10 +347,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
             return (
               <button
                 key={item.id}
-                onClick={() => {
-                  setView(item.id);
-                  if (item.id === "cv") setIsCvBuilderOpen(true);
-                }}
+                onClick={() => { setView(item.id); if (item.id === "cv") setIsCvBuilderOpen(true); setSidebarOpen(false); }}
                 className={`nav-item${active ? " active" : ""}`}
               >
                 <Icon size={15} />
@@ -447,19 +358,8 @@ export function KanbanBoard({ userId }: { userId: string }) {
         </nav>
 
         {/* Bottom controls */}
-        <div
-          style={{
-            borderTop: "0.5px solid var(--border)",
-            paddingTop: 12,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          <button
-            onClick={() => setDarkMode((d) => !d)}
-            className="nav-item"
-          >
+        <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: 12, display: "flex", flexDirection: "column", gap: 2 }}>
+          <button onClick={() => setDarkMode((d) => !d)} className="nav-item">
             {darkMode ? <Sun size={15} /> : <Moon size={15} />}
             <span>{darkMode ? "Light mode" : "Dark mode"}</span>
           </button>
@@ -467,12 +367,8 @@ export function KanbanBoard({ userId }: { userId: string }) {
             onClick={handleLogout}
             className="nav-item"
             style={{ color: "var(--danger-text)" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = "var(--danger-bg)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = "";
-            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--danger-bg)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
           >
             <LogOut size={15} />
             <span>Sign out</span>
@@ -481,53 +377,35 @@ export function KanbanBoard({ userId }: { userId: string }) {
       </aside>
 
       {/* ── Main ── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
 
         {/* Top header */}
-        <header
-          style={{
-            backgroundColor: "var(--bg-raised)",
-            borderBottom: "0.5px solid var(--border)",
-            padding: "0 24px",
-            height: 56,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexShrink: 0,
-          }}
-        >
-          <div>
-            <h1 style={{ fontSize: "0.9375rem", fontWeight: 500, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-              {viewTitle}
-            </h1>
-            <p style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", marginTop: 1 }}>
-              {jobs.length} application{jobs.length !== 1 ? "s" : ""}
-            </p>
+        <header style={{ backgroundColor: "var(--bg-raised)", borderBottom: "0.5px solid var(--border)", padding: "0 16px 0 20px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {/* Hamburger – visible on mobile */}
+            <button
+              className="hamburger-btn"
+              onClick={() => setSidebarOpen((o) => !o)}
+              aria-label="Toggle sidebar"
+            >
+              <Menu size={18} />
+            </button>
+            <div>
+              <h1 style={{ fontSize: "0.9375rem", fontWeight: 500, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>{viewTitle}</h1>
+              <p style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", marginTop: 1 }}>
+                {jobs.length} application{jobs.length !== 1 ? "s" : ""}
+              </p>
+            </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <input
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              className="hidden"
-              style={{ display: "none" }}
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="btn-ghost"
-              style={{ padding: "7px 12px", fontSize: "0.8125rem" }}
-            >
+            <input type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileUpload} />
+            <button onClick={() => fileInputRef.current?.click()} className="btn-ghost" style={{ padding: "7px 12px", fontSize: "0.8125rem" }}>
               <Upload size={14} />
-              <span>Import</span>
+              <span className="btn-label">Import</span>
             </button>
-            <button
-              onClick={handleAddJob}
-              className="btn-primary"
-              style={{ padding: "7px 14px", fontSize: "0.8125rem" }}
-            >
+            <button onClick={handleAddJob} className="btn-primary" style={{ padding: "7px 14px", fontSize: "0.8125rem" }}>
               <Plus size={14} />
-              Add job
+              <span className="btn-label">Add job</span>
             </button>
           </div>
         </header>
@@ -544,76 +422,40 @@ export function KanbanBoard({ userId }: { userId: string }) {
                 <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
                   Applications by status
                 </p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
                   {COLUMNS.map((col) => {
                     const Icon = STATUS_ICONS[col.id];
-                    return (
-                      <StatCard key={col.id} label={col.title} value={stats.byStatus[col.id]} icon={Icon} status={col.id} />
-                    );
+                    return <StatCard key={col.id} label={col.title} value={stats.byStatus[col.id]} icon={Icon} status={col.id} />;
                   })}
                 </div>
               </div>
 
               {/* Summary row */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>
                 {/* Total */}
-                <div
-                  style={{
-                    border: "0.5px solid var(--border)",
-                    borderRadius: 8,
-                    padding: 20,
-                    backgroundColor: "var(--bg-raised)",
-                  }}
-                >
-                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                    Total applications
-                  </p>
-                  <p style={{ fontSize: "2.5rem", fontWeight: 500, color: "var(--text-primary)", lineHeight: 1 }}>
-                    {stats.total}
-                  </p>
+                <div style={{ border: "0.5px solid var(--border)", borderRadius: 8, padding: 20, backgroundColor: "var(--bg-raised)" }}>
+                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Total applications</p>
+                  <p style={{ fontSize: "2.5rem", fontWeight: 500, color: "var(--text-primary)", lineHeight: 1 }}>{stats.total}</p>
                 </div>
                 {/* Success rate */}
-                <div
-                  style={{
-                    border: "0.5px solid var(--status-offer-border)",
-                    borderRadius: 8,
-                    padding: 20,
-                    backgroundColor: "var(--status-offer-bg)",
-                  }}
-                >
-                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--status-offer-text)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                    Success rate
-                  </p>
-                  <p style={{ fontSize: "2.5rem", fontWeight: 500, color: "var(--status-offer-text)", lineHeight: 1 }}>
-                    {stats.successRate}%
-                  </p>
-                  <p style={{ fontSize: "0.75rem", color: "var(--status-offer-text)", opacity: 0.7, marginTop: 4 }}>
-                    Interviewing + Offers
-                  </p>
+                <div style={{ border: "0.5px solid var(--status-offer-border)", borderRadius: 8, padding: 20, backgroundColor: "var(--status-offer-bg)" }}>
+                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--status-offer-text)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Success rate</p>
+                  <p style={{ fontSize: "2.5rem", fontWeight: 500, color: "var(--status-offer-text)", lineHeight: 1 }}>{stats.successRate}%</p>
+                  <p style={{ fontSize: "0.75rem", color: "var(--status-offer-text)", opacity: 0.7, marginTop: 4 }}>Interviewing + Offers</p>
                 </div>
                 {/* Priority breakdown */}
-                <div
-                  style={{
-                    border: "0.5px solid var(--border)",
-                    borderRadius: 8,
-                    padding: 20,
-                    backgroundColor: "var(--bg-raised)",
-                  }}
-                >
-                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
-                    Priority breakdown
-                  </p>
+                <div style={{ border: "0.5px solid var(--border)", borderRadius: 8, padding: 20, backgroundColor: "var(--bg-raised)" }}>
+                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Priority breakdown</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {(["High", "Medium", "Low"] as const).map((p) => {
                       const count = stats.byPriority[p] || 0;
                       const pct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0;
                       const color = p === "High" ? "var(--priority-high-text)" : p === "Medium" ? "var(--priority-medium-text)" : "var(--priority-low-text)";
-                      const barColor = p === "High" ? "var(--priority-high-text)" : p === "Medium" ? "var(--priority-medium-text)" : "var(--priority-low-text)";
                       return (
                         <div key={p} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <span style={{ fontSize: "0.75rem", fontWeight: 500, color, width: 48 }}>{p}</span>
                           <div style={{ flex: 1, backgroundColor: "var(--bg-inset)", borderRadius: 2, height: 4 }}>
-                            <div style={{ width: `${pct}%`, height: 4, borderRadius: 2, backgroundColor: barColor, transition: "width 400ms ease" }} />
+                            <div style={{ width: `${pct}%`, height: 4, borderRadius: 2, backgroundColor: color, transition: "width 400ms ease" }} />
                           </div>
                           <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", width: 20, textAlign: "right" }}>{count}</span>
                         </div>
@@ -626,36 +468,22 @@ export function KanbanBoard({ userId }: { userId: string }) {
               {/* Category breakdown */}
               {Object.keys(stats.byCategory).length > 0 && (
                 <div>
-                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
-                    Applications by category
-                  </p>
-                  <div
-                    style={{
-                      backgroundColor: "var(--bg-raised)",
-                      border: "0.5px solid var(--border)",
-                      borderRadius: 8,
-                      padding: 20,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 10,
-                    }}
-                  >
-                    {Object.entries(stats.byCategory)
-                      .sort((a, b) => b[1] - a[1])
-                      .map(([cat, count]) => {
-                        const pct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0;
-                        const barColor = CATEGORY_BAR[cat] || CATEGORY_BAR.Other;
-                        return (
-                          <div key={cat} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            <span style={{ fontSize: "0.8125rem", color: "var(--text-primary)", width: 96, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat}</span>
-                            <div style={{ flex: 1, backgroundColor: "var(--bg-inset)", borderRadius: 2, height: 5 }}>
-                              <div style={{ width: `${pct}%`, height: 5, borderRadius: 2, backgroundColor: barColor, transition: "width 400ms ease" }} />
-                            </div>
-                            <span style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--text-secondary)", width: 24, textAlign: "right" }}>{count}</span>
-                            <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", width: 32, textAlign: "right" }}>{pct}%</span>
+                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Applications by category</p>
+                  <div style={{ backgroundColor: "var(--bg-raised)", border: "0.5px solid var(--border)", borderRadius: 8, padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+                    {Object.entries(stats.byCategory).sort((a, b) => b[1] - a[1]).map(([cat, count]) => {
+                      const pct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0;
+                      const barColor = CATEGORY_BAR[cat] || CATEGORY_BAR.Other;
+                      return (
+                        <div key={cat} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ fontSize: "0.8125rem", color: "var(--text-primary)", width: 96, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat}</span>
+                          <div style={{ flex: 1, backgroundColor: "var(--bg-inset)", borderRadius: 2, height: 5 }}>
+                            <div style={{ width: `${pct}%`, height: 5, borderRadius: 2, backgroundColor: barColor, transition: "width 400ms ease" }} />
                           </div>
-                        );
-                      })}
+                          <span style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--text-secondary)", width: 24, textAlign: "right" }}>{count}</span>
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", width: 32, textAlign: "right" }}>{pct}%</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -663,17 +491,8 @@ export function KanbanBoard({ userId }: { userId: string }) {
               {/* Recent applications */}
               {jobs.length > 0 && (
                 <div>
-                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
-                    Recent applications
-                  </p>
-                  <div
-                    style={{
-                      backgroundColor: "var(--bg-raised)",
-                      border: "0.5px solid var(--border)",
-                      borderRadius: 8,
-                      overflow: "hidden",
-                    }}
-                  >
+                  <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Recent applications</p>
+                  <div style={{ backgroundColor: "var(--bg-raised)", border: "0.5px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
                     {[...jobs]
                       .sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime())
                       .slice(0, 5)
@@ -683,34 +502,17 @@ export function KanbanBoard({ userId }: { userId: string }) {
                           <div
                             key={job.id}
                             onClick={() => setSelectedJob(job)}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              padding: "12px 20px",
-                              cursor: "pointer",
-                              borderBottom: i < arr.length - 1 ? "0.5px solid var(--border)" : "none",
-                              transition: "background-color 120ms ease",
-                            }}
+                            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", cursor: "pointer", borderBottom: i < arr.length - 1 ? "0.5px solid var(--border)" : "none", transition: "background-color 120ms ease" }}
                             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-subtle)"; }}
                             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
                           >
                             <div>
                               <p style={{ fontSize: "0.875rem", fontWeight: 500, color: "var(--text-primary)" }}>{job.title}</p>
-                              <p style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", marginTop: 2 }}>
-                                {job.company} · {job.category || "Other"}
-                              </p>
+                              <p style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", marginTop: 2 }}>{job.company} · {job.category || "Other"}</p>
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-                              <span
-                                className="chip"
-                                style={{ backgroundColor: sv.bg, color: sv.text, borderColor: sv.border }}
-                              >
-                                {job.status}
-                              </span>
-                              <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
-                                {format(new Date(job.dateAdded), "MMM d")}
-                              </span>
+                              <span className="chip" style={{ backgroundColor: sv.bg, color: sv.text, borderColor: sv.border }}>{job.status}</span>
+                              <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>{format(new Date(job.dateAdded), "MMM d")}</span>
                             </div>
                           </div>
                         );
@@ -730,359 +532,186 @@ export function KanbanBoard({ userId }: { userId: string }) {
             </div>
           )}
 
-          {/* ═══ KANBAN ═══ */}
-          {view === "kanban" && (
-            <div style={{ padding: "20px", height: "100%", overflowX: "auto" }}>
-              <DragDropContext onDragEnd={onDragEnd}>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 12,
-                    minWidth: "max-content",
-                    height: "calc(100vh - 140px)",
-                    paddingBottom: 16,
-                    alignItems: "flex-start",
-                  }}
-                >
-                  {COLUMNS.map((col) => {
-                    let colJobs = jobs.filter((j) => j.status === col.id);
-                    if (col.id === "Interviewing" || col.id === "Offer") {
-                      colJobs = [...colJobs].sort((a, b) => {
-                        const ha = !!(a.offerReceivedDate || a.employmentEndDate);
-                        const hb = !!(b.offerReceivedDate || b.employmentEndDate);
-                        if (ha && !hb) return -1;
-                        if (!ha && hb) return 1;
-                        if (a.offerReceivedDate && b.offerReceivedDate) {
-                          return new Date(b.offerReceivedDate).getTime() - new Date(a.offerReceivedDate).getTime();
-                        }
-                        return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-                      });
-                    } else {
-                      colJobs = [...colJobs].sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
-                    }
-                    const sv = STATUS_VARS[col.id];
-                    return (
-                      <div
-                        key={col.id}
-                        style={{
-                          width: 280,
-                          flexShrink: 0,
-                          display: "flex",
-                          flexDirection: "column",
-                          backgroundColor: "var(--bg-subtle)",
-                          border: "0.5px solid var(--border)",
-                          borderRadius: 8,
-                          padding: 12,
-                          height: "100%",
-                        }}
-                      >
-                        {/* Column header */}
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: 10,
-                            paddingBottom: 10,
-                            borderBottom: "0.5px solid var(--border)",
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: "0.8125rem",
-                              fontWeight: 500,
-                              color: sv.text,
-                            }}
-                          >
-                            {col.title}
-                          </span>
-                          <span
-                            className="chip"
-                            style={{ backgroundColor: sv.bg, color: sv.text, borderColor: sv.border }}
-                          >
-                            {colJobs.length}
-                          </span>
-                        </div>
+          {/* ═══ BOARD ═══ */}
+          {view === "board" && (
+            <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
 
-                        <Droppable droppableId={col.id}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.droppableProps}
-                              style={{
-                                flex: 1,
-                                overflowY: "auto",
-                                minHeight: 80,
-                                borderRadius: 4,
-                                transition: "background-color 120ms ease",
-                                backgroundColor: snapshot.isDraggingOver ? "var(--accent-subtle)" : "transparent",
-                                border: snapshot.isDraggingOver ? "0.5px dashed var(--accent-border)" : "0.5px solid transparent",
-                                padding: 2,
-                              }}
-                            >
-                              {colJobs.map((job, index) => (
-                                <Draggable key={job.id} draggableId={job.id} index={index}>
-                                  {(provided, snapshot) => (
-                                    <JobCard
-                                      job={job}
-                                      onClick={setSelectedJob}
-                                      innerRef={provided.innerRef}
-                                      draggableProps={provided.draggableProps}
-                                      dragHandleProps={provided.dragHandleProps}
-                                      isDragging={snapshot.isDragging}
-                                    />
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                      </div>
-                    );
-                  })}
-                </div>
-              </DragDropContext>
-            </div>
-          )}
-
-          {/* ═══ GRID ═══ */}
-          {view === "grid" && (
-            <div style={{ padding: 28, maxWidth: 1200, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 16 }}>
-              {/* Filters */}
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                <div style={{ position: "relative", flex: "1 1 220px" }}>
-                  <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)", pointerEvents: "none" }} />
-                  <input
-                    type="text"
-                    placeholder="Search company, title, category…"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px 8px 32px",
-                      border: "0.5px solid var(--border-strong)",
-                      borderRadius: 6,
-                      backgroundColor: "var(--bg-raised)",
-                      color: "var(--text-primary)",
-                      fontSize: "0.875rem",
-                      outline: "none",
-                    }}
-                    onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
-                    onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
-                  />
-                </div>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value as JobStatus | "All")}
-                  style={{
-                    padding: "8px 12px",
-                    border: "0.5px solid var(--border-strong)",
-                    borderRadius: 6,
-                    backgroundColor: "var(--bg-raised)",
-                    color: "var(--text-primary)",
-                    fontSize: "0.875rem",
-                    outline: "none",
-                    cursor: "pointer",
-                  }}
-                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
-                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
-                >
-                  <option value="All">All statuses</option>
-                  {COLUMNS.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
-                </select>
-                <select
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                  style={{
-                    padding: "8px 12px",
-                    border: "0.5px solid var(--border-strong)",
-                    borderRadius: 6,
-                    backgroundColor: "var(--bg-raised)",
-                    color: "var(--text-primary)",
-                    fontSize: "0.875rem",
-                    outline: "none",
-                    cursor: "pointer",
-                  }}
-                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
-                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
-                >
-                  {allCategories.map((c) => <option key={c} value={c}>{c === "All" ? "All categories" : c}</option>)}
-                </select>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-tertiary)", fontSize: "0.8125rem" }}>
-                  <Filter size={13} />
-                  {filteredJobs.length} result{filteredJobs.length !== 1 ? "s" : ""}
-                </div>
-              </div>
-
-              {filteredJobs.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "64px 0", color: "var(--text-tertiary)" }}>
-                  <Search size={32} style={{ margin: "0 auto 12px", opacity: 0.25 }} />
-                  <p style={{ fontWeight: 500 }}>No jobs match your filters</p>
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))",
-                    gap: 8,
-                  }}
-                >
-                  {filteredJobs.map((job) => (
-                    <div key={job.id} style={{ cursor: "pointer" }}>
-                      <JobCard job={job} onClick={setSelectedJob} isDragging={false} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ═══ CALENDAR ═══ */}
-          {view === "calendar" && (
-            <div style={{ padding: 28, maxWidth: 960, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 20 }}>
-              {/* Month nav */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h2 style={{ fontSize: "1rem", fontWeight: 500, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-                  {format(calendarDate, "MMMM yyyy")}
-                </h2>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <button
-                    onClick={() => setCalendarDate((d) => subMonths(d, 1))}
-                    className="btn-ghost"
-                    style={{ padding: 8 }}
-                  >
-                    <ChevronLeft size={14} />
-                  </button>
-                  <button
-                    onClick={() => setCalendarDate(new Date())}
-                    className="btn-ghost"
-                    style={{ padding: "6px 12px", fontSize: "0.75rem" }}
-                  >
-                    Today
-                  </button>
-                  <button
-                    onClick={() => setCalendarDate((d) => addMonths(d, 1))}
-                    className="btn-ghost"
-                    style={{ padding: 8 }}
-                  >
-                    <ChevronRight size={14} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Day headers */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-                  <div
-                    key={d}
-                    style={{
-                      textAlign: "center",
-                      fontSize: "0.6875rem",
-                      fontWeight: 500,
-                      color: "var(--text-tertiary)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      padding: "8px 0",
-                    }}
-                  >
-                    {d}
-                  </div>
-                ))}
-              </div>
-
-              {/* Grid */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
-                {Array.from({ length: calendarDays.startPad }).map((_, i) => (
-                  <div key={`pad-${i}`} style={{ height: 88 }} />
-                ))}
-                {calendarDays.days.map((day) => {
-                  const key = format(day, "yyyy-MM-dd");
-                  const dayJobs = jobsByDate[key] || [];
-                  const todayFlag = isToday(day);
+              {/* Sub-tab bar */}
+              <div style={{ display: "flex", alignItems: "center", gap: 2, padding: "8px 16px", borderBottom: "0.5px solid var(--border)", backgroundColor: "var(--bg-raised)", flexShrink: 0 }}>
+                {boardTabItems.map((tab) => {
+                  const Icon = tab.icon;
+                  const active = boardTab === tab.id;
                   return (
-                    <div
-                      key={key}
-                      style={{
-                        height: 88,
-                        borderRadius: 6,
-                        border: todayFlag
-                          ? "0.5px solid var(--accent-border)"
-                          : "0.5px solid var(--border)",
-                        backgroundColor: todayFlag ? "var(--accent-subtle)" : "var(--bg-raised)",
-                        padding: "6px 8px",
-                        display: "flex",
-                        flexDirection: "column",
-                        transition: "border-color 120ms ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!todayFlag) (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!todayFlag) (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                      }}
+                    <button
+                      key={tab.id}
+                      onClick={() => setBoardTab(tab.id)}
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: "0.8125rem", fontWeight: active ? 500 : 400, color: active ? "var(--accent-text)" : "var(--text-secondary)", backgroundColor: active ? "var(--accent-subtle)" : "transparent", transition: "all 120ms ease" }}
                     >
-                      <span
-                        style={{
-                          fontSize: "0.6875rem",
-                          fontWeight: todayFlag ? 500 : 400,
-                          color: todayFlag ? "var(--accent-text)" : "var(--text-tertiary)",
-                          alignSelf: "flex-end",
-                        }}
-                      >
-                        {format(day, "d")}
-                      </span>
-                      <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", gap: 2, marginTop: 4 }}>
-                        {dayJobs.slice(0, 2).map((j) => {
-                          const sv = STATUS_VARS[j.status];
+                      <Icon size={14} />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Sub-view content */}
+              <div style={{ flex: 1, overflow: "auto" }}>
+
+                {/* ─── Kanban ─── */}
+                {boardTab === "kanban" && (
+                  <div style={{ padding: "20px", height: "100%", overflowX: "auto" }}>
+                    <DragDropContext onDragEnd={onDragEnd}>
+                      <div style={{ display: "flex", gap: 12, minWidth: "max-content", height: "calc(100vh - 200px)", paddingBottom: 16, alignItems: "flex-start" }}>
+                        {COLUMNS.map((col) => {
+                          let colJobs = jobs.filter((j) => j.status === col.id);
+                          if (col.id === "Interviewing" || col.id === "Offer") {
+                            colJobs = [...colJobs].sort((a, b) => {
+                              const ha = !!(a.offerReceivedDate || a.employmentEndDate);
+                              const hb = !!(b.offerReceivedDate || b.employmentEndDate);
+                              if (ha && !hb) return -1;
+                              if (!ha && hb) return 1;
+                              if (a.offerReceivedDate && b.offerReceivedDate) {
+                                return new Date(b.offerReceivedDate).getTime() - new Date(a.offerReceivedDate).getTime();
+                              }
+                              return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+                            });
+                          } else {
+                            colJobs = [...colJobs].sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
+                          }
+                          const sv = STATUS_VARS[col.id];
                           return (
-                            <div
-                              key={j.id}
-                              onClick={() => setSelectedJob(j)}
-                              style={{
-                                fontSize: "0.625rem",
-                                fontWeight: 500,
-                                padding: "2px 5px",
-                                borderRadius: 3,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                cursor: "pointer",
-                                backgroundColor: sv.bg,
-                                color: sv.text,
-                                border: `0.5px solid ${sv.border}`,
-                              }}
-                              title={`${j.title} @ ${j.company}`}
-                            >
-                              {j.company}
+                            <div key={col.id} style={{ width: 280, flexShrink: 0, display: "flex", flexDirection: "column", backgroundColor: "var(--bg-subtle)", border: "0.5px solid var(--border)", borderRadius: 8, padding: 12, height: "100%" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, paddingBottom: 10, borderBottom: "0.5px solid var(--border)" }}>
+                                <span style={{ fontSize: "0.8125rem", fontWeight: 500, color: sv.text }}>{col.title}</span>
+                                <span className="chip" style={{ backgroundColor: sv.bg, color: sv.text, borderColor: sv.border }}>{colJobs.length}</span>
+                              </div>
+                              <Droppable droppableId={col.id}>
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    style={{ flex: 1, overflowY: "auto", minHeight: 80, borderRadius: 4, transition: "background-color 120ms ease", backgroundColor: snapshot.isDraggingOver ? "var(--accent-subtle)" : "transparent", border: snapshot.isDraggingOver ? "0.5px dashed var(--accent-border)" : "0.5px solid transparent", padding: 2 }}
+                                  >
+                                    {colJobs.map((job, index) => (
+                                      <Draggable key={job.id} draggableId={job.id} index={index}>
+                                        {(provided, snapshot) => (
+                                          <JobCard job={job} onClick={setSelectedJob} innerRef={provided.innerRef} draggableProps={provided.draggableProps} dragHandleProps={provided.dragHandleProps} isDragging={snapshot.isDragging} />
+                                        )}
+                                      </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                  </div>
+                                )}
+                              </Droppable>
                             </div>
                           );
                         })}
-                        {dayJobs.length > 2 && (
-                          <span style={{ fontSize: "0.5625rem", color: "var(--text-tertiary)", paddingLeft: 2 }}>
-                            +{dayJobs.length - 2} more
-                          </span>
-                        )}
+                      </div>
+                    </DragDropContext>
+                  </div>
+                )}
+
+                {/* ─── Grid ─── */}
+                {boardTab === "grid" && (
+                  <div style={{ padding: 28, maxWidth: 1200, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 16 }}>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                      <div style={{ position: "relative", flex: "1 1 220px" }}>
+                        <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)", pointerEvents: "none" }} />
+                        <input
+                          type="text"
+                          placeholder="Search company, title, category…"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          style={{ width: "100%", padding: "8px 12px 8px 32px", border: "0.5px solid var(--border-strong)", borderRadius: 6, backgroundColor: "var(--bg-raised)", color: "var(--text-primary)", fontSize: "0.875rem", outline: "none" }}
+                          onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                          onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                        />
+                      </div>
+                      <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as JobStatus | "All")} style={{ padding: "8px 12px", border: "0.5px solid var(--border-strong)", borderRadius: 6, backgroundColor: "var(--bg-raised)", color: "var(--text-primary)", fontSize: "0.875rem", outline: "none", cursor: "pointer" }} onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }} onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}>
+                        <option value="All">All statuses</option>
+                        {COLUMNS.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+                      </select>
+                      <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} style={{ padding: "8px 12px", border: "0.5px solid var(--border-strong)", borderRadius: 6, backgroundColor: "var(--bg-raised)", color: "var(--text-primary)", fontSize: "0.875rem", outline: "none", cursor: "pointer" }} onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }} onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}>
+                        {allCategories.map((c) => <option key={c} value={c}>{c === "All" ? "All categories" : c}</option>)}
+                      </select>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-tertiary)", fontSize: "0.8125rem" }}>
+                        <Filter size={13} />
+                        {filteredJobs.length} result{filteredJobs.length !== 1 ? "s" : ""}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                    {filteredJobs.length === 0 ? (
+                      <div style={{ textAlign: "center", padding: "64px 0", color: "var(--text-tertiary)" }}>
+                        <Search size={32} style={{ margin: "0 auto 12px", opacity: 0.25 }} />
+                        <p style={{ fontWeight: 500 }}>No jobs match your filters</p>
+                      </div>
+                    ) : (
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))", gap: 8 }}>
+                        {filteredJobs.map((job) => (
+                          <div key={job.id} style={{ cursor: "pointer" }}>
+                            <JobCard job={job} onClick={setSelectedJob} isDragging={false} />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
-              {/* Legend */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {COLUMNS.map((c) => {
-                  const sv = STATUS_VARS[c.id];
-                  return (
-                    <span
-                      key={c.id}
-                      className="chip"
-                      style={{ backgroundColor: sv.bg, color: sv.text, borderColor: sv.border, padding: "4px 10px" }}
-                    >
-                      {c.title}
-                    </span>
-                  );
-                })}
+                {/* ─── Calendar ─── */}
+                {boardTab === "calendar" && (
+                  <div style={{ padding: 28, maxWidth: 960, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 20 }}>
+                    {/* Month nav */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <h2 style={{ fontSize: "1rem", fontWeight: 500, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>{format(calendarDate, "MMMM yyyy")}</h2>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <button onClick={() => setCalendarDate((d) => subMonths(d, 1))} className="btn-ghost" style={{ padding: 8 }}><ChevronLeft size={14} /></button>
+                        <button onClick={() => setCalendarDate(new Date())} className="btn-ghost" style={{ padding: "6px 12px", fontSize: "0.75rem" }}>Today</button>
+                        <button onClick={() => setCalendarDate((d) => addMonths(d, 1))} className="btn-ghost" style={{ padding: 8 }}><ChevronRight size={14} /></button>
+                      </div>
+                    </div>
+                    {/* Day headers */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
+                      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+                        <div key={d} style={{ textAlign: "center", fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", padding: "8px 0" }}>{d}</div>
+                      ))}
+                    </div>
+                    {/* Grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
+                      {Array.from({ length: calendarDays.startPad }).map((_, i) => <div key={`pad-${i}`} style={{ height: 88 }} />)}
+                      {calendarDays.days.map((day) => {
+                        const key = format(day, "yyyy-MM-dd");
+                        const dayJobs = jobsByDate[key] || [];
+                        const todayFlag = isToday(day);
+                        return (
+                          <div
+                            key={key}
+                            style={{ height: 88, borderRadius: 6, border: todayFlag ? "0.5px solid var(--accent-border)" : "0.5px solid var(--border)", backgroundColor: todayFlag ? "var(--accent-subtle)" : "var(--bg-raised)", padding: "6px 8px", display: "flex", flexDirection: "column", transition: "border-color 120ms ease" }}
+                            onMouseEnter={(e) => { if (!todayFlag) (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                            onMouseLeave={(e) => { if (!todayFlag) (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; }}
+                          >
+                            <span style={{ fontSize: "0.6875rem", fontWeight: todayFlag ? 500 : 400, color: todayFlag ? "var(--accent-text)" : "var(--text-tertiary)", alignSelf: "flex-end" }}>{format(day, "d")}</span>
+                            <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", gap: 2, marginTop: 4 }}>
+                              {dayJobs.slice(0, 2).map((j) => {
+                                const sv = STATUS_VARS[j.status];
+                                return (
+                                  <div key={j.id} onClick={() => setSelectedJob(j)}
+                                    style={{ fontSize: "0.625rem", fontWeight: 500, padding: "2px 5px", borderRadius: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer", backgroundColor: sv.bg, color: sv.text, border: `0.5px solid ${sv.border}` }}
+                                    title={`${j.title} @ ${j.company}`}
+                                  >{j.company}</div>
+                                );
+                              })}
+                              {dayJobs.length > 2 && <span style={{ fontSize: "0.5625rem", color: "var(--text-tertiary)", paddingLeft: 2 }}>+{dayJobs.length - 2} more</span>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {/* Legend */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {COLUMNS.map((c) => { const sv = STATUS_VARS[c.id]; return <span key={c.id} className="chip" style={{ backgroundColor: sv.bg, color: sv.text, borderColor: sv.border, padding: "4px 10px" }}>{c.title}</span>; })}
+                    </div>
+                  </div>
+                )}
+
               </div>
             </div>
           )}
@@ -1093,12 +722,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
               <div style={{ textAlign: "center" }}>
                 <FileText size={36} style={{ margin: "0 auto 16px", opacity: 0.25 }} />
                 <p style={{ fontSize: "0.9375rem", fontWeight: 500, marginBottom: 12 }}>CV Builder</p>
-                <button
-                  onClick={() => setIsCvBuilderOpen(true)}
-                  className="btn-primary"
-                >
-                  Open CV Builder
-                </button>
+                <button onClick={() => setIsCvBuilderOpen(true)} className="btn-primary">Open CV Builder</button>
               </div>
             </div>
           )}
@@ -1108,22 +732,11 @@ export function KanbanBoard({ userId }: { userId: string }) {
 
       {/* ── Modals ── */}
       {selectedJob && (
-        <JobModal
-          job={selectedJob}
-          onClose={() => setSelectedJob(null)}
-          onUpdate={handleUpdateJob}
-          onDelete={handleDeleteJob}
-        />
+        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} onUpdate={handleUpdateJob} onDelete={handleDeleteJob} />
       )}
 
       {isCvBuilderOpen && (
-        <CvBuilderModal
-          jobs={jobs}
-          onClose={() => {
-            setIsCvBuilderOpen(false);
-            if (view === "cv") setView("overview");
-          }}
-        />
+        <CvBuilderModal jobs={jobs} onClose={() => { setIsCvBuilderOpen(false); if (view === "cv") setView("overview"); }} />
       )}
     </div>
   );

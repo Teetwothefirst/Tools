@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -31,7 +32,13 @@ export default function LoginPage() {
     setSuccessMsg(null);
 
     try {
-      if (isLogin) {
+      if (isForgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/reset-password`,
+        });
+        if (error) throw error;
+        setSuccessMsg("Check your email for the password reset link.");
+      } else if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         router.push("/dashboard");
@@ -88,10 +95,16 @@ export default function LoginPage() {
             marginBottom: 4,
           }}
         >
-          {isLogin ? "Welcome back" : "Create your account"}
+          {isForgotPassword
+            ? "Reset your password"
+            : isLogin
+            ? "Welcome back"
+            : "Create your account"}
         </h1>
         <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", margin: 0 }}>
-          {isLogin
+          {isForgotPassword
+            ? "Enter your email address to receive a reset link"
+            : isLogin
             ? "Sign in to continue to JobTracker"
             : "Start tracking your job applications"}
         </p>
@@ -164,24 +177,49 @@ export default function LoginPage() {
           </div>
 
           {/* Password */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <label
-              htmlFor="password"
-              style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--text-secondary)" }}
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              autoComplete={isLogin ? "current-password" : "new-password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input-base focus-ring"
-              placeholder="••••••••"
-            />
-          </div>
+          {!isForgotPassword && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label
+                  htmlFor="password"
+                  style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--text-secondary)" }}
+                >
+                  Password
+                </label>
+                {isLogin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsForgotPassword(true);
+                      setError(null);
+                      setSuccessMsg(null);
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: "var(--accent-text)",
+                    }}
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <input
+                id="password"
+                type="password"
+                required
+                autoComplete={isLogin ? "current-password" : "new-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-base focus-ring"
+                placeholder="••••••••"
+              />
+            </div>
+          )}
 
           {/* Submit */}
           <button
@@ -193,8 +231,12 @@ export default function LoginPage() {
           >
             {loading ? (
               <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
+            ) : isForgotPassword ? (
+              "Send reset link"
+            ) : isLogin ? (
+              "Sign in"
             ) : (
-              isLogin ? "Sign in" : "Create account"
+              "Create account"
             )}
           </button>
         </form>
@@ -214,14 +256,33 @@ export default function LoginPage() {
         </div>
 
         {/* Toggle */}
-        <button
-          id="auth-toggle-btn"
-          onClick={() => { setIsLogin(!isLogin); setError(null); setSuccessMsg(null); }}
-          className="btn-ghost"
-          style={{ width: "100%", justifyContent: "center", padding: "10px 16px" }}
-        >
-          {isLogin ? "Create a new account" : "Sign in to existing account"}
-        </button>
+        {isForgotPassword ? (
+          <button
+            onClick={() => {
+              setIsForgotPassword(false);
+              setIsLogin(true);
+              setError(null);
+              setSuccessMsg(null);
+            }}
+            className="btn-ghost"
+            style={{ width: "100%", justifyContent: "center", padding: "10px 16px" }}
+          >
+            Back to sign in
+          </button>
+        ) : (
+          <button
+            id="auth-toggle-btn"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError(null);
+              setSuccessMsg(null);
+            }}
+            className="btn-ghost"
+            style={{ width: "100%", justifyContent: "center", padding: "10px 16px" }}
+          >
+            {isLogin ? "Create a new account" : "Sign in to existing account"}
+          </button>
+        )}
       </div>
 
       <style>{`

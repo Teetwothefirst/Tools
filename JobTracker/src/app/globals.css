@@ -491,3 +491,78 @@
     }
   }
 }
+
+/* ─── Sidebar (responsive) ─── */
+@layer components {
+  .jt-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background-color: var(--bg-raised);
+    border-right: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 12px;
+    z-index: 30;
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hamburger – hidden on desktop, visible on mobile */
+  .hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 6px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 120ms ease;
+    flex-shrink: 0;
+  }
+  .hamburger-btn:hover {
+    background-color: var(--bg-subtle);
+    color: var(--text-primary);
+  }
+
+  /* btn-label – text label hidden on mobile */
+  .btn-label {
+    display: inline;
+  }
+
+  /* ─── Mobile breakpoint ─── */
+  @media (max-width: 768px) {
+    /* Turn sidebar into a fixed overlay drawer */
+    .jt-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      transform: translateX(-100%);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+    .jt-sidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Show hamburger on mobile */
+    .hamburger-btn {
+      display: flex;
+    }
+
+    /* Hide button labels on small screens */
+    .btn-label {
+      display: none;
+    }
+
+    /* Kanban columns scroll properly on mobile */
+    .kanban-scroll {
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Tighten padding on content areas */
+    .overview-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+}

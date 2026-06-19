@@ -92,7 +92,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
     URL.revokeObjectURL(url);
   };
 
-  const handleExport = (formatType: 'txt' | 'html' | 'json') => {
+  const handleExport = (formatType: 'txt' | 'html' | 'json' | 'md' | 'doc') => {
     setShowExportMenu(false);
     
     if (formatType === 'json') {
@@ -290,7 +290,64 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
       
       downloadFile(content, `${personalInfo.name.replace(/\s+/g, '_')}_CV.html`, 'text/html');
     }
-  };
+    else if (formatType === 'md') {
+      let content = `# ${personalInfo.name}\n`;
+      content += `**${personalInfo.title}**  \n`;
+      content += `${personalInfo.email}${personalInfo.phone ? ` | ${personalInfo.phone}` : ''}\n`;
+      if (personalInfo.website) content += `Portfolio: ${personalInfo.website}  \n`;
+      if (personalInfo.linkedin) content += `LinkedIn: ${personalInfo.linkedin}  \n`;
+      content += `\n---\n\n`;
+      if (personalInfo.summary) {
+        content += `## Professional Summary\n\n${personalInfo.summary}\n\n`;
+      }
+      if (personalInfo.skills) {
+        content += `## Core Skills\n\n${getSkillsList().join(' · ')}\n\n`;
+      }
+      if (selectedJobs.length > 0) {
+        content += `## Work Experience\n\n`;
+        selectedJobs.forEach(job => {
+          content += `### ${job.title} — ${job.company}\n`;
+          content += `*${formatJobDates(job)}*\n\n`;
+          cleanDescription(job.description).slice(0, 4).forEach(pt => {
+            content += `- ${pt}\n`;
+          });
+          content += `\n`;
+        });
+      }
+      downloadFile(content, `${personalInfo.name.replace(/\s+/g, '_')}_CV.md`, 'text/markdown');
+    }
+    else if (formatType === 'doc') {
+      // RTF-based .doc for broad Word compatibility
+      const skillLine = getSkillsList().join(', ');
+      let rtf = `{\\rtf1\\ansi\\deff0\n`;
+      rtf += `{\\fonttbl{\\f0 Times New Roman;}{\\f1 Arial;}}\n`;
+      rtf += `{\\colortbl ;\\red67\\green56\\blue202;}\n`;
+      rtf += `\\f0\\fs28\\b ${personalInfo.name}\\b0\\fs20\\par\n`;
+      rtf += `\\f1\\fs18\\cf1\\b ${personalInfo.title}\\cf0\\b0\\par\n`;
+      rtf += `\\fs16 ${personalInfo.email}${personalInfo.phone ? ` | ${personalInfo.phone}` : ''}\\par\n`;
+      if (personalInfo.website) rtf += `Portfolio: ${personalInfo.website}\\par\n`;
+      if (personalInfo.linkedin) rtf += `LinkedIn: ${personalInfo.linkedin}\\par\n`;
+      rtf += `\\par\\line\n`;
+      if (personalInfo.summary) {
+        rtf += `\\b PROFESSIONAL SUMMARY\\b0\\par\n${personalInfo.summary}\\par\n\\par\n`;
+      }
+      if (skillLine) {
+        rtf += `\\b CORE SKILLS\\b0\\par\n${skillLine}\\par\n\\par\n`;
+      }
+      if (selectedJobs.length > 0) {
+        rtf += `\\b WORK EXPERIENCE\\b0\\par\n\\par\n`;
+        selectedJobs.forEach(job => {
+          rtf += `\\b ${job.title} at ${job.company}\\b0\\par\n`;
+          rtf += `\\i ${formatJobDates(job)}\\i0\\par\n`;
+          cleanDescription(job.description).slice(0, 4).forEach(pt => {
+            rtf += `\\bullet  ${pt}\\par\n`;
+          });
+          rtf += `\\par\n`;
+        });
+      }
+      rtf += `}`;
+      downloadFile(rtf, `${personalInfo.name.replace(/\s+/g, '_')}_CV.doc`, 'application/msword');
+    }
 
   // Helper to format dates for work experience
   const formatJobDates = (job: Job) => {
@@ -309,14 +366,17 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
     return `${start} - ${end}`;
   };
 
-  // Helper to strip AI metadata from description if it exists
+  // Helper to strip AI metadata and Note:/Notes: lines from description
   const cleanDescription = (desc?: string) => {
     if (!desc) return [];
-    // If it contains AI Analysis divider, split it
     const parts = desc.split('--- AI Analysis ---');
     const mainDesc = parts[0].trim();
-    // Return paragraphs or bullet points
-    return mainDesc.split('\n').map(p => p.trim()).filter(p => p.length > 0);
+    return mainDesc
+      .split('\n')
+      .map(p => p.trim())
+      .filter(p => p.length > 0)
+      // Strip lines that start with Note: or Notes: (case-insensitive)
+      .filter(p => !/^notes?:/i.test(p));
   };
 
   const getSkillsList = () => {
@@ -371,6 +431,18 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
                       className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-350 hover:bg-slate-800 hover:text-white transition-colors"
                     >
                       Plain Text (.txt)
+                    </button>
+                    <button 
+                      onClick={() => handleExport('md')} 
+                      className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-350 hover:bg-slate-800 hover:text-white transition-colors"
+                    >
+                      Markdown (.md)
+                    </button>
+                    <button 
+                      onClick={() => handleExport('doc')} 
+                      className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-350 hover:bg-slate-800 hover:text-white transition-colors"
+                    >
+                      MS Word (.doc)
                     </button>
                     <button 
                       onClick={() => handleExport('html')} 
