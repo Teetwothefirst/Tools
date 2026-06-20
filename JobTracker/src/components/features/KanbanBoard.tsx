@@ -422,7 +422,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
                 <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
                   Applications by status
                 </p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10 }}>
                   {COLUMNS.map((col) => {
                     const Icon = STATUS_ICONS[col.id];
                     return <StatCard key={col.id} label={col.title} value={stats.byStatus[col.id]} icon={Icon} status={col.id} />;
@@ -431,7 +431,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
               </div>
 
               {/* Summary row */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10 }}>
                 {/* Total */}
                 <div style={{ border: "0.5px solid var(--border)", borderRadius: 8, padding: 20, backgroundColor: "var(--bg-raised)" }}>
                   <p style={{ fontSize: "0.6875rem", fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Total applications</p>
