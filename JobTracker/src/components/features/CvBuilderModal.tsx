@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
-import { X, Printer, CheckSquare, Square, FileText, User, Mail, Phone, Globe, Sparkles, Briefcase, ChevronDown, Download } from 'lucide-react';
+import { X, Printer, CheckSquare, Square, FileText, User, Mail, Phone, Globe, Briefcase, ChevronDown, Download } from 'lucide-react';
 
 import { format } from 'date-fns';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
@@ -90,6 +90,13 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const getSkillsList = () => {
+    return personalInfo.skills
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
   };
 
   const handleExport = (formatType: 'txt' | 'html' | 'json' | 'md' | 'doc') => {
@@ -348,6 +355,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
       rtf += `}`;
       downloadFile(rtf, `${personalInfo.name.replace(/\s+/g, '_')}_CV.doc`, 'application/msword');
     }
+  };
 
   // Helper to format dates for work experience
   const formatJobDates = (job: Job) => {
@@ -379,12 +387,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
       .filter(p => !/^notes?:/i.test(p));
   };
 
-  const getSkillsList = () => {
-    return personalInfo.skills
-      .split(',')
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
-  };
+
 
   return (
     <div id="cv-builder-modal-overlay" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-hidden">
