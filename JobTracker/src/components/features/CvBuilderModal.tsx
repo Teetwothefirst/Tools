@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
-import { X, Printer, CheckSquare, Square, FileText, User, Mail, Phone, Globe, Briefcase, ChevronDown, Download } from 'lucide-react';
+import { X, Printer, CheckSquare, Square, FileText, User, Mail, Phone, Globe, Briefcase, ChevronDown, Download, Sparkles } from 'lucide-react';
 
 import { format } from 'date-fns';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
@@ -110,7 +110,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
           title: job.title,
           company: job.company,
           dates: formatJobDates(job),
-          description: cleanDescription(job.description)
+          description: getJobBullets(job)
         }))
       };
       const content = JSON.stringify(exportData, null, 2);
@@ -142,7 +142,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
         selectedJobs.forEach(job => {
           content += `${job.title} at ${job.company}\n`;
           content += `${formatJobDates(job)}\n`;
-          const points = cleanDescription(job.description);
+          const points = getJobBullets(job);
           points.slice(0, 4).forEach(pt => {
             content += `- ${pt}\n`;
           });
@@ -155,7 +155,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
     else if (formatType === 'html') {
       const skillsHtml = getSkillsList().map(s => `<span class="skill-tag">${s}</span>`).join('\n');
       const experienceHtml = selectedJobs.map(job => {
-        const points = cleanDescription(job.description).slice(0, 4).map(pt => `<li>${pt}</li>`).join('\n');
+        const points = getJobBullets(job).slice(0, 4).map(pt => `<li>${pt}</li>`).join('\n');
         return `
           <div class="job">
             <div class="job-header">
@@ -315,7 +315,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
         selectedJobs.forEach(job => {
           content += `### ${job.title} — ${job.company}\n`;
           content += `*${formatJobDates(job)}*\n\n`;
-          cleanDescription(job.description).slice(0, 4).forEach(pt => {
+          getJobBullets(job).forEach(pt => {
             content += `- ${pt}\n`;
           });
           content += `\n`;
@@ -346,7 +346,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
         selectedJobs.forEach(job => {
           rtf += `\\b ${job.title} at ${job.company}\\b0\\par\n`;
           rtf += `\\i ${formatJobDates(job)}\\i0\\par\n`;
-          cleanDescription(job.description).slice(0, 4).forEach(pt => {
+          getJobBullets(job).forEach(pt => {
             rtf += `\\bullet  ${pt}\\par\n`;
           });
           rtf += `\\par\n`;
@@ -374,17 +374,27 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
     return `${start} - ${end}`;
   };
 
-  // Helper to strip AI metadata and Note:/Notes: lines from description
-  const cleanDescription = (desc?: string) => {
-    if (!desc) return [];
-    const parts = desc.split('--- AI Analysis ---');
-    const mainDesc = parts[0].trim();
-    return mainDesc
+  // Helper to extract AI ATS bullets or fallback to description
+  const getJobBullets = (job: Job) => {
+    if (job.notes && job.notes.includes('--- AI Analysis ---')) {
+      const parts = job.notes.split('--- AI Analysis ---');
+      const aiPart = parts[1];
+      const summaryMatch = aiPart.match(/Summary:\n([\s\S]*?)(?=\n\nTop Skills:|$)/);
+      if (summaryMatch && summaryMatch[1]) {
+        return summaryMatch[1]
+          .split('\n')
+          .map(line => line.trim().replace(/^- /, '').replace(/^• /, ''))
+          .filter(line => line.length > 0);
+      }
+    }
+    if (!job.description) return [];
+    return job.description
+      .split('--- AI Analysis ---')[0]
       .split('\n')
       .map(p => p.trim())
       .filter(p => p.length > 0)
-      // Strip lines that start with Note: or Notes: (case-insensitive)
-      .filter(p => !/^notes?:/i.test(p));
+      .filter(p => !/^notes?:/i.test(p))
+      .slice(0, 4);
   };
 
 
@@ -394,21 +404,30 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
       <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
         
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-850 bg-slate-950/50 no-print">
-          <div className="flex items-center space-x-2.5">
-            <div className="bg-indigo-600/10 p-2 rounded-lg text-indigo-400">
-              <FileText className="w-5 h-5" />
+        <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-4 border-b border-slate-850 bg-slate-950/50 no-print gap-4">
+          <div className="flex items-center space-x-2.5 pr-8 md:pr-0">
+            <div className="p-2 bg-accent/20 rounded-xl">
+              <Sparkles className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-100">A4 CV / Resume Builder</h2>
-              <p className="text-xs text-slate-400">Convert your applications and job details into a polished resume.</p>
+              <h2 className="text-lg font-semibold text-slate-200 tracking-tight">A4 CV Builder</h2>
+              <p className="text-xs text-slate-400">Select your accepted offers, compile into a clean A4 document</p>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={handlePrint}
+          
+          {/* Mobile close button (absolute top right) */}
+          <button 
+            onClick={onClose}
+            className="md:hidden absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition-all"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          <div className="flex items-center space-x-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+            <button 
+              onClick={handlePrint} 
               disabled={selectedJobs.length === 0}
-              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-indigo-600/10 transition-colors disabled:opacity-50"
+              className="flex items-center space-x-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50 whitespace-nowrap"
             >
               <Printer className="w-4 h-4" />
               <span>Download PDF</span>
@@ -464,9 +483,10 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
               )}
             </div>
 
+            {/* Desktop close button */}
             <button 
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition-all"
+              className="hidden md:block p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -666,7 +686,7 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
                   ) : (
                     <div className="space-y-4">
                       {selectedJobs.map(job => {
-                        const points = cleanDescription(job.description);
+                        const points = getJobBullets(job);
                         return (
                           <div key={job.id} className="space-y-1.5">
                             <div className="flex justify-between items-baseline">
@@ -678,14 +698,16 @@ export function CvBuilderModal({ jobs, onClose }: CvBuilderModalProps) {
                             </div>
 
                             {/* Job description bullet points */}
-                            {points.length > 0 && (
-                              <ul className="list-disc pl-4 space-y-1 text-slate-600 mt-1">
-                                {points.slice(0, 4).map((pt, i) => (
-                                  <li key={i}>{pt}</li>
+                            {getJobBullets(job).length > 0 && (
+                              <ul className="list-none space-y-2 mt-2">
+                                {getJobBullets(job).map((pt, i) => (
+                                  <li key={i} className="text-[11px] text-slate-300 leading-relaxed pl-3 relative">
+                                    <span className="absolute left-0 top-1.5 w-1 h-1 rounded-full bg-slate-500" />
+                                    {pt}
+                                  </li>
                                 ))}
                               </ul>
                             )}
-
                           </div>
                         );
                       })}

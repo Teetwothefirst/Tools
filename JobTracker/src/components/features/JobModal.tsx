@@ -128,6 +128,37 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
     }
   };
 
+  const handleAiFeature = async (endpoint: string, successMsg: string, resultKey: string) => {
+    if (!editedJob?.description) return;
+    setIsSummarizing(true);
+    try {
+      const res = await fetch(`/api/ai/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobDescription: editedJob.description, userProfile: "" })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to generate AI content");
+      }
+      const data = await res.json();
+      let aiText = "";
+      if (endpoint === "tailor-cv") {
+        aiText = `\n\n--- AI CV Tailoring ---\nSummary:\n${data.tailoredSummary}\n\nBullets:\n${data.tailoredBullets.map((b: string) => "- " + b).join("\n")}`;
+      } else if (endpoint === "cover-letter") {
+        aiText = `\n\n--- AI Cover Letter ---\n${data.coverLetter}`;
+      } else if (endpoint === "interview-prep") {
+        aiText = `\n\n--- AI Interview Prep ---\n${data.questions.map((q: any) => `Q: ${q.question}\nA: ${q.tip}`).join("\n\n")}`;
+      }
+      setEditedJob((prev) => prev ? { ...prev, notes: (prev.notes || "") + aiText } : null);
+      toast(successMsg, "success");
+    } catch (err: any) {
+      toast(err.message || "Error generating AI content.", "error");
+    } finally {
+      setIsSummarizing(false);
+    }
+  };
+
   const handleDownloadIcs = () => {
     try {
       const followUpDate = new Date();
@@ -497,31 +528,55 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
 
             {/* Job description */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", marginBottom: 6, gap: 10 }}>
                 <label style={{ ...labelStyle, marginBottom: 0 }}>Job description</label>
-                <button
-                  onClick={handleSummarize}
-                  disabled={isSummarizing || !editedJob.description}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 5,
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "0.75rem",
-                    fontWeight: 500,
-                    color: "var(--accent-text)",
-                    padding: 0,
-                    opacity: isSummarizing || !editedJob.description ? 0.45 : 1,
-                  }}
-                >
-                  {isSummarizing
-                    ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} />
-                    : <Sparkles size={12} />
-                  }
-                  Summarise & key skills
-                </button>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  <button
+                    onClick={handleSummarize}
+                    disabled={isSummarizing || !editedJob.description}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 5, background: "none", border: "none",
+                      cursor: "pointer", fontSize: "0.75rem", fontWeight: 500, color: "var(--accent-text)",
+                      padding: 0, opacity: isSummarizing || !editedJob.description ? 0.45 : 1,
+                    }}
+                  >
+                    {isSummarizing ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Sparkles size={12} />}
+                    Summarise
+                  </button>
+                  <button
+                    onClick={() => handleAiFeature('tailor-cv', 'CV tailored successfully!', 'tailor-cv')}
+                    disabled={isSummarizing || !editedJob.description}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 5, background: "none", border: "none",
+                      cursor: "pointer", fontSize: "0.75rem", fontWeight: 500, color: "var(--accent-text)",
+                      padding: 0, opacity: isSummarizing || !editedJob.description ? 0.45 : 1,
+                    }}
+                  >
+                    <Sparkles size={12} /> Tailor CV
+                  </button>
+                  <button
+                    onClick={() => handleAiFeature('cover-letter', 'Cover letter generated!', 'cover-letter')}
+                    disabled={isSummarizing || !editedJob.description}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 5, background: "none", border: "none",
+                      cursor: "pointer", fontSize: "0.75rem", fontWeight: 500, color: "var(--accent-text)",
+                      padding: 0, opacity: isSummarizing || !editedJob.description ? 0.45 : 1,
+                    }}
+                  >
+                    <Sparkles size={12} /> Cover Letter
+                  </button>
+                  <button
+                    onClick={() => handleAiFeature('interview-prep', 'Interview prep generated!', 'interview-prep')}
+                    disabled={isSummarizing || !editedJob.description}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 5, background: "none", border: "none",
+                      cursor: "pointer", fontSize: "0.75rem", fontWeight: 500, color: "var(--accent-text)",
+                      padding: 0, opacity: isSummarizing || !editedJob.description ? 0.45 : 1,
+                    }}
+                  >
+                    <Sparkles size={12} /> Interview Prep
+                  </button>
+                </div>
               </div>
               <textarea
                 name="description"

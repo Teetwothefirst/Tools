@@ -36,7 +36,7 @@ export async function POST(req: Request) {
          - "Sales" (for sales, BD, accounts, etc.)
          - "HR" (for recruiter, people ops, talent, etc.)
          - "Other" (for roles not fitting the above)
-      7. A 3-bullet-point summary of the role.
+      7. Convert the key responsibilities of this role into 3-4 professional, ATS-friendly resume bullet points written in the past-tense, starting with strong action verbs (e.g. "Spearheaded", "Developed", "Led", "Managed"), describing what a person successfully accomplished in this role.
       8. Top 5 technical/soft skills required.
 
       Return your response STRICTLY as a JSON object with this format:

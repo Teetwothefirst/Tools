@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const prompt = `
       You are an expert technical recruiter and career coach.
       Analyze the following job description and provide:
-      1. A 3-bullet-point summary of the role.
+      1. Convert the key responsibilities of this role into 3-4 professional, ATS-friendly resume bullet points written in the past-tense, starting with strong action verbs (e.g. "Spearheaded", "Developed", "Led", "Managed"), describing what a person successfully accomplished in this role.
       2. A list of the top 5 technical skills requested.
       
       Return your response STRICTLY as a JSON object with this format (do not include markdown codeblocks or any other text):
