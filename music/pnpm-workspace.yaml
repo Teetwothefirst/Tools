@@ -1,0 +1,4 @@
+# Root Monorepo Configuration
+packages:
+  - 'apps/*'
+  - 'packages/*'

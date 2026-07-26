@@ -21,6 +21,7 @@ import {
   getDay, isToday, addMonths, subMonths,
 } from "date-fns";
 import { useToast } from "@/components/ui/Toast";
+import { getSavedDraft } from "@/hooks/useFormDraft";
 
 type ViewType = "overview" | "board" | "cv";
 type BoardTab = "kanban" | "grid" | "calendar";
@@ -102,6 +103,13 @@ export function KanbanBoard({ userId }: { userId: string }) {
       setDarkMode(stored === "true");
     } else {
       setDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+
+    // Restore unsaved form draft on refresh if present
+    const savedDraft = getSavedDraft();
+    if (savedDraft && savedDraft.job) {
+      setSelectedJob(savedDraft.job);
+      toast("Restored your unsaved form draft!", "info");
     }
   }, []);
 

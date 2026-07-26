@@ -1,0 +1,22 @@
+# Dependencies & Node
+node_modules
+.pnpm-store
+*.log
+
+# Apps build outputs
+.next
+dist
+build
+out
+
+# Prisma / Environment
+.env
+.env.local
+.env.production
+!.env.example
+
+# IDE & OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db

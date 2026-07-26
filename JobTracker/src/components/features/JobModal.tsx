@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { Job } from "@/types/job";
 import {
   X, Calendar as CalendarIcon, Save, Loader2, Sparkles,
-  Trash2, PlusCircle,
+  Trash2, PlusCircle, RotateCcw,
 } from "lucide-react";
 // import { generateGoogleCalendarLink } from "@/lib/calendar";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/ui/Toast";
+import { useFormDraft, clearSavedDraft } from "@/hooks/useFormDraft";
 
 interface JobModalProps {
   job: Job | null;
@@ -52,6 +53,14 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
   useEffect(() => {
     setEditedJob(job);
   }, [job]);
+
+  const isNewJob = !job?.company && !job?.title;
+  const { isDirty, isDraftRestored, discardDraft } = useFormDraft({
+    originalJob: job,
+    editedJob,
+    isNewJob,
+    onSetEditedJob: setEditedJob,
+  });
 
   if (!job || !editedJob) return null;
 
@@ -109,6 +118,7 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
     }
     setTimeout(() => {
       onUpdate(finalJob as Job);
+      clearSavedDraft();
       setIsSaving(false);
       onClose();
     }, 300);
@@ -277,6 +287,49 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
             <X size={18} />
           </button>
         </div>
+
+        {/* Unsaved Draft Banner */}
+        {(isDraftRestored || isDirty) && (
+          <div
+            style={{
+              padding: "10px 24px",
+              backgroundColor: "rgba(234, 179, 8, 0.12)",
+              borderBottom: "0.5px solid var(--border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              fontSize: "0.8125rem",
+              color: "var(--text-primary)",
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#eab308", flexShrink: 0 }} />
+              <span>
+                {isDraftRestored ? "Restored unsaved draft data" : "Auto-saving unsaved form edits..."}
+              </span>
+            </div>
+            <button
+              onClick={discardDraft}
+              type="button"
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--text-secondary)",
+                fontSize: "0.75rem",
+                fontWeight: 500,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                textDecoration: "underline",
+              }}
+            >
+              <RotateCcw size={13} />
+              Discard draft
+            </button>
+          </div>
+        )}
 
         {/* AI Autofill strip */}
         <div
