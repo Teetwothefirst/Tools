@@ -204,6 +204,19 @@ export const JobCard = React.memo(function JobCard({
             <Mail size={9} />
             <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{job.mailUsed}</span>
           </span>
+        {job.dateApplied && (
+          <span
+            className="chip"
+            style={{
+              backgroundColor: "var(--status-applied-bg)",
+              color: "var(--status-applied-text)",
+              borderColor: "var(--status-applied-border)",
+            }}
+            title={`Applied: ${job.dateApplied}`}
+          >
+            <Clock size={9} />
+            <span>Applied: {formatDate(job.dateApplied)}</span>
+          </span>
         )}
         {job.attachments && job.attachments.length > 0 && (
           <span

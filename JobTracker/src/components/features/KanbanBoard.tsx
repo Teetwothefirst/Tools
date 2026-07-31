@@ -139,7 +139,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
         const mapped: Job[] = data.map((d: any) => ({
           id: d.id, company: d.company, title: d.title,
           status: d.status as JobStatus, priority: d.priority,
-          dateAdded: d.date_added, notes: d.notes || undefined,
+          dateAdded: d.date_added, dateApplied: d.date_applied || undefined, notes: d.notes || undefined,
           description: d.description || undefined, contacts: d.contacts || undefined,
           mailUsed: d.mail_used || undefined, payAmount: d.pay_amount || undefined,
           jobLink: d.job_link || undefined, offerReceivedDate: d.offer_received_date || undefined,
@@ -282,6 +282,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
       status: jobDraft.status || "Saved",
       priority: jobDraft.priority || "Medium",
       dateAdded: new Date().toISOString(),
+      dateApplied: jobDraft.dateApplied || "",
       category: jobDraft.category || "Engineering",
       payAmount: jobDraft.payAmount || "",
       contacts: jobDraft.contacts || "",
@@ -330,7 +331,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
   const jobsByDate = useMemo(() => {
     const map: Record<string, Job[]> = {};
     for (const j of jobs) {
-      const dates = [j.dateAdded, j.offerReceivedDate, j.employmentEndDate].filter(Boolean) as string[];
+      const dates = [j.dateAdded, j.dateApplied, j.offerReceivedDate, j.employmentEndDate].filter(Boolean) as string[];
       for (const d of dates) {
         try {
           const parsed = new Date(d);

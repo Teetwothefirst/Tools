@@ -14,6 +14,7 @@ const SAMPLE_TEMPLATE = `Company: Independent National Electoral Commission (INE
 Job Title: Administrative Officer II / Executive Officer
 Status: Applied
 Priority: High
+Date applied: 2026-07-25
 Category: Government / Public Sector
 Contacts: Plot 436 Zambezi Crescent, Maitama District, Abuja
 Mail used to apply: applicant@email.com
@@ -30,6 +31,7 @@ export function parsePromptTextLocally(text: string): Partial<Job> {
     title: "",
     status: "Saved",
     priority: "Medium",
+    dateApplied: "",
     category: "Other",
     payAmount: "",
     contacts: "",
@@ -76,6 +78,10 @@ export function parsePromptTextLocally(text: string): Partial<Job> {
         if (["Low", "Medium", "High"].includes(p)) {
           result.priority = p as JobPriority;
         }
+        continue;
+      }
+      if (key.includes("applied") || key.includes("date applied")) {
+        result.dateApplied = val;
         continue;
       }
       if (key === "category") {
@@ -223,6 +229,7 @@ export function PromptJobGenerator({ onGenerateJob }: PromptJobGeneratorProps) {
           title: aiData.title || "",
           status: (aiData.status as JobStatus) || "Saved",
           priority: (aiData.priority as JobPriority) || "Medium",
+          dateApplied: aiData.dateApplied || "",
           category: aiData.category || "Other",
           payAmount: aiData.payAmount || "",
           contacts: aiData.contacts || "",
@@ -245,6 +252,7 @@ export function PromptJobGenerator({ onGenerateJob }: PromptJobGeneratorProps) {
         title: extractedData.title || localData.title || "Job Title",
         status: extractedData.status || localData.status || "Saved",
         priority: extractedData.priority || localData.priority || "Medium",
+        dateApplied: extractedData.dateApplied || localData.dateApplied || "",
         category: extractedData.category || localData.category || "Engineering",
         payAmount: extractedData.payAmount || localData.payAmount || "",
         contacts: extractedData.contacts || localData.contacts || "",

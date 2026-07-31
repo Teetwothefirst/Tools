@@ -17,6 +17,7 @@ export interface Job {
   status: JobStatus;
   priority: JobPriority;
   dateAdded: string; // ISO string
+  dateApplied?: string; // ISO or date string
   notes?: string;
   description?: string;
   contacts?: string;

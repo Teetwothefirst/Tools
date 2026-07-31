@@ -548,8 +548,20 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
               </div>
             </div>
 
-            {/* Offer date + End date */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {/* Date applied + Offer date + End date */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Date applied</label>
+                <input
+                  name="dateApplied"
+                  type="date"
+                  value={editedJob.dateApplied || ""}
+                  onChange={handleChange}
+                  style={inputStyle}
+                  onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
+                  onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
+                />
+              </div>
               <div>
                 <label style={labelStyle}>Offer letter received</label>
                 <input

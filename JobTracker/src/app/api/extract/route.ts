@@ -22,13 +22,14 @@ export async function POST(req: Request) {
     }
 
     const prompt = `
-      You are an expert recruitment assistant and AI data parser. Analyze the following prompt or job posting text (which may be freeform text, structured key-value pairs like "Company: ...", "Job Title: ...", "Job link: ...", or a raw email/job ad) and extract all relevant details:
+      You are an expert recruitment assistant and AI data parser. Analyze the following prompt or job posting text (which may be freeform text, structured key-value pairs like "Company: ...", "Job Title: ...", "Date applied: ...", "Job link: ...", or a raw email/job ad) and extract all relevant details:
 
       1. Company Name (e.g. "Stripe", "INEC", "Google")
       2. Job Title (e.g. "Professional Cadre / Administrative Officer II", "Senior Frontend Engineer")
       3. Status: Must be one of: "Saved", "Applied", "Interviewing", "Offer", "Rejected". (Default to "Saved" if not specified).
       4. Priority: Must be one of: "Low", "Medium", "High". (Default to "Medium" if not specified).
-      5. Category: Classify into one of:
+      5. Date Applied (e.g. "2026-07-25", "July 25, 2026", or empty string if not mentioned)
+      6. Category: Classify into one of:
          - "Engineering" (software, QA, DevOps, IT, data)
          - "Design" (UX, UI, graphic)
          - "Product" (PM, product owner)
@@ -37,14 +38,14 @@ export async function POST(req: Request) {
          - "HR" (recruiter, talent)
          - "Government / Public Sector"
          - "Other"
-      6. Salary / Compensation (e.g. "$140,000/yr", "Grade Level 08", or empty string if not found)
-      7. Contacts / Recruiter Info (address, contact name, office details)
-      8. Mail used to apply (email address used or mentioned)
-      9. Job link (exact URL if mentioned, e.g. "https://recruitment.inecnigeria.org")
-      10. Offer letter received (date or string if mentioned)
-      11. Employment end date (or string if mentioned)
-      12. Additional Notes (any extra context, deadlines, application rules)
-      13. Job description / summary
+      7. Salary / Compensation (e.g. "$140,000/yr", "Grade Level 08", or empty string if not found)
+      8. Contacts / Recruiter Info (address, contact name, office details)
+      9. Mail used to apply (email address used or mentioned)
+      10. Job link (exact URL if mentioned, e.g. "https://recruitment.inecnigeria.org")
+      11. Offer letter received (date or string if mentioned)
+      12. Employment end date (or string if mentioned)
+      13. Additional Notes (any extra context, deadlines, application rules)
+      14. Job description / summary
 
       Return your response STRICTLY as a JSON object with this exact schema:
       {
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
         "title": "Job Title",
         "status": "Saved" | "Applied" | "Interviewing" | "Offer" | "Rejected",
         "priority": "Low" | "Medium" | "High",
+        "dateApplied": "YYYY-MM-DD or date string",
         "category": "Engineering" | "Design" | "Product" | "Marketing" | "Sales" | "HR" | "Government / Public Sector" | "Other",
         "payAmount": "Salary detail",
         "contacts": "Contact detail",
