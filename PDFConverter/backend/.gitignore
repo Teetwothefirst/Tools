@@ -1,0 +1,21 @@
+# Python Virtual Environment
+venv/
+env/
+ENV/
+
+# Ephemeral storage & uploads/outputs
+temp/
+temp/uploads/
+temp/outputs/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local Environment Variables
+.env
+.env.local

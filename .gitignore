@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+venv/
+env/
+ENV/
+
+# Build & Cache
+.next/
+out/
+build/
+dist/
+
+# PDFConverter Exclusions
+PDFConverter/backend/venv/
+PDFConverter/backend/temp/
+PDFConverter/frontend/node_modules/
+PDFConverter/frontend/.next/
+
+# Ephemeral storage & logs
+temp/
+*.log
+*.tmp
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Environment files
+.env
+.env.local
+.env*.local
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
