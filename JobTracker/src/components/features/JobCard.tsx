@@ -204,6 +204,7 @@ export const JobCard = React.memo(function JobCard({
             <Mail size={9} />
             <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{job.mailUsed}</span>
           </span>
+        )}
         {job.dateApplied && (
           <span
             className="chip"
