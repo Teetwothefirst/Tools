@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Job } from "@/types/job";
-import { CalendarDays, Building2, ExternalLink, DollarSign, Mail, Tag, Clock } from "lucide-react";
+import { CalendarDays, Building2, ExternalLink, DollarSign, Mail, Tag, Clock, Paperclip } from "lucide-react";
 import { format } from "date-fns";
 
 interface JobCardProps {
@@ -33,6 +33,7 @@ const CATEGORY_ACCENT: Record<string, string> = {
 const getDaysDifference = (targetDateStr: string, isFromToday: boolean): string => {
   try {
     const target = new Date(targetDateStr);
+    if (isNaN(target.getTime())) return "";
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     target.setHours(0, 0, 0, 0);
@@ -49,7 +50,13 @@ const getDaysDifference = (targetDateStr: string, isFromToday: boolean): string 
 };
 
 const formatDate = (dateStr: string): string => {
-  try { return format(new Date(dateStr), "dd/MM/yyyy"); } catch { return dateStr; }
+  try {
+    const parsed = new Date(dateStr);
+    if (isNaN(parsed.getTime())) return dateStr;
+    return format(parsed, "dd/MM/yyyy");
+  } catch {
+    return dateStr;
+  }
 };
 
 export const JobCard = React.memo(function JobCard({
@@ -196,6 +203,20 @@ export const JobCard = React.memo(function JobCard({
           >
             <Mail size={9} />
             <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{job.mailUsed}</span>
+          </span>
+        )}
+        {job.attachments && job.attachments.length > 0 && (
+          <span
+            className="chip"
+            style={{
+              backgroundColor: "var(--accent-subtle)",
+              color: "var(--accent-text)",
+              borderColor: "var(--accent-border)",
+            }}
+            title={`${job.attachments.length} attachment(s)`}
+          >
+            <Paperclip size={9} />
+            <span>{job.attachments.length} file{job.attachments.length !== 1 ? "s" : ""}</span>
           </span>
         )}
       </div>

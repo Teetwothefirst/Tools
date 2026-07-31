@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Job } from "@/types/job";
 import {
   X, Calendar as CalendarIcon, Save, Loader2, Sparkles,
-  Trash2, PlusCircle, RotateCcw,
+  Trash2, PlusCircle, RotateCcw, ExternalLink, Paperclip, Download,
 } from "lucide-react";
 // import { generateGoogleCalendarLink } from "@/lib/calendar";
 import { api } from "@/lib/api";
@@ -523,7 +523,19 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
                 />
               </div>
               <div>
-                <label style={labelStyle}>Job link</label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label style={labelStyle}>Job link</label>
+                  {editedJob.jobLink && (
+                    <a
+                      href={editedJob.jobLink.startsWith("http") ? editedJob.jobLink : `https://${editedJob.jobLink}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: "0.75rem", color: "var(--accent-text)", display: "flex", alignItems: "center", gap: 3, textDecoration: "none", marginBottom: 6 }}
+                    >
+                      <ExternalLink size={12} /> Open Link
+                    </a>
+                  )}
+                </div>
                 <input
                   name="jobLink"
                   placeholder="https://..."
@@ -577,6 +589,91 @@ export function JobModal({ job, onClose, onUpdate, onDelete }: JobModalProps) {
                 onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)"; }}
                 onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)"; }}
               />
+            </div>
+
+            {/* File Attachments */}
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <label style={{ ...labelStyle, marginBottom: 0 }}>Attachments</label>
+                <label style={{ fontSize: "0.75rem", color: "var(--accent-text)", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                  <Paperclip size={13} /> Add Attachment
+                  <input
+                    type="file"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      if (!e.target.files) return;
+                      const files = Array.from(e.target.files);
+                      const newAtts = files.map((f) => ({
+                        id: `att-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                        name: f.name,
+                        url: URL.createObjectURL(f),
+                        type: f.type,
+                        size: f.size,
+                        uploadedAt: new Date().toISOString(),
+                      }));
+                      setEditedJob((prev) => prev ? { ...prev, attachments: [...(prev.attachments || []), ...newAtts] } : null);
+                    }}
+                  />
+                </label>
+              </div>
+
+              {editedJob.attachments && editedJob.attachments.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {editedJob.attachments.map((att) => (
+                    <div
+                      key={att.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "8px 12px",
+                        borderRadius: 6,
+                        border: "0.5px solid var(--border-strong)",
+                        backgroundColor: "var(--bg-raised)",
+                        fontSize: "0.8125rem",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, overflow: "hidden" }}>
+                        <Paperclip size={14} style={{ color: "var(--accent-text)", flexShrink: 0 }} />
+                        <span style={{ color: "var(--text-primary)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {att.name}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <a
+                          href={att.url}
+                          download={att.name}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "var(--accent-text)", display: "flex", alignItems: "center", textDecoration: "none" }}
+                          title="Download attachment"
+                        >
+                          <Download size={14} />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditedJob((prev) =>
+                              prev
+                                ? { ...prev, attachments: (prev.attachments || []).filter((a) => a.id !== att.id) }
+                                : null
+                            );
+                          }}
+                          style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer" }}
+                          title="Remove attachment"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", fontStyle: "italic" }}>
+                  No files attached yet. Click "Add Attachment" to attach resumes, offer letters, or notes.
+                </p>
+              )}
             </div>
 
             {/* Job description */}

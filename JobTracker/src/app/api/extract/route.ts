@@ -16,42 +16,56 @@ export async function POST(req: Request) {
 
     if (!description || description.trim() === '') {
       return NextResponse.json(
-        { error: 'Job description is required' },
+        { error: 'Job prompt or description is required' },
         { status: 400 }
       );
     }
 
     const prompt = `
-      You are an expert technical recruiter. Analyze the following job description and extract key details:
-      1. Company Name (extract the name of the hiring company)
-      2. Job Title (extract the exact job title)
-      3. Priority: Determine if the role level/urgency suggests priority 'High', 'Medium', or 'Low' (default to 'Medium' if unclear)
-      4. Salary/Compensation (e.g. "$120,000/yr", "£80k - £100k", or empty string if not found)
-      5. Contacts/Recruiter info (name, email, or details if mentioned, otherwise empty string)
-      6. Category: Classify the job into one of these standard categories:
-         - "Engineering" (for software engineers, QA, architects, developers, etc.)
-         - "Design" (for UX, UI, product designers, etc.)
-         - "Product" (for product managers, program managers, etc.)
-         - "Marketing" (for content creators, SEO, growth, etc.)
-         - "Sales" (for sales, BD, accounts, etc.)
-         - "HR" (for recruiter, people ops, talent, etc.)
-         - "Other" (for roles not fitting the above)
-      7. Convert the key responsibilities of this role into 3-4 professional, ATS-friendly resume bullet points written in the past-tense, starting with strong action verbs (e.g. "Spearheaded", "Developed", "Led", "Managed"), describing what a person successfully accomplished in this role.
-      8. Top 5 technical/soft skills required.
+      You are an expert recruitment assistant and AI data parser. Analyze the following prompt or job posting text (which may be freeform text, structured key-value pairs like "Company: ...", "Job Title: ...", "Job link: ...", or a raw email/job ad) and extract all relevant details:
 
-      Return your response STRICTLY as a JSON object with this format:
+      1. Company Name (e.g. "Stripe", "INEC", "Google")
+      2. Job Title (e.g. "Professional Cadre / Administrative Officer II", "Senior Frontend Engineer")
+      3. Status: Must be one of: "Saved", "Applied", "Interviewing", "Offer", "Rejected". (Default to "Saved" if not specified).
+      4. Priority: Must be one of: "Low", "Medium", "High". (Default to "Medium" if not specified).
+      5. Category: Classify into one of:
+         - "Engineering" (software, QA, DevOps, IT, data)
+         - "Design" (UX, UI, graphic)
+         - "Product" (PM, product owner)
+         - "Marketing" (content, SEO, growth)
+         - "Sales" (BD, account exec)
+         - "HR" (recruiter, talent)
+         - "Government / Public Sector"
+         - "Other"
+      6. Salary / Compensation (e.g. "$140,000/yr", "Grade Level 08", or empty string if not found)
+      7. Contacts / Recruiter Info (address, contact name, office details)
+      8. Mail used to apply (email address used or mentioned)
+      9. Job link (exact URL if mentioned, e.g. "https://recruitment.inecnigeria.org")
+      10. Offer letter received (date or string if mentioned)
+      11. Employment end date (or string if mentioned)
+      12. Additional Notes (any extra context, deadlines, application rules)
+      13. Job description / summary
+
+      Return your response STRICTLY as a JSON object with this exact schema:
       {
         "company": "Company Name",
         "title": "Job Title",
+        "status": "Saved" | "Applied" | "Interviewing" | "Offer" | "Rejected",
         "priority": "Low" | "Medium" | "High",
+        "category": "Engineering" | "Design" | "Product" | "Marketing" | "Sales" | "HR" | "Government / Public Sector" | "Other",
         "payAmount": "Salary detail",
         "contacts": "Contact detail",
-        "category": "Engineering" | "Design" | "Product" | "Marketing" | "Sales" | "HR" | "Other",
-        "summary": ["bullet 1", "bullet 2", "bullet 3"],
-        "skills": ["skill 1", "skill 2", "skill 3", "skill 4", "skill 5"]
+        "mailUsed": "Email detail",
+        "jobLink": "https://...",
+        "offerReceivedDate": "",
+        "employmentEndDate": "",
+        "notes": "Extra notes",
+        "description": "Full job description summary",
+        "summary": ["bullet 1", "bullet 2"],
+        "skills": ["skill 1", "skill 2"]
       }
 
-      Job Description:
+      Input Text / Prompt:
       ${description}
     `;
 

@@ -1,6 +1,15 @@
 export type JobStatus = 'Saved' | 'Applied' | 'Interviewing' | 'Offer' | 'Rejected';
 export type JobPriority = 'Low' | 'Medium' | 'High';
 
+export interface JobAttachment {
+  id: string;
+  name: string;
+  url: string;
+  type?: string;
+  size?: number;
+  uploadedAt: string;
+}
+
 export interface Job {
   id: string;
   company: string;
@@ -17,5 +26,5 @@ export interface Job {
   offerReceivedDate?: string;
   employmentEndDate?: string;
   category?: string;
+  attachments?: JobAttachment[];
 }
-

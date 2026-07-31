@@ -6,6 +6,7 @@ import { Job, JobStatus } from "@/types/job";
 import { JobCard } from "./JobCard";
 import { JobModal } from "./JobModal";
 import { CvBuilderModal } from "./CvBuilderModal";
+import { PromptJobGenerator } from "./PromptJobGenerator";
 import {
   Plus, Upload, Briefcase, LogOut, FileText, LayoutDashboard,
   Kanban, Grid3X3, Calendar as CalendarIcon, Sun, Moon,
@@ -129,6 +130,12 @@ export function KanbanBoard({ userId }: { userId: string }) {
       const { data, error } = await supabase.from("jobs").select("*").order("date_added", { ascending: false });
       if (error) throw error;
       if (data) {
+        let cachedAttachments: Record<string, any[]> = {};
+        try {
+          const cached = localStorage.getItem("jt-job-attachments");
+          if (cached) cachedAttachments = JSON.parse(cached);
+        } catch (e) {}
+
         const mapped: Job[] = data.map((d: any) => ({
           id: d.id, company: d.company, title: d.title,
           status: d.status as JobStatus, priority: d.priority,
@@ -137,6 +144,7 @@ export function KanbanBoard({ userId }: { userId: string }) {
           mailUsed: d.mail_used || undefined, payAmount: d.pay_amount || undefined,
           jobLink: d.job_link || undefined, offerReceivedDate: d.offer_received_date || undefined,
           employmentEndDate: d.employment_end_date || undefined, category: d.category || undefined,
+          attachments: d.attachments || cachedAttachments[d.id] || [],
         }));
         setJobs(mapped);
       }
@@ -177,6 +185,15 @@ export function KanbanBoard({ userId }: { userId: string }) {
 
   const handleUpdateJob = async (updatedJob: Job) => {
     const exists = jobs.some((j) => j.id === updatedJob.id);
+    if (updatedJob.attachments && updatedJob.attachments.length > 0) {
+      try {
+        const cached = localStorage.getItem("jt-job-attachments");
+        const map: Record<string, any[]> = cached ? JSON.parse(cached) : {};
+        map[updatedJob.id] = updatedJob.attachments;
+        localStorage.setItem("jt-job-attachments", JSON.stringify(map));
+      } catch (e) {}
+    }
+
     const dbJob = {
       id: updatedJob.id, user_id: userId,
       company: updatedJob.company, title: updatedJob.title,
@@ -257,6 +274,28 @@ export function KanbanBoard({ userId }: { userId: string }) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handlePromptGeneratedJob = (jobDraft: Partial<Job>) => {
+    const newJob: Job = {
+      id: uuidv4(),
+      company: jobDraft.company || "",
+      title: jobDraft.title || "",
+      status: jobDraft.status || "Saved",
+      priority: jobDraft.priority || "Medium",
+      dateAdded: new Date().toISOString(),
+      category: jobDraft.category || "Engineering",
+      payAmount: jobDraft.payAmount || "",
+      contacts: jobDraft.contacts || "",
+      mailUsed: jobDraft.mailUsed || "",
+      jobLink: jobDraft.jobLink || "",
+      offerReceivedDate: jobDraft.offerReceivedDate || "",
+      employmentEndDate: jobDraft.employmentEndDate || "",
+      notes: jobDraft.notes || "",
+      description: jobDraft.description || "",
+      attachments: jobDraft.attachments || [],
+    };
+    setSelectedJob(newJob);
+  };
+
   // ─── Computed values ───
   const stats = useMemo(() => {
     const byStatus: Record<JobStatus, number> = { Saved: 0, Applied: 0, Interviewing: 0, Offer: 0, Rejected: 0 };
@@ -293,9 +332,15 @@ export function KanbanBoard({ userId }: { userId: string }) {
     for (const j of jobs) {
       const dates = [j.dateAdded, j.offerReceivedDate, j.employmentEndDate].filter(Boolean) as string[];
       for (const d of dates) {
-        const key = format(new Date(d), "yyyy-MM-dd");
-        if (!map[key]) map[key] = [];
-        if (!map[key].includes(j)) map[key].push(j);
+        try {
+          const parsed = new Date(d);
+          if (isNaN(parsed.getTime())) continue;
+          const key = format(parsed, "yyyy-MM-dd");
+          if (!map[key]) map[key] = [];
+          if (!map[key].includes(j)) map[key].push(j);
+        } catch {
+          // Ignore unparseable date strings safely
+        }
       }
     }
     return map;
@@ -424,6 +469,8 @@ export function KanbanBoard({ userId }: { userId: string }) {
           {/* ═══ OVERVIEW ═══ */}
           {view === "overview" && (
             <div style={{ padding: 28, maxWidth: 1200, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 28 }}>
+              {/* AI Prompt Auto-Fill Section */}
+              <PromptJobGenerator onGenerateJob={handlePromptGeneratedJob} />
 
               {/* Status stat cards */}
               <div>
@@ -568,6 +615,9 @@ export function KanbanBoard({ userId }: { userId: string }) {
                 {/* ─── Kanban ─── */}
                 {boardTab === "kanban" && (
                   <div style={{ padding: "20px", height: "100%", overflowX: "auto" }}>
+                    <div style={{ maxWidth: 1200, marginBottom: 16 }}>
+                      <PromptJobGenerator onGenerateJob={handlePromptGeneratedJob} />
+                    </div>
                     <DragDropContext onDragEnd={onDragEnd}>
                       <div style={{ display: "flex", gap: 12, minWidth: "max-content", height: "calc(100vh - 200px)", paddingBottom: 16, alignItems: "flex-start" }}>
                         {COLUMNS.map((col) => {
