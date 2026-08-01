@@ -34,6 +34,29 @@ export async function uploadForConversion(
   return res.json();
 }
 
+export async function uploadForOcr(
+  file: File,
+  options: { language?: string; deskew?: boolean; clean?: boolean } = {}
+): Promise<TaskInitResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('language', options.language || 'eng');
+  formData.append('deskew', String(options.deskew ?? true));
+  formData.append('clean', String(options.clean ?? true));
+
+  const res = await fetch(`${API_BASE_URL}/ocr/pdf-to-searchable`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ detail: 'OCR Processing Request Failed' }));
+    throw new Error(errData.detail || `OCR failed with status ${res.status}`);
+  }
+
+  return res.json();
+}
+
 export async function pollTaskStatus(taskId: string): Promise<TaskStatusResponse> {
   const res = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
   

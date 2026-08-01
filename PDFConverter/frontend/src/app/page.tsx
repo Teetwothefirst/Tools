@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Layers, FileCode, FileText, Wrench, Shield, Zap, Cpu } from 'lucide-react';
+import { Layers, FileCode, FileText, Wrench, Shield, Zap, Cpu, ScanText } from 'lucide-react';
 import { ToolCard } from '@/components/ToolCard';
 
 export default function Home() {
@@ -34,7 +34,7 @@ export default function Home() {
           transition={{ delay: 0.2 }}
           className="mt-6 text-lg text-slate-300 leading-relaxed"
         >
-          A full-stack document processing platform. Execute lightweight merges and page organization directly inside your browser with <code className="text-brand-400">pdf-lib</code>, or convert and repair documents with server-side engines.
+          A full-stack document processing platform. Execute lightweight merges and page organization directly inside your browser with <code className="text-brand-400">pdf-lib</code>, or convert, OCR, and repair documents with server-side engines.
         </motion.p>
 
         <motion.div
@@ -55,7 +55,7 @@ export default function Home() {
       </div>
 
       {/* Tools Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ToolCard
           title="Merge & Organize PDF"
           description="Drag-and-drop multiple PDFs, visually re-order pages using canvas thumbnails, rotate pages, and merge purely client-side."
@@ -63,6 +63,15 @@ export default function Home() {
           icon={Layers}
           gradient="from-brand-600 to-blue-500"
           badge="Browser Engine"
+        />
+
+        <ToolCard
+          title="OCR Scanned PDF Engine"
+          description="Convert non-editable, image-based, or scanned PDF documents into searchable text PDFs using Tesseract OCR & ocrmypdf."
+          href="/ocr"
+          icon={ScanText}
+          gradient="from-emerald-500 to-teal-600"
+          badge="ocrmypdf / Tesseract"
         />
 
         <ToolCard
@@ -88,7 +97,7 @@ export default function Home() {
           description="Fix corrupted PDF XRef tables, broken stream headers, and invalid structures using Ghostscript & PyMuPDF engines."
           href="/repair"
           icon={Wrench}
-          gradient="from-emerald-600 to-teal-500"
+          gradient="from-slate-700 to-slate-900"
           badge="Ghostscript / fitz"
         />
       </div>

@@ -11,6 +11,27 @@ logger = logging.getLogger("PDFConverter.TaskManager")
 # In-memory Task State Registry for Async Fallback Runner
 IN_MEMORY_TASKS: Dict[str, Dict[str, Any]] = {}
 
+import importlib
+
+try:
+    celery_module = importlib.import_module("celery")
+    Celery = getattr(celery_module, "Celery")
+    celery_app = Celery("pdf_converter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
+    celery_app.conf.update(
+        task_serializer='json',
+        accept_content=['json'],
+        result_serializer='json',
+        timezone='UTC',
+        enable_utc=True,
+    )
+except Exception as _e:
+    class DummyCeleryApp:
+        def task(self, *args, **kwargs):
+            def decorator(fn):
+                return fn
+            return decorator
+    celery_app = DummyCeleryApp()
+
 class TaskManager:
     """
     Task Manager supporting Celery integration when Redis is available,
@@ -18,23 +39,7 @@ class TaskManager:
     """
     def __init__(self):
         self.use_celery = settings.USE_CELERY
-        self.celery_app = None
-        
-        if self.use_celery:
-            try:
-                from celery import Celery
-                self.celery_app = Celery("pdf_converter", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
-                self.celery_app.conf.update(
-                    task_serializer='json',
-                    accept_content=['json'],
-                    result_serializer='json',
-                    timezone='UTC',
-                    enable_utc=True,
-                )
-                logger.info("Celery task queue initialized with Redis broker.")
-            except Exception as e:
-                logger.warning(f"Failed to initialize Celery ({e}). Falling back to In-Memory Task Engine.")
-                self.use_celery = False
+        self.celery_app = celery_app
 
     def create_task(self) -> str:
         task_id = str(uuid.uuid4())
