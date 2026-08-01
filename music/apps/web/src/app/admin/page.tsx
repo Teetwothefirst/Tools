@@ -10,13 +10,11 @@ export default function AdminPage() {
   const router = useRouter();
   const { user, token, isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
+  const [mounted, setMounted] = useState(false);
 
-  // Redirect if not Admin
   React.useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'ADMIN') {
-      router.push('/');
-    }
-  }, [isAuthenticated, user, router]);
+    setMounted(true);
+  }, []);
 
   // Create Artist Form State
   const [artistName, setArtistName] = useState('');
@@ -167,6 +165,39 @@ export default function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ['browse'] });
     },
   });
+
+  if (!mounted) {
+    return (
+      <div className="p-12 text-center text-muted-foreground">
+        Loading Admin Studio...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || user?.role !== 'ADMIN') {
+    return (
+      <div className="max-w-md mx-auto my-16 p-8 bg-card border border-border rounded-2xl text-center space-y-4 shadow-lg">
+        <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
+          <User className="w-6 h-6" />
+        </div>
+        <h2 className="text-xl font-bold">Admin Studio Access Required</h2>
+        <p className="text-sm text-muted-foreground">
+          You must be signed in with an Administrator account (`role: ADMIN`) to access music uploads and catalog control.
+        </p>
+        <div className="p-3 bg-muted/40 rounded-lg text-xs text-left space-y-1 border border-border">
+          <p className="font-semibold text-foreground">Seed Admin Credentials:</p>
+          <p>Email: <code className="text-primary font-mono font-bold">admin@music.com</code></p>
+          <p>Password: <code className="text-primary font-mono font-bold">password123</code></p>
+        </div>
+        <button
+          onClick={() => router.push('/login')}
+          className="w-full py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl text-sm hover:opacity-90 transition shadow-md"
+        >
+          Sign In as Admin
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">

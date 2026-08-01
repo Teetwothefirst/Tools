@@ -33,7 +33,7 @@ export default function AlbumDetailPage() {
   const [album, setAlbum] = useState<AlbumDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
-  const { setTrack, setQueue } = usePlayerStore();
+  const { playTrack, setTrack, setQueue } = usePlayerStore();
 
   useEffect(() => {
     async function loadAlbum() {
@@ -51,16 +51,12 @@ export default function AlbumDetailPage() {
 
   const handlePlayAlbum = () => {
     if (album?.tracks && album.tracks.length > 0) {
-      setQueue(album.tracks as any);
-      setTrack(album.tracks[0] as any);
+      playTrack(album.tracks[0] as any, album.tracks as any);
     }
   };
 
   const handlePlayTrack = (track: any) => {
-    if (album?.tracks) {
-      setQueue(album.tracks as any);
-    }
-    setTrack(track);
+    playTrack(track, album?.tracks as any || [track]);
   };
 
   const formatDuration = (seconds: number) => {

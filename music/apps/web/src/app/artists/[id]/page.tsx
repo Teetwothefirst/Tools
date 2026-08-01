@@ -35,7 +35,7 @@ export default function ArtistDetailPage() {
   const [artist, setArtist] = useState<ArtistDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
-  const { setTrack, setQueue } = usePlayerStore();
+  const { playTrack } = usePlayerStore();
 
   useEffect(() => {
     async function loadArtist() {
@@ -53,16 +53,12 @@ export default function ArtistDetailPage() {
 
   const handlePlayAll = () => {
     if (artist?.tracks && artist.tracks.length > 0) {
-      setQueue(artist.tracks as any);
-      setTrack(artist.tracks[0] as any);
+      playTrack(artist.tracks[0] as any, artist.tracks as any);
     }
   };
 
   const handlePlayTrack = (track: any) => {
-    if (artist?.tracks) {
-      setQueue(artist.tracks as any);
-    }
-    setTrack(track);
+    playTrack(track, artist?.tracks as any || [track]);
   };
 
   const formatDuration = (seconds: number) => {

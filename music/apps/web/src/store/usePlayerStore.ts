@@ -19,6 +19,8 @@ interface PlayerState {
   setVolume: (volume: number) => void;
   addToQueue: (track: Track) => void;
   clearQueue: () => void;
+  setQueue: (queue: Track[]) => void;
+  setTrack: (track: Track) => void;
 }
 
 export const usePlayerStore = create<PlayerState>()(
@@ -94,6 +96,13 @@ export const usePlayerStore = create<PlayerState>()(
       addToQueue: (track) => set((state) => ({ queue: [...state.queue, track] })),
 
       clearQueue: () => set({ queue: [], queueIndex: -1, currentTrack: null, isPlaying: false }),
+
+      setQueue: (queue) => set({ queue }),
+
+      setTrack: (track) => {
+        const { playTrack, queue } = get();
+        playTrack(track, queue.length > 0 ? queue : [track]);
+      },
     }),
     {
       name: 'music-player-storage',
