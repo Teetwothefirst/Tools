@@ -38,23 +38,28 @@ export class CatalogController {
   @Get('browse')
   @ApiOperation({ summary: 'Browse featured items and new releases' })
   async browse() {
-    const [newReleases, popularTracks, artists] = await Promise.all([
-      this.prisma.album.findMany({
-        orderBy: { createdAt: 'desc' },
-        include: { artist: true },
-        take: 8,
-      }),
-      this.prisma.track.findMany({
-        orderBy: { playCount: 'desc' },
-        include: { artist: true, album: true },
-        take: 10,
-      }),
-      this.prisma.artist.findMany({
-        take: 8,
-      }),
-    ]);
+    try {
+      const [newReleases, popularTracks, artists] = await Promise.all([
+        this.prisma.album.findMany({
+          orderBy: { createdAt: 'desc' },
+          include: { artist: true },
+          take: 8,
+        }),
+        this.prisma.track.findMany({
+          orderBy: { playCount: 'desc' },
+          include: { artist: true, album: true },
+          take: 10,
+        }),
+        this.prisma.artist.findMany({
+          take: 8,
+        }),
+      ]);
 
-    return { newReleases, popularTracks, artists };
+      return { newReleases, popularTracks, artists };
+    } catch (e) {
+      console.error("Browse query error (database may need schema push):", e);
+      return { newReleases: [], popularTracks: [], artists: [] };
+    }
   }
 
   @Get('track/:id')
@@ -64,6 +69,58 @@ export class CatalogController {
       where: { id },
       include: { artist: true, album: true },
     });
+  }
+
+  @Get('artist/:id')
+  @ApiOperation({ summary: 'Get artist detail with top tracks and albums' })
+  async getArtist(@Param('id') id: string) {
+    const artist = await this.prisma.artist.findUnique({
+      where: { id },
+      include: {
+        albums: {
+          orderBy: { createdAt: 'desc' },
+        },
+        tracks: {
+          orderBy: { playCount: 'desc' },
+          take: 10,
+          include: { album: true },
+        },
+      },
+    });
+    return artist;
+  }
+
+  @Get('album/:id')
+  @ApiOperation({ summary: 'Get album detail with track list' })
+  async getAlbum(@Param('id') id: string) {
+    const album = await this.prisma.album.findUnique({
+      where: { id },
+      include: {
+        artist: true,
+        tracks: {
+          include: { artist: true },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+    return album;
+  }
+
+  @Get('recommendations')
+  @ApiOperation({ summary: 'Get discovery and trending recommendations' })
+  async getRecommendations() {
+    const [trending, discoverArtists] = await Promise.all([
+      this.prisma.track.findMany({
+        orderBy: { playCount: 'desc' },
+        take: 12,
+        include: { artist: true, album: true },
+      }),
+      this.prisma.artist.findMany({
+        take: 6,
+        include: { albums: true },
+      }),
+    ]);
+    return { trending, discoverArtists };
   }
 
   // Admin upload features (Step 8 support)

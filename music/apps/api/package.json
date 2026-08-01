@@ -6,6 +6,8 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+    "predev": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -17,7 +19,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "db:push": "prisma db push",
+    "db:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@music/shared": "workspace:*",

@@ -14,18 +14,28 @@ export default function HomePage() {
   const { data: browseData } = useQuery({
     queryKey: ['browse'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:4000/api/catalog/browse');
-      return res.json();
+      try {
+        const res = await fetch('http://localhost:4000/api/catalog/browse');
+        if (!res.ok) return { newReleases: [], popularTracks: [], artists: [] };
+        return res.json();
+      } catch (e) {
+        return { newReleases: [], popularTracks: [], artists: [] };
+      }
     },
   });
 
   const { data: recentTracks = [] } = useQuery({
     queryKey: ['recently-played'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:4000/api/history/recently-played', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.json();
+      try {
+        const res = await fetch('http://localhost:4000/api/history/recently-played', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return [];
+        return res.json();
+      } catch (e) {
+        return [];
+      }
     },
     enabled: isAuthenticated && !!token,
   });
@@ -33,10 +43,15 @@ export default function HomePage() {
   const { data: continueListening = [] } = useQuery({
     queryKey: ['continue-listening'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:4000/api/history/continue-listening', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.json();
+      try {
+        const res = await fetch('http://localhost:4000/api/history/continue-listening', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return [];
+        return res.json();
+      } catch (e) {
+        return [];
+      }
     },
     enabled: isAuthenticated && !!token,
   });
@@ -208,7 +223,7 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {newReleases.map((album: any) => (
-              <div key={album.id} className="p-3 rounded-xl bg-card border border-border hover:scale-[1.02] transition flex flex-col gap-2">
+              <Link key={album.id} href={`/albums/${album.id}`} className="p-3 rounded-xl bg-card border border-border hover:scale-[1.02] transition flex flex-col gap-2 group">
                 {album.coverUrl ? (
                   <img src={album.coverUrl} className="w-full aspect-square rounded-lg object-cover" alt="" />
                 ) : (
@@ -217,10 +232,14 @@ export default function HomePage() {
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold truncate text-foreground">{album.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">{album.artist?.name}</p>
+                  <p className="text-xs font-semibold truncate text-foreground group-hover:text-primary transition-colors">{album.title}</p>
+                  {album.artist && (
+                    <span className="text-xs text-muted-foreground hover:underline truncate block">
+                      {album.artist.name}
+                    </span>
+                  )}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
