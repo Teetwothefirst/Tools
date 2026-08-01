@@ -15,7 +15,7 @@ export class StorageController {
   @ApiOperation({ summary: 'Upload audio file (.mp3, .wav, .m4a, .flac) to Supabase Storage' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadAudio(@UploadedFile() file: Express.Multer.File) {
+  async uploadAudio(@UploadedFile() file: any) {
     if (!file) {
       throw new BadRequestException('No audio file uploaded');
     }
@@ -43,7 +43,7 @@ export class StorageController {
   @ApiOperation({ summary: 'Upload cover art or avatar image (.png, .jpg, .webp) to Supabase Storage' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+  async uploadImage(@UploadedFile() file: any) {
     if (!file) {
       throw new BadRequestException('No image file uploaded');
     }

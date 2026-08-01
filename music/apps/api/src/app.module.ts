@@ -29,4 +29,5 @@ import { AppService } from './app.service';
   controllers: [AppController],
   providers: [AppService],
 })
+// Registered modules including ConverterModule
 export class AppModule {}

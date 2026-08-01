@@ -1,13 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import * as path from 'path';
 import * as fs from 'fs';
 
 @Injectable()
 export class StorageService {
   private readonly logger = new Logger(StorageService.name);
-  private supabase: SupabaseClient | null = null;
+  private supabase: any = null;
   private supabaseUrl: string;
 
   constructor(private configService: ConfigService) {
@@ -15,12 +14,17 @@ export class StorageService {
     const supabaseKey = this.configService.get<string>('SUPABASE_KEY', '');
 
     if (this.supabaseUrl && supabaseKey) {
-      this.supabase = createClient(this.supabaseUrl, supabaseKey);
+      try {
+        const { createClient } = require('@supabase/supabase-js');
+        this.supabase = createClient(this.supabaseUrl, supabaseKey);
+      } catch (e: any) {
+        this.logger.warn(`Supabase JS SDK not installed in node_modules: ${e.message}`);
+      }
     }
   }
 
-  async uploadFile(bucketName: string, file: Express.Multer.File): Promise<{ url: string; path: string }> {
-    const fileExt = path.extname(file.originalname).toLowerCase();
+  async uploadFile(bucketName: string, file: any): Promise<{ url: string; path: string }> {
+    const fileExt = path.extname(file.originalname || 'file').toLowerCase();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${fileExt}`;
 
     try {

@@ -1,111 +1,180 @@
 import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
-import * as ffmpeg from 'fluent-ffmpeg';
-import * as ffmpegPath from 'ffmpeg-static';
 import * as path from 'path';
 import * as fs from 'fs';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { StorageService } from '../storage/storage.service';
+
+const execAsync = promisify(exec);
+
+export type MediaTargetFormat = 'mp3' | 'wav' | 'aac' | 'flac' | 'm4a' | 'ogg' | 'mp4' | 'webm';
 
 @Injectable()
 export class ConverterService {
   private readonly logger = new Logger(ConverterService.name);
+  private ffmpegBinary: string = 'ffmpeg';
 
   constructor(private readonly storageService: StorageService) {
-    if (ffmpegPath) {
-      ffmpeg.setFfmpegPath(ffmpegPath);
-      this.logger.log(`Initialized FFmpeg binary path: ${ffmpegPath}`);
+    this.initFfmpegPath();
+  }
+
+  private initFfmpegPath() {
+    try {
+      const ffmpegStatic = require('ffmpeg-static');
+      const exePath = typeof ffmpegStatic === 'string' ? ffmpegStatic : (ffmpegStatic?.path || ffmpegStatic?.default);
+      if (exePath && fs.existsSync(exePath)) {
+        this.ffmpegBinary = `"${exePath}"`;
+        this.logger.log(`Using ffmpeg-static module at: ${exePath}`);
+        return;
+      }
+    } catch (e) {}
+
+    // Search directory tree for ffmpeg.exe
+    let searchDir = process.cwd();
+    for (let i = 0; i < 5; i++) {
+      const direct = path.join(searchDir, 'node_modules', 'ffmpeg-static', 'ffmpeg.exe');
+      if (fs.existsSync(direct)) {
+        this.ffmpegBinary = `"${direct}"`;
+        this.logger.log(`Found ffmpeg-static binary at: ${direct}`);
+        return;
+      }
+
+      const pnpmDir = path.join(searchDir, 'node_modules', '.pnpm');
+      if (fs.existsSync(pnpmDir)) {
+        try {
+          const entries = fs.readdirSync(pnpmDir);
+          for (const entry of entries) {
+            if (entry.includes('ffmpeg-static')) {
+              const pnpmExe = path.join(pnpmDir, entry, 'node_modules', 'ffmpeg-static', 'ffmpeg.exe');
+              if (fs.existsSync(pnpmExe)) {
+                this.ffmpegBinary = `"${pnpmExe}"`;
+                this.logger.log(`Found FFmpeg pnpm binary at: ${pnpmExe}`);
+                return;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+
+      const parent = path.dirname(searchDir);
+      if (parent === searchDir) break;
+      searchDir = parent;
     }
+
+    this.ffmpegBinary = 'ffmpeg';
+    this.logger.warn('Defaulting to system "ffmpeg" CLI path.');
   }
 
   async convertMedia(
-    file: Express.Multer.File,
-    targetFormat: 'mp3' | 'wav' | 'aac' | 'flac' | 'mp4' | 'webm' = 'mp3',
+    file: any,
+    targetFormat: string = 'mp3',
     bitrate: string = '192k'
   ): Promise<{ url: string; fileName: string; format: string; size: number; duration: number }> {
+    // Re-verify FFmpeg binary path before execution
+    if (this.ffmpegBinary === 'ffmpeg') {
+      this.initFfmpegPath();
+    }
+
     const tempDir = path.join(process.cwd(), 'temp-conversions');
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
     }
 
-    const inputExt = path.extname(file.originalname);
-    const baseName = path.basename(file.originalname, inputExt);
-    const inputPath = path.join(tempDir, `input-${Date.now()}${inputExt}`);
-    const outputPath = path.join(tempDir, `${baseName}-converted-${Date.now()}.${targetFormat}`);
+    const fmt = targetFormat.toLowerCase();
+    const inputExt = path.extname(file.originalname || 'input.mp4');
+    const baseName = path.basename(file.originalname || 'file', inputExt);
+    const timeId = Date.now();
+    const inputPath = path.join(tempDir, `input-${timeId}${inputExt}`);
+    const outputPath = path.join(tempDir, `${baseName}-converted-${timeId}.${fmt}`);
 
-    // Save input buffer temporarily
+    // Write uploaded buffer to disk
     fs.writeFileSync(inputPath, file.buffer);
 
-    return new Promise((resolve, reject) => {
-      let command = ffmpeg(inputPath);
+    let ffmpegCmd = '';
+    switch (fmt) {
+      case 'mp3':
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -vn -c:a libmp3lame -b:a ${bitrate} "${outputPath}"`;
+        break;
+      case 'wav':
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -vn -c:a pcm_s16le "${outputPath}"`;
+        break;
+      case 'aac':
+      case 'm4a':
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -vn -c:a aac -b:a ${bitrate} "${outputPath}"`;
+        break;
+      case 'flac':
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -vn -c:a flac "${outputPath}"`;
+        break;
+      case 'ogg':
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -vn -c:a libvorbis -b:a ${bitrate} "${outputPath}"`;
+        break;
+      case 'mp4':
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -c:v libx264 -c:a aac -b:a ${bitrate} "${outputPath}"`;
+        break;
+      case 'webm':
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -c:v libvpx -c:a libvorbis -b:a ${bitrate} "${outputPath}"`;
+        break;
+      default:
+        ffmpegCmd = `${this.ffmpegBinary} -y -i "${inputPath}" -vn -b:a ${bitrate} "${outputPath}"`;
+    }
 
-      if (['mp3', 'wav', 'aac', 'flac'].includes(targetFormat)) {
-        // Audio conversion settings
-        command = command
-          .noVideo()
-          .toFormat(targetFormat)
-          .audioBitrate(bitrate)
-          .audioChannels(2);
-      } else if (['mp4', 'webm'].includes(targetFormat)) {
-        // Video conversion settings
-        command = command
-          .toFormat(targetFormat)
-          .videoCodec(targetFormat === 'webm' ? 'libvpx' : 'libx264')
-          .audioCodec('aac');
+    this.logger.log(`Executing conversion command: ${ffmpegCmd}`);
+
+    try {
+      await execAsync(ffmpegCmd);
+
+      if (!fs.existsSync(outputPath)) {
+        throw new Error('Converted output file was not generated');
       }
 
-      command
-        .on('start', (cmd) => {
-          this.logger.log(`Executing FFmpeg command: ${cmd}`);
-        })
-        .on('end', async () => {
-          try {
-            const convertedBuffer = fs.readFileSync(outputPath);
-            const stats = fs.statSync(outputPath);
+      const convertedBuffer = fs.readFileSync(outputPath);
+      const stats = fs.statSync(outputPath);
 
-            // Create pseudo Multer File for storage service
-            const convertedFile: Express.Multer.File = {
-              fieldname: 'file',
-              originalname: `${baseName}.${targetFormat}`,
-              encoding: '7bit',
-              mimetype: this.getMimeType(targetFormat),
-              buffer: convertedBuffer,
-              size: stats.size,
-              stream: null as any,
-              destination: '',
-              filename: '',
-              path: '',
-            };
+      const convertedFile: any = {
+        fieldname: 'file',
+        originalname: `${baseName}.${fmt}`,
+        encoding: '7bit',
+        mimetype: this.getMimeType(fmt),
+        buffer: convertedBuffer,
+        size: stats.size,
+      };
 
-            const bucket = ['mp4', 'webm'].includes(targetFormat) ? 'video-files' : 'audio-files';
-            const uploadResult = await this.storageService.uploadFile(bucket, convertedFile);
+      const bucket = ['mp4', 'webm'].includes(fmt) ? 'video-files' : 'audio-files';
+      const uploadResult = await this.storageService.uploadFile(bucket, convertedFile);
 
-            // Cleanup temp files
-            try {
-              if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-              if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
-            } catch (e) {}
+      // Clean up temp files
+      try {
+        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+        if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+      } catch (e) {}
 
-            resolve({
-              url: uploadResult.url,
-              fileName: `${baseName}.${targetFormat}`,
-              format: targetFormat,
-              size: stats.size,
-              duration: 180,
-            });
-          } catch (err: any) {
-            this.logger.error('Failed to upload converted file', err);
-            reject(new InternalServerErrorException('Failed to process converted media'));
-          }
-        })
-        .on('error', (err) => {
-          this.logger.error(`FFmpeg conversion error: ${err.message}`);
-          try {
-            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-            if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
-          } catch (e) {}
-          reject(new InternalServerErrorException(`Conversion failed: ${err.message}`));
-        })
-        .save(outputPath);
-    });
+      return {
+        url: uploadResult.url,
+        fileName: `${baseName}.${fmt}`,
+        format: fmt,
+        size: stats.size,
+        duration: 180,
+      };
+    } catch (err: any) {
+      this.logger.error(`FFmpeg execution error: ${err.message}`);
+      
+      // Clean up temp files on failure
+      try {
+        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+        if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+      } catch (e) {}
+
+      if (err.message?.includes('not recognized') || err.message?.includes('ENOENT')) {
+        this.logger.warn(`FFmpeg binary not found on system PATH. Please run 'pnpm install' or install FFmpeg CLI.`);
+        throw new InternalServerErrorException(
+          `Media conversion engine requires FFmpeg binary. Please install FFmpeg or run 'pnpm install' in the music project directory.`
+        );
+      }
+
+      throw new InternalServerErrorException(
+        `Media conversion failed (${fmt.toUpperCase()}): ${err.message}`
+      );
+    }
   }
 
   private getMimeType(format: string): string {
@@ -114,6 +183,8 @@ export class ConverterService {
       wav: 'audio/wav',
       aac: 'audio/aac',
       flac: 'audio/flac',
+      m4a: 'audio/aac',
+      ogg: 'audio/ogg',
       mp4: 'video/mp4',
       webm: 'video/webm',
     };

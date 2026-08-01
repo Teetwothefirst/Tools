@@ -2,6 +2,7 @@ import { Controller, Post, Get, Body, UseInterceptors, UploadedFile, BadRequestE
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ConverterService } from './converter.service';
+import { ConvertMediaDto } from './dto/convert-media.dto';
 
 @ApiTags('Media Converter')
 @Controller('converter')
@@ -40,23 +41,24 @@ export class ConverterController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async convertMedia(
-    @UploadedFile() file: Express.Multer.File,
-    @Body('targetFormat') targetFormat: 'mp3' | 'wav' | 'aac' | 'flac' | 'mp4' | 'webm' = 'mp3',
-    @Body('bitrate') bitrate: string = '192k'
+    @UploadedFile() file: any,
+    @Body() dto: ConvertMediaDto,
   ) {
     if (!file) {
       throw new BadRequestException('No media file uploaded for conversion');
     }
 
-    const validFormats = ['mp3', 'wav', 'aac', 'flac', 'mp4', 'webm'];
-    const fmt = targetFormat?.toLowerCase() as any;
-    if (!validFormats.includes(fmt)) {
+    const targetFormat = (dto.targetFormat || 'mp3').toLowerCase() as any;
+    const bitrate = dto.bitrate || '192k';
+
+    const validFormats = ['mp3', 'wav', 'aac', 'flac', 'm4a', 'ogg', 'mp4', 'webm'];
+    if (!validFormats.includes(targetFormat)) {
       throw new BadRequestException(`Invalid target format: ${targetFormat}. Supported: ${validFormats.join(', ')}`);
     }
 
-    const result = await this.converterService.convertMedia(file, fmt, bitrate || '192k');
+    const result = await this.converterService.convertMedia(file, targetFormat, bitrate);
     return {
-      message: `Successfully converted ${file.originalname} to ${fmt.toUpperCase()}`,
+      message: `Successfully converted ${file.originalname} to ${targetFormat.toUpperCase()}`,
       fileName: result.fileName,
       format: result.format,
       url: result.url,

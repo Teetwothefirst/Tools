@@ -9,6 +9,23 @@ dist
 build
 out
 
+# Media uploads & conversions
+uploads/
+**/uploads/
+temp-conversions/
+**/temp-conversions/
+
+# Binary Media Files
+*.mp3
+*.wav
+*.mp4
+*.m4a
+*.webm
+*.flac
+*.ogg
+*.mkv
+*.avi
+
 # Prisma / Environment
 .env
 .env.local
