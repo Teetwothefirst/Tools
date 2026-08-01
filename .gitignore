@@ -16,6 +16,23 @@ PDFConverter/backend/temp/
 PDFConverter/frontend/node_modules/
 PDFConverter/frontend/.next/
 
+# Music Platform & Converter Exclusions
+uploads/
+**/uploads/
+temp-conversions/
+**/temp-conversions/
+
+# Binary Media File Exclusions
+*.mp3
+*.wav
+*.mp4
+*.m4a
+*.webm
+*.flac
+*.ogg
+*.mkv
+*.avi
+
 # Ephemeral storage & logs
 temp/
 *.log
