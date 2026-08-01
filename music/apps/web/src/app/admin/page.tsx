@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Upload, Plus, Music, User, Library } from 'lucide-react';
+import { Upload, Plus, Music, User, Library, FileAudio, Image as ImageIcon } from 'lucide-react';
 
 export default function AdminPage() {
   const router = useRouter();
@@ -35,6 +35,8 @@ export default function AdminPage() {
   const [trackArtistId, setTrackArtistId] = useState('');
   const [trackAlbumId, setTrackAlbumId] = useState('');
 
+  const [uploadingAudio, setUploadingAudio] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [notification, setNotification] = useState('');
 
   // Query Artists and Albums to feed select fields
@@ -45,6 +47,55 @@ export default function AdminPage() {
       return res.json();
     },
   });
+
+  const handleAudioFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAudio(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('http://localhost:4000/api/storage/upload/audio', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setTrackAudio(data.url);
+        if (!trackTitle) setTrackTitle(file.name.replace(/\.[^/.]+$/, ""));
+        setNotification('Audio uploaded to Supabase Storage!');
+      }
+    } catch (err) {
+      console.error('Audio upload error', err);
+    } finally {
+      setUploadingAudio(false);
+    }
+  };
+
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetSetter: (url: string) => void) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('http://localhost:4000/api/storage/upload/image', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        targetSetter(data.url);
+        setNotification('Cover image uploaded to Supabase Storage!');
+      }
+    } catch (err) {
+      console.error('Image upload error', err);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const createArtistMutation = useMutation({
     mutationFn: async () => {
@@ -124,8 +175,8 @@ export default function AdminPage() {
           <Upload className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Catalog Control</h1>
-          <p className="text-muted-foreground text-sm">Upload music tracks, create album records, and add artists metadata.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Admin Catalog & Supabase Uploads</h1>
+          <p className="text-muted-foreground text-sm">Upload music tracks, cover images, and set up catalog records.</p>
         </div>
       </div>
 
@@ -164,13 +215,19 @@ export default function AdminPage() {
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Image URL</label>
+              <label className="text-xs text-muted-foreground">Artist Photo (File or URL)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageFileUpload(e, setArtistImg)}
+                className="w-full text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-primary file:text-primary-foreground hover:file:opacity-90"
+              />
               <input
                 type="text"
                 value={artistImg}
                 onChange={(e) => setArtistImg(e.target.value)}
-                placeholder="https://image-cdn.com/artist.jpg"
-                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="https://... or uploaded image URL"
+                className="w-full mt-2 px-3 py-2 bg-background border border-border rounded-lg text-xs focus:outline-none"
               />
             </div>
             <button
@@ -199,13 +256,19 @@ export default function AdminPage() {
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Cover Art URL</label>
+              <label className="text-xs text-muted-foreground">Cover Art (File Upload or URL)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageFileUpload(e, setAlbumCover)}
+                className="w-full text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-primary file:text-primary-foreground hover:file:opacity-90"
+              />
               <input
                 type="text"
                 value={albumCover}
                 onChange={(e) => setAlbumCover(e.target.value)}
-                placeholder="https://image-cdn.com/album.jpg"
-                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="https://... or uploaded cover URL"
+                className="w-full mt-2 px-3 py-2 bg-background border border-border rounded-lg text-xs focus:outline-none"
               />
             </div>
             <div>
@@ -230,10 +293,10 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Form 3: Upload Track */}
+        {/* Form 3: Create Track */}
         <div className="bg-card border border-border rounded-xl p-6 space-y-4">
           <h2 className="text-lg font-semibold flex items-center gap-2 border-b border-border pb-2">
-            <Music className="w-4 h-4 text-primary" /> Upload/Create Track
+            <Music className="w-4 h-4 text-primary" /> Create Track
           </h2>
           <div className="space-y-3">
             <div>
@@ -247,13 +310,22 @@ export default function AdminPage() {
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Audio URL (CDN/Direct File)</label>
+              <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1 text-primary">
+                <FileAudio className="w-3.5 h-3.5" /> Upload Audio File (.mp3, .wav)
+              </label>
+              <input
+                type="file"
+                accept="audio/*"
+                onChange={handleAudioFileUpload}
+                className="w-full mt-1 text-xs text-muted-foreground file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-primary file:text-primary-foreground hover:file:opacity-90"
+              />
+              {uploadingAudio && <p className="text-xs text-primary animate-pulse mt-1">Uploading audio file to Supabase Storage...</p>}
               <input
                 type="text"
                 value={trackAudio}
                 onChange={(e) => setTrackAudio(e.target.value)}
-                placeholder="https://audio-cdn.com/track.mp3"
-                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Audio URL (auto-filled on file upload)"
+                className="w-full mt-2 px-3 py-2 bg-background border border-border rounded-lg text-xs focus:outline-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">

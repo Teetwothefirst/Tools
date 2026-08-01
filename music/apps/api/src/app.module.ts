@@ -6,6 +6,7 @@ import { CatalogModule } from './catalog/catalog.module';
 import { LibraryModule } from './library/library.module';
 import { PlaylistModule } from './playlist/playlist.module';
 import { HistoryModule } from './history/history.module';
+import { StorageModule } from './storage/storage.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -21,6 +22,7 @@ import { AppService } from './app.service';
     LibraryModule,
     PlaylistModule,
     HistoryModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

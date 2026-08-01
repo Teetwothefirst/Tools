@@ -3,8 +3,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
+import * as express from 'express';
+import * as path from 'path';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Serve static uploaded files fallback
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
   // Global prefix
   app.setGlobalPrefix('api');
