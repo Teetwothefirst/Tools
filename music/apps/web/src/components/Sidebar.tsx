@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Music, Home, Compass, Search, Heart, Settings, LogIn, Upload, ListMusic, Menu, X } from 'lucide-react';
+import { Music, Home, Compass, Search, Heart, Settings, LogIn, Upload, ListMusic, Menu, X, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useState } from 'react';
 
@@ -15,6 +15,7 @@ export function Sidebar() {
     { label: 'Home', icon: Home, href: '/' },
     { label: 'Browse', icon: Compass, href: '/browse' },
     { label: 'Search', icon: Search, href: '/search' },
+    { label: 'Converter', icon: RefreshCw, href: '/converter' },
     { label: 'Playlists', icon: ListMusic, href: '/playlists', authRequired: true },
     { label: 'Library', icon: Heart, href: '/library', authRequired: true },
     { label: 'Settings', icon: Settings, href: '/settings', authRequired: true },

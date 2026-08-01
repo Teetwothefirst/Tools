@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Upload, Plus, Music, User, Library, FileAudio, Image as ImageIcon } from 'lucide-react';
 
-export default function AdminPage() {
+function AdminContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialAudioUrl = searchParams.get('audioUrl') || '';
   const { user, token, isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(false);
@@ -28,7 +30,7 @@ export default function AdminPage() {
 
   // Create Track Form State
   const [trackTitle, setTrackTitle] = useState('');
-  const [trackAudio, setTrackAudio] = useState('');
+  const [trackAudio, setTrackAudio] = useState(initialAudioUrl);
   const [trackDuration, setTrackDuration] = useState('180');
   const [trackArtistId, setTrackArtistId] = useState('');
   const [trackAlbumId, setTrackAlbumId] = useState('');
@@ -155,14 +157,14 @@ export default function AdminPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
-      setNotification('Track added successfully!');
+    onSuccess: (data: any) => {
+      setNotification(`Track "${data.title || 'song'}" added successfully! It is now live on Home, Search, and Browse.`);
       setTrackTitle('');
       setTrackAudio('');
       setTrackDuration('180');
       setTrackArtistId('');
       setTrackAlbumId('');
-      queryClient.invalidateQueries({ queryKey: ['browse'] });
+      queryClient.invalidateQueries();
     },
   });
 
@@ -397,14 +399,37 @@ export default function AdminPage() {
               </select>
             </div>
             <button
-              onClick={() => createTrackMutation.mutate()}
-              className="w-full py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm hover:opacity-90 transition flex items-center justify-center gap-1.5"
+              onClick={() => {
+                if (!trackTitle.trim()) {
+                  setNotification('Please enter a track title.');
+                  return;
+                }
+                if (!trackAudio.trim()) {
+                  setNotification('Please upload an audio file or enter an Audio URL first.');
+                  return;
+                }
+                if (!trackArtistId) {
+                  setNotification('Please select an Artist for this track (or create an Artist first).');
+                  return;
+                }
+                createTrackMutation.mutate();
+              }}
+              disabled={createTrackMutation.isPending}
+              className="w-full py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm hover:opacity-90 transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
-              <Plus className="w-4 h-4" /> Save Track
+              <Plus className="w-4 h-4" /> {createTrackMutation.isPending ? 'Saving Track...' : 'Save Track'}
             </button>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<div className="p-12 text-center text-muted-foreground">Loading Admin Studio...</div>}>
+      <AdminContent />
+    </Suspense>
   );
 }
