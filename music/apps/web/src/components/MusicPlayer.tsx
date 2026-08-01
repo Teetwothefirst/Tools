@@ -25,7 +25,7 @@ export function MusicPlayer() {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-20 bg-card/95 backdrop-blur-md border-t border-border px-3 sm:px-6 flex items-center justify-between z-50 gap-3">
+    <div className="fixed bottom-0 left-0 lg:left-64 right-0 h-20 bg-card/95 backdrop-blur-md border-t border-border px-3 sm:px-6 flex items-center justify-between z-30 gap-3">
       {/* Left: Track Details */}
       <div className="flex items-center gap-3 w-auto sm:w-1/4 min-w-0 flex-shrink-0 max-w-[200px] sm:max-w-none">
         {currentTrack.album?.coverUrl ? (
