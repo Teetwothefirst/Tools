@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Upload, Plus, Music, User, Library, FileAudio, Image as ImageIcon } from 'lucide-react';
+import { api } from '@/lib/api';
 
 function AdminContent() {
   const router = useRouter();
