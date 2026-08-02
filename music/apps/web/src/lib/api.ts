@@ -25,4 +25,20 @@ export const api = {
     }
     return { data: await res.json() };
   },
+
+  put: async (endpoint: string, body: any, headers: Record<string, string> = {}) => {
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+    const isFormData = body instanceof FormData;
+    const reqHeaders: Record<string, string> = isFormData ? { ...headers } : { 'Content-Type': 'application/json', ...headers };
+
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: reqHeaders,
+      body: isFormData ? body : JSON.stringify(body),
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return { data: await res.json() };
+  },
 };

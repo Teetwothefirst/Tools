@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -130,6 +130,20 @@ export class CatalogController {
   @ApiOperation({ summary: 'Create artist metadata (Admin)' })
   async createArtist(@Body() body: { name: string; bio?: string; imageUrl?: string }) {
     return this.prisma.artist.create({ data: body });
+  }
+
+  @Put('artist/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update existing artist profile (Admin)' })
+  async updateArtist(
+    @Param('id') id: string,
+    @Body() body: { name?: string; bio?: string; imageUrl?: string }
+  ) {
+    return this.prisma.artist.update({
+      where: { id },
+      data: body,
+    });
   }
 
   @Post('album')

@@ -18,7 +18,8 @@ function AdminContent() {
     setMounted(true);
   }, []);
 
-  // Create Artist Form State
+  // Create or Edit Artist Form State
+  const [selectedArtistId, setSelectedArtistId] = useState('');
   const [artistName, setArtistName] = useState('');
   const [artistBio, setArtistBio] = useState('');
   const [artistImg, setArtistImg] = useState('');
@@ -115,6 +116,25 @@ function AdminContent() {
       setArtistBio('');
       setArtistImg('');
       queryClient.invalidateQueries({ queryKey: ['browse'] });
+    },
+  });
+
+  const updateArtistMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.put(
+        `/catalog/artist/${selectedArtistId}`,
+        { name: artistName, bio: artistBio, imageUrl: artistImg },
+        { Authorization: `Bearer ${token}` }
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      setNotification('Artist profile updated successfully!');
+      setSelectedArtistId('');
+      setArtistName('');
+      setArtistBio('');
+      setArtistImg('');
+      queryClient.invalidateQueries();
     },
   });
 
@@ -221,12 +241,53 @@ function AdminContent() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Form 1: Create Artist */}
+        {/* Form 1: Create or Edit Artist */}
         <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2 border-b border-border pb-2">
-            <User className="w-4 h-4 text-primary" /> Create Artist
+          <h2 className="text-lg font-semibold flex items-center justify-between border-b border-border pb-2">
+            <span className="flex items-center gap-2">
+              <User className="w-4 h-4 text-primary" /> {selectedArtistId ? 'Edit Artist Profile' : 'Create Artist'}
+            </span>
+            {selectedArtistId && (
+              <button
+                onClick={() => {
+                  setSelectedArtistId('');
+                  setArtistName('');
+                  setArtistBio('');
+                  setArtistImg('');
+                }}
+                className="text-xs text-primary font-medium hover:underline"
+              >
+                + New Artist
+              </button>
+            )}
           </h2>
           <div className="space-y-3">
+            <div>
+              <label className="text-xs text-muted-foreground font-semibold">Select Artist to Edit (Optional)</label>
+              <select
+                value={selectedArtistId}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  setSelectedArtistId(id);
+                  const selected = browseData?.artists?.find((a: any) => a.id === id);
+                  if (selected) {
+                    setArtistName(selected.name || '');
+                    setArtistBio(selected.bio || '');
+                    setArtistImg(selected.imageUrl || '');
+                  } else {
+                    setArtistName('');
+                    setArtistBio('');
+                    setArtistImg('');
+                  }
+                }}
+                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-xs focus:outline-none"
+              >
+                <option value="">-- Create New Artist --</option>
+                {browseData?.artists?.map((artist: any) => (
+                  <option key={artist.id} value={artist.id}>✏️ {artist.name}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="text-xs text-muted-foreground">Artist Name</label>
               <input
@@ -264,10 +325,21 @@ function AdminContent() {
               />
             </div>
             <button
-              onClick={() => createArtistMutation.mutate()}
-              className="w-full py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm hover:opacity-90 transition flex items-center justify-center gap-1.5"
+              onClick={() => {
+                if (!artistName.trim()) {
+                  setNotification('Please enter an artist name.');
+                  return;
+                }
+                if (selectedArtistId) {
+                  updateArtistMutation.mutate();
+                } else {
+                  createArtistMutation.mutate();
+                }
+              }}
+              disabled={createArtistMutation.isPending || updateArtistMutation.isPending}
+              className="w-full py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm hover:opacity-90 transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
-              <Plus className="w-4 h-4" /> Save Artist
+              <Plus className="w-4 h-4" /> {selectedArtistId ? 'Update Artist Profile' : 'Save Artist'}
             </button>
           </div>
         </div>
