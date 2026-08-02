@@ -1,268 +1,202 @@
 'use client';
 
 import React from 'react';
-import { useAuthStore } from '@/store/useAuthStore';
-import { usePlayerStore } from '@/store/usePlayerStore';
-import { useQuery } from '@tanstack/react-query';
-import { Play, Pause, Music, Disc, RotateCcw, Sparkles, ListMusic } from 'lucide-react';
 import Link from 'next/link';
+import { Play, Music, Sparkles, RefreshCw, Upload, Radio, ArrowRight, ShieldCheck, Headphones, Layers, Lock, Cpu, Globe } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
 
-export default function HomePage() {
-  const { isAuthenticated, token, user } = useAuthStore();
-  const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayerStore();
-
-  const { data: browseData } = useQuery({
-    queryKey: ['browse'],
-    queryFn: async () => {
-      try {
-        const res = await fetch('http://localhost:4000/api/catalog/browse');
-        if (!res.ok) return { newReleases: [], popularTracks: [], artists: [] };
-        return res.json();
-      } catch (e) {
-        return { newReleases: [], popularTracks: [], artists: [] };
-      }
-    },
-  });
-
-  const { data: recentTracks = [] } = useQuery({
-    queryKey: ['recently-played'],
-    queryFn: async () => {
-      try {
-        const res = await fetch('http://localhost:4000/api/history/recently-played', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) return [];
-        return res.json();
-      } catch (e) {
-        return [];
-      }
-    },
-    enabled: isAuthenticated && !!token,
-  });
-
-  const { data: continueListening = [] } = useQuery({
-    queryKey: ['continue-listening'],
-    queryFn: async () => {
-      try {
-        const res = await fetch('http://localhost:4000/api/history/continue-listening', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) return [];
-        return res.json();
-      } catch (e) {
-        return [];
-      }
-    },
-    enabled: isAuthenticated && !!token,
-  });
-
-  const handlePlayClick = (track: any, queue: any[] = []) => {
-    if (currentTrack?.id === track.id) {
-      togglePlay();
-    } else {
-      playTrack(track, queue.length ? queue : [track]);
-    }
-  };
-
-  const greeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  const popularTracks = browseData?.popularTracks || [];
-  const newReleases = browseData?.newReleases || [];
+export default function StandaloneLandingPage() {
+  const { isAuthenticated, user } = useAuthStore();
 
   return (
-    <div className="p-4 sm:p-8 max-w-7xl mx-auto space-y-10">
-      {/* Personalized Greeting */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-foreground">
-            {isAuthenticated ? `${greeting()}, ${user?.name?.split(' ')[0] || 'there'} 👋` : 'Welcome to MusicPlatform'}
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            {isAuthenticated ? 'Pick up where you left off, or discover something new.' : 'Sign in to unlock your personal library.'}
-          </p>
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      {/* Landing Navigation Header */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/60 px-6 lg:px-12 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-accent text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
+            <Music className="w-5 h-5" />
+          </div>
+          <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
+            MusicPlatform
+          </span>
         </div>
-        {!isAuthenticated && (
-          <Link
-            href="/login"
-            className="px-5 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl text-sm hover:opacity-90 transition hidden sm:block flex-shrink-0"
-          >
-            Get Started
-          </Link>
-        )}
-      </div>
 
-      {/* Continue Listening */}
-      {isAuthenticated && continueListening.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <RotateCcw className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-bold">Continue Listening</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {continueListening.map(({ track, progress }: { track: any; progress: number }) => {
-              if (!track) return null;
-              const active = currentTrack?.id === track.id;
-              const playing = active && isPlaying;
-              const pct = track.duration > 0 ? Math.min((progress / track.duration) * 100, 100) : 0;
+        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-muted-foreground">
+          <Link href="/app" className="hover:text-primary transition-colors">Streaming App</Link>
+          <Link href="/converter" className="hover:text-primary transition-colors">Media Converter</Link>
+          <Link href="/admin" className="hover:text-primary transition-colors">Creator Studio</Link>
+          <a href="http://localhost:4000/api/docs" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors">Swagger API</a>
+        </nav>
 
-              return (
-                <div
-                  key={track.id}
-                  className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:bg-muted/40 transition group"
-                >
-                  {track.album?.coverUrl ? (
-                    <img src={track.album.coverUrl} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt="" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                      <Music className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold truncate ${active ? 'text-primary' : 'text-foreground'}`}>
-                      {track.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">{track.artist?.name}</p>
-                    {/* Progress bar */}
-                    <div className="mt-1.5 h-1 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handlePlayClick(track)}
-                    className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition flex-shrink-0"
-                  >
-                    {playing ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Recently Played */}
-      {isAuthenticated && recentTracks.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <RotateCcw className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-bold">Recently Played</h2>
-          </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-            {recentTracks.slice(0, 6).map((track: any) => {
-              if (!track) return null;
-              const active = currentTrack?.id === track.id;
-              const playing = active && isPlaying;
-              return (
-                <button
-                  key={track.id}
-                  onClick={() => handlePlayClick(track, recentTracks)}
-                  className="flex flex-col items-center gap-2 p-3 rounded-xl bg-card border border-border hover:scale-[1.03] transition group text-left"
-                >
-                  {track.album?.coverUrl ? (
-                    <img src={track.album.coverUrl} className="w-full aspect-square rounded-lg object-cover" alt="" />
-                  ) : (
-                    <div className="w-full aspect-square rounded-lg bg-muted flex items-center justify-center">
-                      <Music className={`w-6 h-6 ${active ? 'text-primary' : 'text-muted-foreground'}`} />
-                    </div>
-                  )}
-                  <p className={`text-xs font-medium text-center truncate w-full ${active ? 'text-primary' : 'text-foreground'}`}>
-                    {track.title}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Popular Tracks */}
-      {popularTracks.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-bold">Popular Tracks</h2>
-          </div>
-          <div className="divide-y divide-border/40 bg-card rounded-xl border border-border overflow-hidden">
-            {popularTracks.slice(0, 8).map((track: any, i: number) => {
-              const active = currentTrack?.id === track.id;
-              const playing = active && isPlaying;
-              return (
-                <div key={track.id} className="flex items-center gap-3 p-3 hover:bg-muted/40 transition group">
-                  <span className="text-xs text-muted-foreground w-5 text-center group-hover:hidden">{i + 1}</span>
-                  <button
-                    onClick={() => handlePlayClick(track, popularTracks)}
-                    className="w-9 h-9 rounded bg-muted flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition flex-shrink-0"
-                  >
-                    {playing ? <Pause className="w-4 h-4 fill-current text-primary" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
-                  </button>
-                  <div className="min-w-0 flex-1">
-                    <p className={`text-sm font-medium truncate ${active ? 'text-primary' : 'text-foreground'}`}>{track.title}</p>
-                    <p className="text-xs text-muted-foreground truncate">{track.artist?.name}</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground hidden sm:block">
-                    {Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* New Releases */}
-      {newReleases.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Disc className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-bold">New Releases</h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {newReleases.map((album: any) => (
-              <Link key={album.id} href={`/albums/${album.id}`} className="p-3 rounded-xl bg-card border border-border hover:scale-[1.02] transition flex flex-col gap-2 group">
-                {album.coverUrl ? (
-                  <img src={album.coverUrl} className="w-full aspect-square rounded-lg object-cover" alt="" />
-                ) : (
-                  <div className="w-full aspect-square rounded-lg bg-muted flex items-center justify-center">
-                    <Disc className="w-7 h-7 text-muted-foreground" />
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold truncate text-foreground group-hover:text-primary transition-colors">{album.title}</p>
-                  {album.artist && (
-                    <span className="text-xs text-muted-foreground hover:underline truncate block">
-                      {album.artist.name}
-                    </span>
-                  )}
-                </div>
+        <div className="flex items-center gap-3">
+          {isAuthenticated ? (
+            <Link
+              href="/app"
+              className="px-5 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl text-sm hover:opacity-90 transition shadow-md flex items-center gap-2"
+            >
+              <Play className="w-4 h-4 fill-current" /> Open Web Player
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition hidden sm:block"
+              >
+                Sign In
               </Link>
-            ))}
+              <Link
+                href="/app"
+                className="px-5 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl text-sm hover:opacity-90 transition shadow-md flex items-center gap-2"
+              >
+                <Play className="w-4 h-4 fill-current" /> Launch Platform
+              </Link>
+            </>
+          )}
+        </div>
+      </header>
+
+      {/* Main Landing Hero */}
+      <main className="flex-1 space-y-24 py-12 lg:py-20 px-6 lg:px-12 max-w-7xl mx-auto">
+        <section className="text-center space-y-8 relative">
+          {/* Subtle Background Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10 pointer-events-none" />
+
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-extrabold tracking-wider uppercase">
+            <Sparkles className="w-4 h-4" /> Next-Generation Music & Media Creation Platform
+          </div>
+
+          <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-foreground max-w-4xl mx-auto leading-[1.08]">
+            Stream, Convert & Create <span className="bg-gradient-to-r from-primary via-accent to-purple-400 bg-clip-text text-transparent">Without Limits.</span>
+          </h1>
+
+          <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+            The full-stack platform combining high-fidelity audio streaming, instant FFmpeg video-to-audio conversion, Supabase cloud storage, and artist creator tools.
+          </p>
+
+          {/* Action CTAs */}
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <Link
+              href="/app"
+              className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-primary-foreground font-black rounded-2xl text-base shadow-xl shadow-primary/20 hover:scale-105 transition-transform flex items-center gap-3 group"
+            >
+              <Play className="w-5 h-5 fill-current" /> Launch Web Player <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href="/converter"
+              className="px-7 py-4 bg-card text-foreground border border-border/80 font-extrabold rounded-2xl text-base hover:bg-muted/40 transition shadow-md flex items-center gap-2.5"
+            >
+              <RefreshCw className="w-5 h-5 text-primary" /> Universal Media Converter
+            </Link>
+
+            <Link
+              href="/admin"
+              className="px-7 py-4 bg-accent/15 text-accent border border-accent/30 font-extrabold rounded-2xl text-base hover:bg-accent/25 transition flex items-center gap-2.5"
+            >
+              <Upload className="w-5 h-5" /> Admin Studio
+            </Link>
           </div>
         </section>
-      )}
 
-      {/* Empty state for first-time users */}
-      {!isAuthenticated && popularTracks.length === 0 && newReleases.length === 0 && (
-        <div className="text-center py-24 space-y-4">
-          <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto">
-            <Music className="w-8 h-8" />
+        {/* Feature Highlights Showcase Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-8 bg-card border border-border/80 rounded-3xl space-y-4 shadow-lg hover:border-primary/50 transition group">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Headphones className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-extrabold text-foreground">High-Fidelity Audio Player</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Global persistent audio player bar supporting continuous background playback, playlists, liked song libraries, and recently played streaming history.
+            </p>
+            <Link href="/app" className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline pt-2">
+              Explore Streaming Catalog <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
-          <h3 className="text-xl font-bold">Start Exploring Music</h3>
-          <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-            Browse our growing catalog, search for your favorite artists, and build your personal library.
+
+          <div className="p-8 bg-card border border-border/80 rounded-3xl space-y-4 shadow-lg hover:border-primary/50 transition group">
+            <div className="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center group-hover:scale-110 transition-transform">
+              <RefreshCw className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-extrabold text-foreground">Universal FFmpeg Converter</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              On-the-fly media conversion engine for turning MP4, MKV, MOV, and WEBM video files into studio-quality 320kbps MP3s, WAV, and AAC streams.
+            </p>
+            <Link href="/converter" className="inline-flex items-center gap-1.5 text-xs font-bold text-accent hover:underline pt-2">
+              Try Media Converter <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-8 bg-card border border-border/80 rounded-3xl space-y-4 shadow-lg hover:border-primary/50 transition group">
+            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-extrabold text-foreground">Cloud Storage & Admin Studio</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Upload tracks and album covers directly to Supabase Storage buckets with real-time metadata extraction, artist biography editing, and RBAC control.
+            </p>
+            <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-400 hover:underline pt-2">
+              Access Creator Studio <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </section>
+
+        {/* Technical Architecture Strip */}
+        <section className="bg-card border border-border rounded-3xl p-8 sm:p-12 space-y-6">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <h2 className="text-2xl font-black text-foreground">Built on Tier-1 Engineering Architecture</h2>
+            <p className="text-xs text-muted-foreground">Modular Monorepo architecture designed for high scalability and security.</p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+            <div className="p-4 bg-background/50 rounded-2xl border border-border/50 space-y-1">
+              <p className="text-lg font-extrabold text-primary">Next.js 14</p>
+              <p className="text-[11px] text-muted-foreground">App Router & React 18</p>
+            </div>
+
+            <div className="p-4 bg-background/50 rounded-2xl border border-border/50 space-y-1">
+              <p className="text-lg font-extrabold text-accent">NestJS API</p>
+              <p className="text-[11px] text-muted-foreground">Passport JWT & Swagger</p>
+            </div>
+
+            <div className="p-4 bg-background/50 rounded-2xl border border-border/50 space-y-1">
+              <p className="text-lg font-extrabold text-purple-400">Prisma ORM</p>
+              <p className="text-[11px] text-muted-foreground">PostgreSQL & Supabase SSL</p>
+            </div>
+
+            <div className="p-4 bg-background/50 rounded-2xl border border-border/50 space-y-1">
+              <p className="text-lg font-extrabold text-emerald-400">FFmpeg Engine</p>
+              <p className="text-[11px] text-muted-foreground">320kbps Audio Encoder</p>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Banner */}
+        <section className="rounded-3xl bg-gradient-to-r from-primary to-accent p-8 sm:p-12 text-primary-foreground text-center space-y-6 shadow-2xl">
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight">Ready to Start Listening and Creating?</h2>
+          <p className="text-sm sm:text-base opacity-90 max-w-lg mx-auto">
+            Launch the web player to explore the music catalog, or convert video files into audio streams instantly.
           </p>
-          <Link
-            href="/browse"
-            className="inline-block mt-2 px-6 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl text-sm hover:opacity-90 transition"
-          >
-            Explore Music
-          </Link>
+          <div className="flex justify-center gap-4 pt-2">
+            <Link
+              href="/app"
+              className="px-8 py-3.5 bg-background text-foreground font-extrabold rounded-2xl text-sm hover:opacity-95 transition shadow-lg"
+            >
+              Launch Web Player
+            </Link>
+          </div>
+        </section>
+      </main>
+
+      {/* Landing Footer */}
+      <footer className="border-t border-border/60 py-8 px-6 text-center text-xs text-muted-foreground space-y-2">
+        <p>© 2026 MusicPlatform. Built with Next.js 14, NestJS, Prisma, and Supabase Cloud Storage.</p>
+        <div className="flex justify-center gap-6 text-xs font-semibold pt-1">
+          <Link href="/app" className="hover:text-foreground">App Catalog</Link>
+          <Link href="/converter" className="hover:text-foreground">Media Converter</Link>
+          <Link href="/admin" className="hover:text-foreground">Admin Studio</Link>
+          <a href="http://localhost:4000/api/docs" target="_blank" rel="noreferrer" className="hover:text-foreground">Swagger API</a>
         </div>
-      )}
+      </footer>
     </div>
   );
 }

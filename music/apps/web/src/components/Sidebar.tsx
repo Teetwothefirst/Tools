@@ -11,8 +11,10 @@ export function Sidebar() {
   const { isAuthenticated, logout, user } = useAuthStore();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  if (pathname === '/') return null;
+
   const routes = [
-    { label: 'Home', icon: Home, href: '/' },
+    { label: 'Home', icon: Home, href: '/app' },
     { label: 'Browse', icon: Compass, href: '/browse' },
     { label: 'Search', icon: Search, href: '/search' },
     { label: 'Converter', icon: RefreshCw, href: '/converter' },

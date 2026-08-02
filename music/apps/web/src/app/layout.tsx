@@ -2,16 +2,17 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/providers/providers';
-import { Sidebar } from '@/components/Sidebar';
-import { MusicPlayer } from '@/components/MusicPlayer';
+import { ClientLayout } from '@/components/ClientLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Music Platform - Stream, Convert & Create',
-  description: 'Production-grade modular music streaming and media creation web app',
+  title: 'Music Platform | Stream, Convert & Create',
+  description: 'Production-grade modular music streaming, creator studio and media conversion web app',
   icons: {
-    icon: '/icon.svg',
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
     shortcut: '/icon.svg',
     apple: '/icon.svg',
   },
@@ -24,16 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+      </head>
       <body className={inter.className}>
         <Providers>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            {/* pt-14 on mobile to clear fixed top bar; lg:pl-64 for desktop sidebar */}
-            <div className="flex-1 pt-14 lg:pt-0 lg:pl-64 pb-20 min-w-0">
-              {children}
-            </div>
-          </div>
-          <MusicPlayer />
+          <ClientLayout>{children}</ClientLayout>
         </Providers>
       </body>
     </html>
