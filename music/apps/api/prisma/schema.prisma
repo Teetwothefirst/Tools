@@ -68,6 +68,7 @@ model Track {
   audioUrl       String
   duration       Int             // In seconds
   playCount      Int             @default(0)
+  lyrics         String?         // Timestamped LRC lyrics string
   artistId       String
   artist         Artist          @relation(fields: [artistId], references: [id], onDelete: Cascade)
   albumId        String?
