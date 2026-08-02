@@ -8,8 +8,13 @@ import { MusicPlayer } from '@/components/MusicPlayer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Music Streaming Platform',
-  description: 'Production-grade modular music streaming web app',
+  title: 'Music Platform - Stream, Convert & Create',
+  description: 'Production-grade modular music streaming and media creation web app',
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({

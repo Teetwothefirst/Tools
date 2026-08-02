@@ -2,6 +2,8 @@
 
 Production-ready, full-stack modular music streaming web application built with **Next.js 14**, **NestJS**, **Prisma ORM**, **PostgreSQL (Supabase)**, and **FFmpeg**.
 
+> 📌 **Master Product Roadmap:** See [`ROADMAP.md`](./ROADMAP.md) for the single source of truth covering all completed phases (1-5) and upcoming phases (6-10) targeting a Spotify, Apple Music & YouTube Music standard platform.
+
 ---
 
 ## 🌟 Key Features
