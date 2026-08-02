@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -26,7 +26,7 @@ async function main() {
       email: 'admin@music.com',
       name: 'Admin User',
       password: hashedPassword,
-      role: Role.ADMIN,
+      role: 'ADMIN' as any,
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
     },
   });
@@ -36,7 +36,7 @@ async function main() {
       email: 'user@music.com',
       name: 'Alex Rivera',
       password: hashedPassword,
-      role: Role.USER,
+      role: 'USER' as any,
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
     },
   });

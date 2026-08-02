@@ -35,6 +35,7 @@ function AdminContent() {
   const [trackDuration, setTrackDuration] = useState('180');
   const [trackArtistId, setTrackArtistId] = useState('');
   const [trackAlbumId, setTrackAlbumId] = useState('');
+  const [trackLyrics, setTrackLyrics] = useState('');
 
   const [uploadingAudio, setUploadingAudio] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -173,6 +174,7 @@ function AdminContent() {
           duration: parseInt(trackDuration) || 180,
           artistId: trackArtistId,
           albumId: trackAlbumId || undefined,
+          lyrics: trackLyrics || undefined,
         }),
       });
       return res.json();
@@ -184,6 +186,7 @@ function AdminContent() {
       setTrackDuration('180');
       setTrackArtistId('');
       setTrackAlbumId('');
+      setTrackLyrics('');
       queryClient.invalidateQueries();
     },
   });
@@ -469,6 +472,16 @@ function AdminContent() {
                   <option key={album.id} value={album.id}>{album.title}</option>
                 ))}
               </select>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground font-semibold">Track Lyrics (.lrc Format or Plain Text)</label>
+              <textarea
+                rows={3}
+                value={trackLyrics}
+                onChange={(e) => setTrackLyrics(e.target.value)}
+                placeholder="[00:12.00] High above the city lights&#10;[00:18.50] We're chasing dreams..."
+                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary"
+              />
             </div>
             <button
               onClick={() => {

@@ -57,6 +57,7 @@ export interface Track {
   audioUrl: string;
   duration: number;
   playCount?: number;
+  lyrics?: string | null;
   artistId?: string;
   artist?: Artist;
   albumId?: string | null;

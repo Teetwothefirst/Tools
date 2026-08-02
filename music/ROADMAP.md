@@ -19,8 +19,8 @@ To build a production-grade, full-stack music streaming, media creation, and dis
 | **Phase 3** | Supabase Infrastructure & Catalog | Supabase SSL Database, Seeder, Artist & Album Detail Pages | ✅ Completed |
 | **Phase 4** | Cloud Storage & Creator Studio | Supabase Storage Buckets, Admin Studio (`/admin`), Edit Artist Profiles | ✅ Completed |
 | **Phase 5** | Universal Media Conversion Engine | FFmpeg Engine (`MP4 → MP3, WAV, AAC, FLAC, WEBM`), Bitrate Presets | ✅ Completed |
-| **Phase 6** | Synced Lyrics & Immersive Player | Timestamped LRC Parser, Auto-scrolling Synced Lyrics, Fullscreen Modal | 🚀 **Next Up** |
-| **Phase 7** | Recommendation Engine & Genre Hub | "Made For You" Mixes, Genre Hub (`/browse/genres`), Mood Filters | ⏳ Planned |
+| **Phase 6** | Synced Lyrics & Immersive Player | Timestamped LRC Parser, Auto-scrolling Synced Lyrics, Fullscreen Modal | ✅ Completed |
+| **Phase 7** | Recommendation Engine & Genre Hub | "Made For You" Mixes, Genre Hub (`/browse/genres`), Mood Filters | 🚀 **Next Up** |
 | **Phase 8** | Social Platform & Collaboration | Collaborative Playlists, Friend Activity Feed, Shareable Widgets | ⏳ Planned |
 | **Phase 9** | Spotify for Artists Studio | Creator Analytics Dashboard, Listener Demographics, Release Scheduler | ⏳ Planned |
 | **Phase 10**| YouTube Music Video & PWA Offline | Audio/Video Toggle, HLS Video Player, PWA Offline Audio Caching | ⏳ Planned |
