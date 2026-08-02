@@ -14,6 +14,11 @@ export const metadata: Metadata = {
   title: "JobTracker - Track and Organize Your Job Applications",
   description:
     "Simplify your job hunt with visual Kanban boards, AI-powered job summaries and skill extraction, interview reminders, and instant resume exports to PDF.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +32,7 @@ export default function RootLayout({
       className={`${inter.variable} h-full`}
     >
       <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>

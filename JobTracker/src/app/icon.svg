@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Background squircle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+
+  <!-- Inner subtle glow rim -->
+  <rect x="10" y="10" width="492" height="492" rx="120" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="8" />
+
+  <!-- Briefcase Graphic -->
+  <g transform="translate(0, 10)" filter="url(#shadow)">
+    <!-- Handle -->
+    <path d="M 192 168 C 192 144, 208 128, 232 128 L 280 128 C 304 128, 320 144, 320 168 L 320 184 L 192 184 Z" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Body -->
+    <rect x="104" y="184" width="304" height="208" rx="36" fill="#FFFFFF" />
+    
+    <!-- Center divider strap -->
+    <path d="M 104 260 L 408 260" stroke="#E2E8F0" stroke-width="12" />
+    <!-- Lock latch -->
+    <rect x="228" y="242" width="56" height="44" rx="10" fill="#6366F1" />
+    <circle cx="256" cy="264" r="6" fill="#FFFFFF" />
+  </g>
+
+  <!-- Status / Success Checkmark Badge -->
+  <g transform="translate(320, 290)">
+    <circle cx="64" cy="64" r="64" fill="url(#badgeGrad)" stroke="#FFFFFF" stroke-width="16"/>
+    <!-- Checkmark icon -->
+    <path d="M 40 66 L 56 82 L 88 48" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
