@@ -41,19 +41,19 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-center justify-between flex-wrap gap-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex items-center justify-between flex-wrap gap-4 transition-colors">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-emerald-400" /> LGA Field Agent Management & RLS Scoping
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> LGA Field Agent Management & RLS Scoping
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Agents are restricted at row-level security (RLS) to their assigned LGA & beneficiary list.
           </p>
         </div>
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-lg flex items-center gap-2 shadow transition"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 shadow transition"
         >
           <Plus className="w-4 h-4" /> Register New Field Agent
         </button>
@@ -61,53 +61,53 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
 
       {/* Add Agent Form */}
       {showAddForm && (
-        <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4 text-xs shadow-lg">
-          <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">Create New Field Agent Account</h3>
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 text-xs shadow-lg">
+          <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Create New Field Agent Account</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">Full Agent Name</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Full Agent Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Ibrahim Danjuma"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">Phone Number (+234)</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Phone Number (+234)</label>
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="08031234567"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-mono font-medium"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">Assigned LGA</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Assigned LGA</label>
               <input
                 type="text"
                 value={assignedLga}
                 onChange={(e) => setAssignedLga(e.target.value)}
                 placeholder="Kano Municipal"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">State</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">State</label>
               <input
                 type="text"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 placeholder="Kano"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
                 required
               />
             </div>
@@ -117,13 +117,13 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-lg"
+              className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold px-4 py-2 rounded-xl"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2 rounded-lg shadow"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2 rounded-xl shadow"
             >
               Save & Assign Agent Bounds
             </button>
@@ -132,10 +132,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
       )}
 
       {/* Agents Data Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+          <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 uppercase font-bold border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="p-3.5">Agent Name</th>
                 <th className="p-3.5">Contact Phone</th>
@@ -145,19 +145,19 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
                 <th className="p-3.5">Row-Level Security (RLS) Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 bg-slate-900">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
               {agents.map((agent) => (
-                <tr key={agent.id} className="hover:bg-slate-850">
-                  <td className="p-3.5 font-bold text-slate-100">{agent.name}</td>
-                  <td className="p-3.5 font-mono text-emerald-400">{agent.phone_number}</td>
-                  <td className="p-3.5 font-semibold text-slate-200 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-400" /> {agent.assigned_lga}
+                <tr key={agent.id} className="hover:bg-slate-50 dark:hover:bg-slate-850">
+                  <td className="p-3.5 font-bold text-slate-900 dark:text-slate-100">{agent.name}</td>
+                  <td className="p-3.5 font-mono text-emerald-600 dark:text-emerald-400">{agent.phone_number}</td>
+                  <td className="p-3.5 font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> {agent.assigned_lga}
                   </td>
                   <td className="p-3.5">{agent.state} State</td>
-                  <td className="p-3.5 capitalize font-mono text-slate-400">{agent.role}</td>
+                  <td className="p-3.5 capitalize font-mono text-slate-500">{agent.role}</td>
                   <td className="p-3.5">
-                    <span className="bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded text-[11px] font-medium inline-flex items-center gap-1">
-                      <Lock className="w-3 h-3 text-emerald-400" /> RLS Scoped ({agent.assigned_lga} only)
+                    <span className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-2 py-0.5 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> RLS Scoped ({agent.assigned_lga} only)
                     </span>
                   </td>
                 </tr>

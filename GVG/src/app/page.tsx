@@ -5,6 +5,7 @@ import { UserRole, Beneficiary, Agent, CheckIn, Escalation, ImportBatch } from '
 import { MockDataStore } from '../lib/data/mockStore';
 import { OfflineCheckinQueue } from '../lib/offline/checkinQueue';
 import { Navbar } from '../components/layout/Navbar';
+import { AuthPage } from '../components/auth/AuthPage';
 import { BeneficiaryRegistry } from '../components/registry/BeneficiaryRegistry';
 import { BeneficiaryDetailModal } from '../components/registry/BeneficiaryDetailModal';
 import { ImportWizard } from '../components/import/ImportWizard';
@@ -19,24 +20,35 @@ export default function Home() {
   const [store] = useState(() => MockDataStore.getInstance());
   const [offlineQueue] = useState(() => OfflineCheckinQueue.getInstance());
 
+  // Authentication Session State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [loggedInUser, setLoggedInUser] = useState<{ name: string; emailOrPhone: string; lga?: string }>({
+    name: 'Director General (NSIPA)',
+    emailOrPhone: 'superadmin@nsipa.gov.ng',
+  });
+
+  // Theme Mode State
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
+
+  // Role & Navigation
   const [currentRole, setCurrentRole] = useState<UserRole>('super_admin');
   const [activeTab, setActiveTab] = useState<string>('registry');
 
-  // State collections
+  // Data Collections
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
   const [escalations, setEscalations] = useState<Escalation[]>([]);
   const [importBatches, setImportBatches] = useState<ImportBatch[]>([]);
 
-  // PWA Offline Queue State
+  // Network & Queue
   const [isOnline, setIsOnline] = useState<boolean>(true);
   const [queuedItemsCount, setQueuedItemsCount] = useState<number>(0);
 
   // Selected Beneficiary Modal
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
 
-  // Refresh view data from local store
+  // Refresh data from mock database
   const refreshData = () => {
     setBeneficiaries(store.getBeneficiaries());
     setAgents(store.getAgents());
@@ -48,6 +60,17 @@ export default function Home() {
 
   useEffect(() => {
     refreshData();
+
+    // Theme initialization
+    if (typeof window !== 'undefined') {
+      const savedTheme = (localStorage.getItem('gvg_theme_mode') as 'dark' | 'light') || 'dark';
+      setThemeMode(savedTheme);
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
 
     const handleOnline = () => {
       setIsOnline(true);
@@ -72,7 +95,40 @@ export default function Home() {
     };
   }, []);
 
-  // Synchronize queued offline check-ins
+  const handleToggleTheme = () => {
+    const nextTheme = themeMode === 'dark' ? 'light' : 'dark';
+    setThemeMode(nextTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gvg_theme_mode', nextTheme);
+      if (nextTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  };
+
+  const handleLogin = (
+    role: UserRole,
+    userDetails: { name: string; emailOrPhone: string; lga?: string }
+  ) => {
+    setCurrentRole(role);
+    setLoggedInUser(userDetails);
+    setIsAuthenticated(true);
+
+    if (role === 'agent') {
+      setActiveTab('checkin');
+    } else if (role === 'beneficiary') {
+      setActiveTab('whatsapp');
+    } else {
+      setActiveTab('registry');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
+
   const syncOfflineQueue = () => {
     const queue = offlineQueue.getQueue();
     if (queue.length === 0) return;
@@ -85,7 +141,6 @@ export default function Home() {
     refreshData();
   };
 
-  // Adjust active tab when switching user role
   const handleRoleChange = (role: UserRole) => {
     setCurrentRole(role);
     if (role === 'agent') {
@@ -97,7 +152,6 @@ export default function Home() {
     }
   };
 
-  // Handlers
   const handleCommitImport = (newBens: Beneficiary[], batchRecord: ImportBatch) => {
     store.addBeneficiaries(newBens);
     store.addImportBatch(batchRecord);
@@ -166,12 +220,12 @@ export default function Home() {
     }
   };
 
-  // Row-Level Security Scoping for Agent role
+  // Agent RLS Scoping
   const currentAgent = agents[0] || {
     id: 'agent-101',
     name: 'Aminu Bello',
-    assigned_lga: 'Kano Municipal',
-    phone_number: '+2348031234567',
+    assigned_lga: loggedInUser.lga || 'Kano Municipal',
+    phone_number: loggedInUser.emailOrPhone || '+2348031234567',
     state: 'Kano',
   };
 
@@ -182,8 +236,12 @@ export default function Home() {
 
   const openEscalationsCount = escalations.filter((e) => e.status === 'open').length;
 
+  if (!isAuthenticated) {
+    return <AuthPage onLogin={handleLogin} themeMode={themeMode} onToggleTheme={handleToggleTheme} />;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
       {/* Top Navbar */}
       <Navbar
         currentRole={currentRole}
@@ -194,6 +252,10 @@ export default function Home() {
         offlineQueueCount={queuedItemsCount}
         onSyncOfflineQueue={syncOfflineQueue}
         openEscalationsCount={openEscalationsCount}
+        themeMode={themeMode}
+        onToggleTheme={handleToggleTheme}
+        loggedInUser={loggedInUser}
+        onLogout={handleLogout}
       />
 
       {/* Main Container Body */}
@@ -275,7 +337,7 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-6 text-xs text-slate-500">
+      <footer className="border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <strong>NSIPA GVG Progress Tracker</strong> • Independent Civic-Tech Solution for Grant for Vulnerable Groups (Nigeria)
@@ -283,7 +345,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <button
               onClick={handleResetDemoData}
-              className="text-slate-400 hover:text-amber-400 flex items-center gap-1 transition"
+              className="text-slate-400 hover:text-amber-500 flex items-center gap-1 transition"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Reset Demo Datasets
             </button>
