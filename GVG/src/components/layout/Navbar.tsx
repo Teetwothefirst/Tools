@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { UserRole } from '../../types/gvg';
 import { ShieldCheck, Wifi, WifiOff, RefreshCw, UserCheck, AlertTriangle, FileSpreadsheet, Activity, Sun, Moon, LogOut, User, Globe, Menu, X } from 'lucide-react';
+import { GVGLogo } from '../common/GVGLogo';
 
 interface NavbarProps {
   currentRole: UserRole;
@@ -40,32 +41,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white sticky top-0 z-40 shadow-sm transition-colors duration-300">
       {/* Top Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
         {/* Logo & Tagline */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onGoToLanding}
-            className="w-10 h-10 rounded-xl bg-[#008751] hover:bg-[#006838] flex items-center justify-center font-black text-xl text-white shadow-md border-2 border-amber-400 transition shrink-0"
-            title="Return to GVG Overview Landing Page"
-          >
-            GVG
-          </button>
-          <div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-slate-100">
-                NSIPA GVG Tracker
-              </span>
-              <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/50 px-2 py-0.5 rounded-full font-bold">
-                Nigeria Civic-Tech
-              </span>
-            </div>
-            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
-              Support: +234 802 126 6483 | info@nsipa.gov.ng
-            </p>
-          </div>
-        </div>
+        <button onClick={onGoToLanding} className="text-left hover:opacity-90 transition">
+          <GVGLogo size="md" variant="full" />
+        </button>
 
-        {/* Desktop Controls (Hidden on small screens) */}
+        {/* Desktop Controls */}
         <div className="hidden md:flex items-center gap-2.5 flex-wrap">
           {/* Public Landing Link */}
           <button

@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { UserRole } from '../../types/gvg';
-import { ShieldCheck, Lock, Mail, Phone, ArrowRight, Sun, Moon, Bot } from 'lucide-react';
+import { ShieldCheck, Phone, Lock, ArrowRight, Sun, Moon, Sparkles, CheckCircle2, User, KeyRound } from 'lucide-react';
+import { GVGLogo } from '../common/GVGLogo';
 
 interface AuthPageProps {
   onLogin: (role: UserRole, userDetails: { name: string; emailOrPhone: string; lga?: string }) => void;
@@ -11,250 +12,231 @@ interface AuthPageProps {
 }
 
 export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, themeMode, onToggleTheme }) => {
-  const [selectedTab, setSelectedTab] = useState<'agency' | 'agent' | 'beneficiary'>('agency');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
+  const [authTab, setAuthTab] = useState<'staff' | 'agent' | 'whatsapp'>('staff');
+  const [emailOrPhone, setEmailOrPhone] = useState('');
+  const [passwordOrOtp, setPasswordOrOtp] = useState('');
 
-  const handleQuickLogin = (role: UserRole, name: string, contact: string, lga?: string) => {
-    onLogin(role, { name, emailOrPhone: contact, lga });
-  };
-
-  const handleAgencySubmit = (e: React.FormEvent) => {
+  const handleStaffSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin('admin', { name: email.split('@')[0] || 'Agency Admin', emailOrPhone: email });
+    if (!emailOrPhone) return;
+    const isSuperAdmin = emailOrPhone.toLowerCase().includes('super') || emailOrPhone.toLowerCase().includes('director');
+    const role: UserRole = isSuperAdmin ? 'super_admin' : 'admin';
+
+    onLogin(role, {
+      name: isSuperAdmin ? 'Director General (NSIPA)' : 'NSIPA Admin User',
+      emailOrPhone,
+    });
   };
 
   const handleAgentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin('agent', { name: 'Field Agent', emailOrPhone: phone, lga: 'Kano Municipal' });
+    if (!emailOrPhone) return;
+
+    onLogin('agent', {
+      name: 'Aminu Bello (Agent)',
+      emailOrPhone,
+      lga: 'Kano Municipal',
+    });
   };
 
-  const handleBeneficiarySubmit = (e: React.FormEvent) => {
+  const handleWhatsAppSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin('beneficiary', { name: 'GVG Beneficiary', emailOrPhone: phone });
+    onLogin('beneficiary', {
+      name: 'Fatima Abubakar',
+      emailOrPhone: emailOrPhone || '+2348031234567',
+    });
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between p-4 sm:p-6 transition-colors duration-300">
-      {/* Top Header */}
-      <header className="max-w-7xl w-full mx-auto flex items-center justify-between py-2">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center font-black text-xl text-white shadow-lg border border-emerald-400">
-            GVG
-          </div>
-          <div>
-            <span className="font-extrabold text-lg text-slate-900 dark:text-slate-100">NSIPA GVG Portal</span>
-            <p className="text-xs text-slate-500 dark:text-slate-400">National Social Investment Programme Agency, Nigeria</p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between font-sans transition-colors duration-300">
+      {/* Header */}
+      <header className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+        <GVGLogo size="md" variant="full" />
 
-        {/* Theme Mode Toggle Button */}
         <button
           onClick={onToggleTheme}
-          className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition shadow-sm flex items-center gap-2 text-xs font-bold"
+          className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition"
+          title="Toggle Theme"
         >
-          {themeMode === 'dark' ? (
-            <>
-              <Sun className="w-4 h-4 text-amber-400" /> Light Theme
-            </>
-          ) : (
-            <>
-              <Moon className="w-4 h-4 text-indigo-600" /> Dark Theme
-            </>
-          )}
+          {themeMode === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
         </button>
       </header>
 
-      {/* Main Login Card */}
-      <div className="max-w-md w-full mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 my-auto transition-colors">
-        {/* Title Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 shadow-inner mb-2">
-            <ShieldCheck className="w-8 h-8" />
-          </div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">GVG Progress Tracker</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Post-Disbursement Beneficiary Monitoring & Impact Evaluation System
-          </p>
-        </div>
-
-        {/* Tab Buttons */}
-        <div className="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold">
-          <button
-            onClick={() => setSelectedTab('agency')}
-            className={`py-2 rounded-lg transition ${
-              selectedTab === 'agency' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            🏛️ Staff
-          </button>
-          <button
-            onClick={() => setSelectedTab('agent')}
-            className={`py-2 rounded-lg transition ${
-              selectedTab === 'agent' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            🚶 Field Agent
-          </button>
-          <button
-            onClick={() => setSelectedTab('beneficiary')}
-            className={`py-2 rounded-lg transition ${
-              selectedTab === 'beneficiary' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            💬 Beneficiary
-          </button>
-        </div>
-
-        {/* Agency Login Form */}
-        {selectedTab === 'agency' && (
-          <form onSubmit={handleAgencySubmit} className="space-y-4 text-xs">
-            <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Official NSIPA Email Address</label>
-              <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3 top-3.5 text-slate-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin.gvg@nsipa.gov.ng"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
-                  required
-                />
-              </div>
+      {/* Main Login Card Container */}
+      <main className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+          {/* Logo Badge Banner */}
+          <div className="text-center space-y-2">
+            <div className="flex justify-center">
+              <GVGLogo size="lg" variant="icon" />
             </div>
 
-            <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Password</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 absolute left-3 top-3.5 text-slate-400" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
-                  required
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition"
-            >
-              Sign In to Agency Dashboard <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-        )}
-
-        {/* Agent Form */}
-        {selectedTab === 'agent' && (
-          <form onSubmit={handleAgentSubmit} className="space-y-4 text-xs">
-            <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Registered Field Phone Number</label>
-              <div className="relative">
-                <Phone className="w-4 h-4 absolute left-3 top-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+234 803 123 4567"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-mono font-medium"
-                  required
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition"
-            >
-              Open Mobile Field Agent App <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-        )}
-
-        {/* Beneficiary Form */}
-        {selectedTab === 'beneficiary' && (
-          <form onSubmit={handleBeneficiarySubmit} className="space-y-4 text-xs">
-            <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Beneficiary Phone Number</label>
-              <div className="relative">
-                <Phone className="w-4 h-4 absolute left-3 top-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="0803 999 1122"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-mono font-medium"
-                  required
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition"
-            >
-              Access WhatsApp Self Check-in <Bot className="w-4 h-4" />
-            </button>
-          </form>
-        )}
-
-        {/* One-Click Presets */}
-        <div className="border-t border-slate-200 dark:border-slate-800 pt-4 space-y-2">
-          <div className="text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider text-center">
-            ⚡ Quick Demo One-Click Access
+            <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+              NSIPA GVG Portal Sign In
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Grant for Vulnerable Groups • Post-Disbursement Platform
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          {/* Authentication Mode Tabs */}
+          <div className="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-bold">
             <button
-              onClick={() => handleQuickLogin('super_admin', 'Director General (NSIPA)', 'superadmin@nsipa.gov.ng')}
-              className="bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 p-2.5 rounded-xl text-left transition group"
+              onClick={() => setAuthTab('staff')}
+              className={`py-2 rounded-xl transition ${
+                authTab === 'staff'
+                  ? 'bg-white dark:bg-slate-800 text-[#008751] dark:text-emerald-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
             >
-              <div className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+              🛡️ Admin
+            </button>
+            <button
+              onClick={() => setAuthTab('agent')}
+              className={`py-2 rounded-xl transition ${
+                authTab === 'agent'
+                  ? 'bg-white dark:bg-slate-800 text-[#008751] dark:text-emerald-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              🚶 Agent
+            </button>
+            <button
+              onClick={() => setAuthTab('whatsapp')}
+              className={`py-2 rounded-xl transition ${
+                authTab === 'whatsapp'
+                  ? 'bg-white dark:bg-slate-800 text-[#008751] dark:text-emerald-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              💬 WhatsApp
+            </button>
+          </div>
+
+          {/* TAB 1: STAFF / ADMIN LOGIN */}
+          {authTab === 'staff' && (
+            <form onSubmit={handleStaffSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Official Email Address</label>
+                <div className="relative">
+                  <User className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <input
+                    type="email"
+                    value={emailOrPhone}
+                    onChange={(e) => setEmailOrPhone(e.target.value)}
+                    placeholder="admin@nsipa.gov.ng"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Password</label>
+                <div className="relative">
+                  <KeyRound className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <input
+                    type="password"
+                    value={passwordOrOtp}
+                    onChange={(e) => setPasswordOrOtp(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-[#008751] hover:bg-[#006838] text-white font-bold text-xs py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
+              >
+                <ShieldCheck className="w-4 h-4" /> Authenticate Admin Credentials
+              </button>
+            </form>
+          )}
+
+          {/* TAB 2: FIELD AGENT PHONE LOGIN */}
+          {authTab === 'agent' && (
+            <form onSubmit={handleAgentSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Registered Agent Phone Number</label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <input
+                    type="text"
+                    value={emailOrPhone}
+                    onChange={(e) => setEmailOrPhone(e.target.value)}
+                    placeholder="08031234567 (+234)"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-mono font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-[#008751] hover:bg-[#006838] text-white font-bold text-xs py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
+              >
+                <Phone className="w-4 h-4" /> Enter Mobile Agent Form Gateway
+              </button>
+            </form>
+          )}
+
+          {/* TAB 3: WHATSAPP BOT SELF CHECK-IN */}
+          {authTab === 'whatsapp' && (
+            <form onSubmit={handleWhatsAppSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Beneficiary WhatsApp Number</label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                  <input
+                    type="text"
+                    value={emailOrPhone}
+                    onChange={(e) => setEmailOrPhone(e.target.value)}
+                    placeholder="+234 803 123 4567"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-mono font-medium"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-[#008751] hover:bg-[#006838] text-white font-bold text-xs py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
+              >
+                Open WhatsApp Bot Simulator &rarr;
+              </button>
+            </form>
+          )}
+
+          {/* Quick Demo Access Preset */}
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-center space-y-2">
+            <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+              ⚡ Or Instant 1-Click Demo Login
+            </span>
+            <div className="flex justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => onLogin('super_admin', { name: 'Director General (NSIPA)', emailOrPhone: 'superadmin@nsipa.gov.ng' })}
+                className="bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold px-3 py-1.5 rounded-xl text-[11px] transition"
+              >
                 👑 Super Admin
-              </div>
-              <div className="text-[10px] text-slate-500">Full System & Roles</div>
-            </button>
+              </button>
 
-            <button
-              onClick={() => handleQuickLogin('admin', 'Kano State Admin', 'kano.admin@nsipa.gov.ng')}
-              className="bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 p-2.5 rounded-xl text-left transition group"
-            >
-              <div className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
-                🛡️ Agency Admin
-              </div>
-              <div className="text-[10px] text-slate-500">Imports & Triage</div>
-            </button>
-
-            <button
-              onClick={() => handleQuickLogin('agent', 'Aminu Bello (Agent)', '+2348031234567', 'Kano Municipal')}
-              className="bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 p-2.5 rounded-xl text-left transition group"
-            >
-              <div className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
-                🚶 LGA Agent
-              </div>
-              <div className="text-[10px] text-slate-500">Mobile Form (&lt; 2 min)</div>
-            </button>
-
-            <button
-              onClick={() => handleQuickLogin('beneficiary', 'Fatima Abubakar', '+2348039991122')}
-              className="bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 p-2.5 rounded-xl text-left transition group"
-            >
-              <div className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
-                💬 Beneficiary
-              </div>
-              <div className="text-[10px] text-slate-500">WhatsApp 1-2-3 Bot</div>
-            </button>
+              <button
+                type="button"
+                onClick={() => onLogin('agent', { name: 'Aminu Bello (Agent)', emailOrPhone: '+2348031234567', lga: 'Kano Municipal' })}
+                className="bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold px-3 py-1.5 rounded-xl text-[11px] transition"
+              >
+                🚶 Field Agent
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
 
-      <footer className="text-center text-xs text-slate-400 dark:text-slate-500 py-2">
-        Protected under NSIPA Civic-Tech Data Protection Guidelines • Federal Republic of Nigeria
+      {/* Footer */}
+      <footer className="py-4 text-center text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800">
+        NSIPA Grant for Vulnerable Groups (GVG) • Official Federal Portal
       </footer>
     </div>
   );

@@ -45,6 +45,16 @@ export function generateImpactPDFReport(
             padding-bottom: 15px;
             margin-bottom: 30px;
           }
+          .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+          }
+          .logo-img {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+          }
           .logo-text {
             font-size: 24px;
             font-weight: 800;
@@ -168,9 +178,12 @@ export function generateImpactPDFReport(
       </head>
       <body>
         <div class="header">
-          <div>
-            <div class="logo-text">NSIPA — GVG PROGRAMME</div>
-            <div class="sub-logo">National Social Investment Programme Agency, Nigeria</div>
+          <div class="logo-container">
+            <img src="/gvg-logo.svg" class="logo-img" alt="GVG Official Logo" />
+            <div>
+              <div class="logo-text">NSIPA — GVG PROGRAMME</div>
+              <div class="sub-logo">National Social Investment Programme Agency, Nigeria</div>
+            </div>
           </div>
           <div class="report-meta">
             <div><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</div>

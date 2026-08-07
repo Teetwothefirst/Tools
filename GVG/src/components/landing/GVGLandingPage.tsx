@@ -24,6 +24,7 @@ import {
   X,
   Globe,
 } from 'lucide-react';
+import { GVGLogo } from '../common/GVGLogo';
 
 interface GVGLandingPageProps {
   onEnterWorkspace: () => void;
@@ -35,7 +36,7 @@ interface GVGLandingPageProps {
 const FAQS = [
   {
     q: 'What is the Grant for Vulnerable Groups (GVG)?',
-    a: 'GVG is a flagship social safety-net empowerment programme implemented by the National Social Investment Programme Agency (NSIPA), Nigeria. It provides ₦40,000 direct cash credit alerts alongside industrial sewing machines or agro-grinding machines to low-income vulnerable Nigerians across all 774 Local Government Areas.',
+    a: 'GVG is a flagship social safety-net empowerment programme implemented by the National Social Investment Programme Agency (NSIPA), Nigeria. It provides direct cash grants alongside industrial sewing machines or agro-grinding machines to low-income vulnerable Nigerians across all 774 Local Government Areas.',
   },
   {
     q: 'How are GVG beneficiaries selected?',
@@ -89,28 +90,11 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
         </div>
       </div>
 
-      {/* 2. Main Navigation Bar (NSIPA Style Header - Fully Responsive) */}
+      {/* 2. Main Navigation Bar */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 shadow-md transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
           {/* Logo & Emblem */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#008751] flex items-center justify-center font-black text-xl sm:text-2xl text-white shadow-md border-2 border-amber-400 shrink-0">
-              GVG
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-black text-base sm:text-xl tracking-tight text-[#008751] dark:text-emerald-400">
-                  NSIPA GVG
-                </span>
-                {/* <span className="text-[9px] sm:text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-full font-extrabold uppercase">
-                  Flagship Drive
-                </span> */}
-              </div>
-              <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-semibold line-clamp-1">
-                Grant for Vulnerable Groups • Post-Disbursement Tracking
-              </p>
-            </div>
-          </div>
+          <GVGLogo size="md" variant="full" />
 
           {/* Desktop Navigation Links & Action */}
           <div className="hidden lg:flex items-center gap-6">
@@ -169,21 +153,21 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
               >
-                About GVG Programme
+                About
               </a>
               <a
                 href="#package"
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
               >
-                ₦40,000 + Machine Package
+                Programme Package
               </a>
               <a
                 href="#lgas"
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
               >
-                774 LGAs Coverage
+                774 LGAs Scope
               </a>
               <a
                 href="#faqs"
@@ -219,7 +203,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
         )}
       </header>
 
-      {/* 3. Hero Showcase Section (Fully Responsive Banner) */}
+      {/* 3. Hero Showcase Section */}
       <section id="about" className="relative overflow-hidden bg-gradient-to-br from-[#005e38] via-[#008751] to-[#004d2e] text-white py-12 sm:py-16 lg:py-24 shadow-inner">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
@@ -229,7 +213,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
             <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-sm">
                 <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
-                Federal Republic of Nigeria • NSIPA
+                Federal Republic of Nigeria • Social Safety-Nets
               </div>
 
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-none">
@@ -240,7 +224,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
               </h1>
 
               <p className="text-emerald-100 text-xs sm:text-base leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Providing <strong> direct financial support</strong> and <strong>starter trade equipment</strong> (industrial sewing machines, agro-grinding mills etc) to low-income households, persons with disabilities, senior citizens, and widows across all <strong>774 Local Government Areas</strong> in Nigeria.
+                Providing <strong>direct cash grants</strong> and <strong>starter trade equipment</strong> (industrial sewing machines & agro-grinding mills) to low-income households, persons with disabilities, senior citizens, and widows across all <strong>774 Local Government Areas</strong> in Nigeria.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
@@ -262,9 +246,8 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
               {/* Stats Highlights */}
               <div className="pt-6 grid grid-cols-3 gap-2 sm:gap-4 border-t border-emerald-600/60">
                 <div className="p-2 sm:p-0">
-                  {/* <div className="text-xl sm:text-3xl font-black text-amber-300">₦40,000</div> */}
                   <div className="text-xl sm:text-3xl font-black text-amber-300">80+</div>
-                  <div className="text-[10px] sm:text-xs text-emerald-100 font-medium">Directly impacted</div>
+                  <div className="text-[10px] sm:text-xs text-emerald-100 font-medium">Direct impacted</div>
                 </div>
                 <div className="p-2 sm:p-0">
                   <div className="text-xl sm:text-3xl font-black text-white">774 LGAs</div>
@@ -277,14 +260,12 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
               </div>
             </div>
 
-            {/* Right Card Panel: Quick Role Login & Objective */}
+            {/* Right Card Panel */}
             <div className="lg:col-span-5">
               <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-5">
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-[#008751] text-white flex items-center justify-center font-bold shrink-0">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
+                    <GVGLogo size="md" variant="icon" />
                     <div>
                       <h3 className="font-extrabold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">
                         NSIPA Field Tracking Gateway
@@ -342,7 +323,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 4. Programme Pillars Section (Responsive Grid) */}
+      {/* 4. Programme Pillars Section */}
       <section id="package" className="py-12 sm:py-16 lg:py-20 bg-white dark:bg-slate-900 transition-colors border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center max-w-3xl mx-auto space-y-3">
@@ -363,8 +344,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
                 ₦
               </div>
               <h3 className="font-extrabold text-slate-900 dark:text-slate-100 text-base sm:text-lg">
-                {/* ₦40,000  */}
-                Direct Cash Credit
+                Direct Cash Grant
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 Direct financial grant credited to beneficiary bank accounts to cover working capital, raw materials, and initial operational setup costs.
@@ -410,7 +390,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 5. 774 Local Government Areas Scope & Map Showcase */}
+      {/* 5. 774 Local Government Areas Scope */}
       <section id="lgas" className="py-12 sm:py-16 lg:py-20 bg-slate-100/60 dark:bg-slate-950 transition-colors border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
@@ -541,9 +521,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
             {/* Agency Info */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white text-[#008751] flex items-center justify-center font-black text-xl border-2 border-amber-400 shrink-0">
-                  GVG
-                </div>
+                <GVGLogo size="md" variant="icon" className="bg-white rounded-xl p-1 shadow" />
                 <div>
                   <strong className="text-white text-sm block font-extrabold">
                     NSIPA — GVG Programme
@@ -562,10 +540,10 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
             <div className="space-y-2">
               <h4 className="font-extrabold text-amber-300 uppercase tracking-wider text-xs">Navigation Links</h4>
               <ul className="space-y-1.5 text-emerald-100">
-                <li><a href="#about" className="hover:text-white transition">About GVG Programme</a></li>
-                <li><a href="#package" className="hover:text-white transition">₦40,000 + Machine Package</a></li>
-                <li><a href="#lgas" className="hover:text-white transition">774 LGA Scope</a></li>
-                <li><a href="#faqs" className="hover:text-white transition">Frequently Asked Questions</a></li>
+                <li><a href="#about" className="hover:text-white transition">About</a></li>
+                <li><a href="#package" className="hover:text-white transition">Programme Package</a></li>
+                <li><a href="#lgas" className="hover:text-white transition">774 LGAs Scope</a></li>
+                <li><a href="#faqs" className="hover:text-white transition">FAQs</a></li>
               </ul>
             </div>
 

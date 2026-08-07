@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 550" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="gvgBlueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#0369A1" />
+    </linearGradient>
+    <linearGradient id="gvgGreenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22C55E" />
+      <stop offset="100%" stop-color="#15803D" />
+    </linearGradient>
+    <linearGradient id="gvgPrimaryGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#008751" />
+      <stop offset="100%" stop-color="#005E38" />
+    </linearGradient>
+  </defs>
+
+  <!-- Group: Emblem Top Mark -->
+  <g id="Emblem">
+    <!-- People Arc -->
+    <!-- Far Left Green Person -->
+    <g transform="translate(170, 95)">
+      <circle cx="0" cy="-12" r="10" fill="#22C55E"/>
+      <path d="M -12,12 C -12,0 12,0 12,12 Z" fill="#22C55E"/>
+    </g>
+
+    <!-- Center Left Blue Person with Cross -->
+    <g transform="translate(210, 75)">
+      <circle cx="0" cy="-12" r="11" fill="#0284C7"/>
+      <!-- Cross Badge -->
+      <path d="M -4,-14 H 4 V -10 H -4 Z M -1,-17 H 1 V -7 H -1 Z" fill="#FFFFFF"/>
+      <path d="M -15,14 C -15,0 15,0 15,14 Z" fill="#0284C7"/>
+    </g>
+
+    <!-- Top Center Green Person -->
+    <g transform="translate(250, 65)">
+      <circle cx="0" cy="-13" r="12" fill="#008751"/>
+      <path d="M -16,15 C -16,-2 16,-2 16,15 Z" fill="#008751"/>
+    </g>
+
+    <!-- Top Right Yellow Person -->
+    <g transform="translate(290, 75)">
+      <circle cx="0" cy="-12" r="11" fill="#EAB308"/>
+      <path d="M -15,14 C -15,0 15,0 15,14 Z" fill="#EAB308"/>
+    </g>
+
+    <!-- Center Right Blue Person -->
+    <g transform="translate(325, 95)">
+      <circle cx="0" cy="-11" r="10" fill="#0284C7"/>
+      <path d="M -13,13 C -13,0 13,0 13,13 Z" fill="#0284C7"/>
+    </g>
+
+    <!-- Far Right Orange Person -->
+    <g transform="translate(355, 115)">
+      <circle cx="0" cy="-10" r="9" fill="#F97316"/>
+      <path d="M -11,11 C -11,0 11,0 11,11 Z" fill="#F97316"/>
+    </g>
+
+    <!-- Center Green Heart -->
+    <path d="M 250 118 C 240 102 215 105 215 125 C 215 142 240 155 250 162 C 260 155 285 142 285 125 C 285 105 260 102 250 118 Z" fill="#008751"/>
+
+    <!-- Left Blue Caring Hand Wing -->
+    <path d="M 155 120 Q 200 130 250 180 Q 200 230 155 160 Q 130 140 155 120 Z" fill="url(#gvgBlueGradient)"/>
+    <path d="M 152 145 C 190 165 245 190 248 192 C 205 215 170 205 152 145 Z" fill="#0284C7" opacity="0.9"/>
+    <path d="M 152 120 C 180 135 248 200 248 200 Q 180 235 152 120 Z" fill="#0369A1"/>
+
+    <!-- Right Blue Caring Hand Wing -->
+    <path d="M 345 120 Q 300 130 250 180 Q 300 230 345 160 Q 370 140 345 120 Z" fill="url(#gvgBlueGradient)"/>
+    <path d="M 348 145 C 310 165 255 190 252 192 C 295 215 330 205 348 145 Z" fill="#0284C7" opacity="0.9"/>
+    <path d="M 348 120 C 320 135 252 200 252 200 Q 320 235 348 120 Z" fill="#0369A1"/>
+
+    <!-- Main Outer Embracing Blue & Green Hands Bowl -->
+    <path d="M 150 135 C 150 180 180 230 250 255 C 320 230 350 180 350 135 C 365 200 320 270 250 270 C 180 270 135 200 150 135 Z" fill="#0284C7"/>
+    <path d="M 160 145 C 160 185 185 225 250 245 C 315 225 340 185 340 145 C 350 195 315 255 250 255 C 185 255 150 195 160 145 Z" fill="url(#gvgGreenGradient)"/>
+  </g>
+
+  <!-- Curved Divider Line -->
+  <path d="M 130 295 Q 250 280 370 295" stroke="#005E38" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Main GVG Typography -->
+  <text x="250" y="360" text-anchor="middle" font-family="'Inter', 'Arial Black', sans-serif" font-weight="900" font-size="78" fill="#005E38" letter-spacing="4">GVG</text>
+
+  <!-- Subtitle Text -->
+  <text x="250" y="405" text-anchor="middle" font-family="'Inter', Arial, sans-serif" font-weight="800" font-size="28" fill="#006838" letter-spacing="0.5">Grant for</text>
+  <text x="250" y="438" text-anchor="middle" font-family="'Inter', Arial, sans-serif" font-weight="800" font-size="28" fill="#006838" letter-spacing="0.5">Vulnerable Groups</text>
+
+  <!-- Tagline Text -->
+  <text x="250" y="470" text-anchor="middle" font-family="'Georgia', serif" font-style="italic" font-size="18" fill="#475569">Empowering Lives, Restoring Hope.</text>
+
+  <!-- NSIPA Official Agency Line -->
+  <g transform="translate(195, 490)">
+    <!-- Flag Bars -->
+    <rect x="0" y="0" width="10" height="18" fill="#008751" rx="1"/>
+    <rect x="15" y="0" width="10" height="18" fill="#008751" rx="1"/>
+    <text x="34" y="15" font-family="'Inter', Arial, sans-serif" font-weight="900" font-size="18" fill="#334155" letter-spacing="1">NSIPA</text>
+  </g>
+  <text x="250" y="525" text-anchor="middle" font-family="'Inter', Arial, sans-serif" font-weight="600" font-size="13" fill="#64748b" letter-spacing="0.2">National Social Investment Programme Agency</text>
+</svg>
