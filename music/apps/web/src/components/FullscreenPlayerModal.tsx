@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { usePlayerStore } from '@/store/usePlayerStore';
 import { useAudio } from '@/providers/audio-provider';
 import { parseLrc, getActiveLyricIndex, LyricLine } from '@/lib/lrcParser';
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music, X, Maximize2, ListMusic, AlignLeft, Sparkles, Shuffle, Repeat } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music, X, Maximize2, ListMusic, AlignLeft, Sparkles, Shuffle, Repeat, Video } from 'lucide-react';
 
 interface FullscreenPlayerModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface FullscreenPlayerModalProps {
 }
 
 export function FullscreenPlayerModal({ isOpen, onClose }: FullscreenPlayerModalProps) {
-  const { currentTrack, isPlaying, togglePlay, nextTrack, prevTrack, volume, setVolume, queue, queueIndex, playTrack } = usePlayerStore();
+  const { currentTrack, isPlaying, togglePlay, nextTrack, prevTrack, volume, setVolume, queue, queueIndex, playTrack, isVideoMode, toggleVideoMode } = usePlayerStore();
   const { duration, currentTime, seek } = useAudio();
 
   const [activeTab, setActiveTab] = useState<'lyrics' | 'queue'>('lyrics');
@@ -23,6 +23,18 @@ export function FullscreenPlayerModal({ isOpen, onClose }: FullscreenPlayerModal
   const lyricLineRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
   if (!isOpen || !currentTrack) return null;
+
+  const getVideoEmbedUrl = (url: string) => {
+    if (!url) return null;
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const match = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/);
+      const id = match ? match[1] : url;
+      return `https://www.youtube.com/embed/${id}?autoplay=1&mute=0`;
+    }
+    return url;
+  };
+
+  const videoEmbedUrl = currentTrack.videoUrl ? getVideoEmbedUrl(currentTrack.videoUrl) : null;
 
   // Sample default timestamped lyrics if track lyrics field is empty for demonstration
   const defaultSampleLrc = `
@@ -62,61 +74,77 @@ export function FullscreenPlayerModal({ isOpen, onClose }: FullscreenPlayerModal
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-3xl flex flex-col justify-between text-foreground p-6 sm:p-10 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-      {/* Ambient Blurred Artwork Backdrop */}
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-2xl flex flex-col justify-between p-6 sm:p-10 animate-in fade-in duration-300 overflow-hidden text-foreground">
+      {/* Background Ambient Blur Backdrop */}
       {currentTrack.album?.coverUrl && (
         <div
-          className="absolute inset-0 -z-10 bg-cover bg-center opacity-20 blur-3xl scale-125 transform transition-all duration-700 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center blur-3xl opacity-20 pointer-events-none scale-125"
           style={{ backgroundImage: `url(${currentTrack.album.coverUrl})` }}
         />
       )}
 
       {/* Header Bar */}
-      <div className="flex items-center justify-between w-full max-w-6xl mx-auto border-b border-border/40 pb-4 z-10">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary">
-            <Music className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Now Playing</p>
-            <h3 className="text-base font-bold text-foreground truncate max-w-xs sm:max-w-md">{currentTrack.title}</h3>
-          </div>
-        </div>
-
-        {/* Tab Switcher */}
-        <div className="flex items-center gap-2 bg-muted/30 p-1 rounded-xl border border-border/50">
+      <div className="flex items-center justify-between z-10">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab('lyrics')}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
-              activeTab === 'lyrics' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+              activeTab === 'lyrics' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-card border border-border text-muted-foreground hover:text-foreground'
             }`}
           >
             <AlignLeft className="w-3.5 h-3.5" /> Synced Lyrics
           </button>
           <button
             onClick={() => setActiveTab('queue')}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
-              activeTab === 'queue' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+              activeTab === 'queue' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-card border border-border text-muted-foreground hover:text-foreground'
             }`}
           >
             <ListMusic className="w-3.5 h-3.5" /> Queue ({queue.length})
           </button>
         </div>
 
-        <button
-          onClick={onClose}
-          className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition"
-          aria-label="Close modal"
-        >
-          <X className="w-6 h-6" />
-        </button>
+        <div className="flex items-center gap-3">
+          {currentTrack.videoUrl && (
+            <button
+              onClick={toggleVideoMode}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border ${
+                isVideoMode ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-card border-border text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {isVideoMode ? <Video className="w-4 h-4" /> : <Music className="w-4 h-4" />}
+              {isVideoMode ? 'Music Video Mode' : 'Audio Mode'}
+            </button>
+          )}
+
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition"
+            aria-label="Close modal"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 my-6 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center overflow-hidden z-10">
-        {/* Left Column: Large Album Art */}
+        {/* Left Column: Media Player (Video Player OR Large Album Art) */}
         <div className="flex flex-col items-center justify-center space-y-6">
-          {currentTrack.album?.coverUrl ? (
+          {isVideoMode && videoEmbedUrl ? (
+            <div className="w-full max-w-md h-64 sm:h-80 rounded-3xl overflow-hidden shadow-2xl border-4 border-primary/30 bg-black">
+              {videoEmbedUrl.includes('youtube.com') ? (
+                <iframe
+                  src={videoEmbedUrl}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <video src={videoEmbedUrl} controls autoPlay className="w-full h-full object-cover" />
+              )}
+            </div>
+          ) : currentTrack.album?.coverUrl ? (
             <img
               src={currentTrack.album.coverUrl}
               alt={currentTrack.title}

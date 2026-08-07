@@ -45,6 +45,9 @@ export interface Album {
   title: string;
   coverUrl?: string | null;
   releaseDate?: string | Date | null;
+  scheduledReleaseDate?: string | Date | null;
+  isPublished?: boolean;
+  genre?: string | null;
   artistId: string;
   artist?: Artist;
   createdAt?: string | Date;
@@ -55,9 +58,14 @@ export interface Track {
   id: string;
   title: string;
   audioUrl: string;
+  videoUrl?: string | null;
   duration: number;
   playCount?: number;
   lyrics?: string | null;
+  genre?: string | null;
+  mood?: string | null;
+  scheduledReleaseDate?: string | Date | null;
+  isPublished?: boolean;
   artistId?: string;
   artist?: Artist;
   albumId?: string | null;
@@ -71,6 +79,7 @@ export interface Playlist {
   title: string;
   description?: string | null;
   coverUrl?: string | null;
+  isPublic?: boolean;
   userId: string;
   user?: User;
   tracks?: Track[];

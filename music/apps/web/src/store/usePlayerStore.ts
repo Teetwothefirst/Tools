@@ -7,12 +7,14 @@ interface PlayerState {
   queue: Track[];
   queueIndex: number;
   isPlaying: boolean;
+  isVideoMode: boolean;
   volume: number;
   playHistory: Track[];
   
   // Actions
   playTrack: (track: Track, queue?: Track[]) => void;
   togglePlay: () => void;
+  toggleVideoMode: () => void;
   setPlaying: (playing: boolean) => void;
   nextTrack: () => void;
   prevTrack: () => void;
@@ -30,6 +32,7 @@ export const usePlayerStore = create<PlayerState>()(
       queue: [],
       queueIndex: -1,
       isPlaying: false,
+      isVideoMode: false,
       volume: 0.5,
       playHistory: [],
 
@@ -47,6 +50,8 @@ export const usePlayerStore = create<PlayerState>()(
       },
 
       togglePlay: () => set((state) => ({ isPlaying: !state.isPlaying && !!state.currentTrack })),
+
+      toggleVideoMode: () => set((state) => ({ isVideoMode: !state.isVideoMode })),
       
       setPlaying: (isPlaying) => set((state) => ({ isPlaying: isPlaying && !!state.currentTrack })),
 

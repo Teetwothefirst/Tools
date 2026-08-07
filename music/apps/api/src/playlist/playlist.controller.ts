@@ -25,6 +25,23 @@ export class PlaylistController {
     });
   }
 
+  @Get('public')
+  @ApiOperation({ summary: 'Get all public community playlists' })
+  async getPublicPlaylists() {
+    return this.prisma.playlist.findMany({
+      where: { isPublic: true },
+      include: {
+        user: { select: { id: true, name: true, avatarUrl: true } },
+        tracks: {
+          take: 4,
+          include: { track: { include: { album: true } } },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all playlists belonging to current user' })
   async getPlaylists(@CurrentUser('userId') userId: string) {
@@ -63,11 +80,23 @@ export class PlaylistController {
   @ApiOperation({ summary: 'Edit playlist details' })
   async updatePlaylist(
     @Param('id') id: string,
-    @Body() body: { title?: string; description?: string; coverUrl?: string },
+    @Body() body: { title?: string; description?: string; coverUrl?: string; isPublic?: boolean },
   ) {
     return this.prisma.playlist.update({
       where: { id },
       data: body,
+    });
+  }
+
+  @Put(':id/visibility')
+  @ApiOperation({ summary: 'Toggle playlist public/private visibility' })
+  async toggleVisibility(
+    @Param('id') id: string,
+    @Body() body: { isPublic: boolean },
+  ) {
+    return this.prisma.playlist.update({
+      where: { id },
+      data: { isPublic: body.isPublic },
     });
   }
 

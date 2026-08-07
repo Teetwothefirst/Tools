@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePlayerStore } from '@/store/usePlayerStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Play, Pause, Trash2, ArrowUp, ArrowDown, ListMusic, Music } from 'lucide-react';
+import { Play, Pause, Trash2, ArrowUp, ArrowDown, ListMusic, Music, Share2, Globe, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { ShareModal } from '@/components/ShareModal';
 
 export default function PlaylistDetailsPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function PlaylistDetailsPage({ params }: { params: { id: string }
   const [editTitle, setEditTitle] = useState('');
   const [editDesc, setEditDesc] = useState('');
   const [showEdit, setShowEdit] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const { data: playlist, isLoading } = useQuery({
     queryKey: ['playlist', params.id],
@@ -24,6 +26,23 @@ export default function PlaylistDetailsPage({ params }: { params: { id: string }
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.json();
+    },
+  });
+
+  const toggleVisibilityMutation = useMutation({
+    mutationFn: async (isPublic: boolean) => {
+      const res = await fetch(`http://localhost:4000/api/playlists/${params.id}/visibility`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isPublic }),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['playlist', params.id] });
     },
   });
 
@@ -123,20 +142,47 @@ export default function PlaylistDetailsPage({ params }: { params: { id: string }
           <h1 className="text-4xl md:text-5xl font-black tracking-tight truncate text-foreground">{playlist.title}</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">{playlist.description || 'No description'}</p>
           
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+            <button
+              onClick={() => toggleVisibilityMutation.mutate(!playlist.isPublic)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 ${
+                playlist.isPublic
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                  : 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+              }`}
+            >
+              {playlist.isPublic ? <Globe className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+              {playlist.isPublic ? 'Public Playlist' : 'Private Playlist'}
+            </button>
+
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition shadow-md"
+            >
+              <Share2 className="w-3.5 h-3.5" /> Share & Embed
+            </button>
+
             <button
               onClick={() => {
                 setEditTitle(playlist.title);
                 setEditDesc(playlist.description || '');
                 setShowEdit(true);
               }}
-              className="px-4 py-1.5 bg-muted text-muted-foreground hover:bg-muted/80 rounded-lg text-xs font-semibold transition"
+              className="px-4 py-2 bg-card border border-border text-muted-foreground hover:text-foreground rounded-xl text-xs font-semibold transition"
             >
               Edit Metadata
             </button>
           </div>
         </div>
       </div>
+
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        title={playlist.title}
+        shareUrl={`/playlists/${params.id}`}
+        type="playlist"
+      />
 
       {showEdit && (
         <div className="bg-card border border-border rounded-xl p-6 max-w-lg space-y-4">

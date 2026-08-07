@@ -33,10 +33,13 @@ function AdminContent() {
   // Create Track Form State
   const [trackTitle, setTrackTitle] = useState('');
   const [trackAudio, setTrackAudio] = useState(initialAudioUrl);
+  const [trackVideo, setTrackVideo] = useState('');
   const [trackDuration, setTrackDuration] = useState('180');
   const [trackArtistId, setTrackArtistId] = useState('');
   const [trackAlbumId, setTrackAlbumId] = useState('');
   const [trackLyrics, setTrackLyrics] = useState('');
+  const [trackGenre, setTrackGenre] = useState('Synthwave');
+  const [trackMood, setTrackMood] = useState('Chill');
 
   const [uploadingAudio, setUploadingAudio] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -172,7 +175,10 @@ function AdminContent() {
         body: JSON.stringify({
           title: trackTitle,
           audioUrl: trackAudio,
+          videoUrl: trackVideo || undefined,
           duration: parseInt(trackDuration) || 180,
+          genre: trackGenre,
+          mood: trackMood,
           artistId: trackArtistId,
           albumId: trackAlbumId || undefined,
           lyrics: trackLyrics || undefined,

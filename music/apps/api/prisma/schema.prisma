@@ -48,36 +48,44 @@ model Artist {
 }
 
 model Album {
-  id          String          @id @default(uuid())
-  title       String
-  coverUrl    String?
-  releaseDate DateTime?
-  artistId    String
-  artist      Artist          @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  tracks      Track[]
-  favorites   FavoriteAlbum[]
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id                   String          @id @default(uuid())
+  title                String
+  coverUrl             String?
+  releaseDate          DateTime?
+  scheduledReleaseDate DateTime?
+  isPublished          Boolean         @default(true)
+  genre                String?
+  artistId             String
+  artist               Artist          @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  tracks               Track[]
+  favorites            FavoriteAlbum[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 
   @@map("albums")
 }
 
 model Track {
-  id             String          @id @default(uuid())
-  title          String
-  audioUrl       String
-  duration       Int             // In seconds
-  playCount      Int             @default(0)
-  lyrics         String?         // Timestamped LRC lyrics string
-  artistId       String
-  artist         Artist          @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  albumId        String?
-  album          Album?          @relation(fields: [albumId], references: [id], onDelete: SetNull)
-  likes          Like[]
-  playlistTracks PlaylistTrack[]
-  activities     UserActivity[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id                   String          @id @default(uuid())
+  title                String
+  audioUrl             String
+  videoUrl             String?         // Optional video stream URL or YouTube embed ID
+  duration             Int             // In seconds
+  playCount            Int             @default(0)
+  lyrics               String?         // Timestamped LRC lyrics string
+  genre                String?         // Music Genre (e.g. Synthwave, Lofi, Pop, EDM)
+  mood                 String?         // Mood Tag (e.g. Chill, Focus, Workout, Party)
+  scheduledReleaseDate DateTime?
+  isPublished          Boolean         @default(true)
+  artistId             String
+  artist               Artist          @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  albumId              String?
+  album                Album?          @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  likes                Like[]
+  playlistTracks       PlaylistTrack[]
+  activities           UserActivity[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 
   @@map("tracks")
 }
@@ -98,6 +106,7 @@ model Playlist {
   title       String
   description String?
   coverUrl    String?
+  isPublic    Boolean         @default(true)
   userId      String
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   tracks      PlaylistTrack[]

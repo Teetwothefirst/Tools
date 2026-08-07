@@ -1,0 +1,16 @@
+{
+  "short_name": "MusicPlatform",
+  "name": "MusicPlatform - Streaming & Offline Audio",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/app",
+  "background_color": "#09090b",
+  "theme_color": "#8b5cf6",
+  "display": "standalone",
+  "orientation": "portrait"
+}

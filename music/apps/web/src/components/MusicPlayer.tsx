@@ -4,12 +4,29 @@ import React, { useState } from 'react';
 import { usePlayerStore } from '@/store/usePlayerStore';
 import { useAudio } from '@/providers/audio-provider';
 import { FullscreenPlayerModal } from '@/components/FullscreenPlayerModal';
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music, Maximize2, AlignLeft } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music, Maximize2, AlignLeft, Video, Download, Check, ArrowDownCircle } from 'lucide-react';
+import { saveTrackOffline, isTrackCachedOffline } from '@/lib/offlineStorage';
 
 export function MusicPlayer() {
-  const { currentTrack, isPlaying, togglePlay, nextTrack, prevTrack, volume, setVolume } = usePlayerStore();
+  const { currentTrack, isPlaying, togglePlay, nextTrack, prevTrack, volume, setVolume, isVideoMode, toggleVideoMode } = usePlayerStore();
   const { duration, currentTime, seek } = useAudio();
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+  const [downloadingOffline, setDownloadingOffline] = useState(false);
+
+  React.useEffect(() => {
+    if (currentTrack) {
+      isTrackCachedOffline(currentTrack.audioUrl).then(setIsOffline);
+    }
+  }, [currentTrack]);
+
+  const handleDownloadOffline = async () => {
+    if (!currentTrack || isOffline) return;
+    setDownloadingOffline(true);
+    const success = await saveTrackOffline(currentTrack);
+    setDownloadingOffline(false);
+    if (success) setIsOffline(true);
+  };
 
   if (!currentTrack) return null;
 
@@ -105,15 +122,46 @@ export function MusicPlayer() {
           </div>
         </div>
 
-        {/* Right: Volume & Synced Lyrics Trigger */}
-        <div className="hidden sm:flex items-center justify-end gap-3 w-1/4">
+        {/* Right: Video Mode, Offline Download, Volume & Synced Lyrics Trigger */}
+        <div className="hidden sm:flex items-center justify-end gap-2.5 w-1/3">
+          {/* Audio / Video Switcher */}
+          {currentTrack.videoUrl && (
+            <button
+              onClick={toggleVideoMode}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border ${
+                isVideoMode
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-card border-border text-muted-foreground hover:text-foreground'
+              }`}
+              title="Toggle Audio / Music Video mode"
+            >
+              {isVideoMode ? <Video className="w-3.5 h-3.5" /> : <Music className="w-3.5 h-3.5" />}
+              {isVideoMode ? 'Video Mode' : 'Audio Mode'}
+            </button>
+          )}
+
+          {/* Offline Download Action */}
+          <button
+            onClick={handleDownloadOffline}
+            disabled={downloadingOffline}
+            className={`p-2 rounded-xl text-xs font-semibold transition flex items-center gap-1 ${
+              isOffline
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            }`}
+            title={isOffline ? 'Saved Offline' : 'Download for Offline Listening'}
+          >
+            {downloadingOffline ? <ArrowDownCircle className="w-4 h-4 animate-bounce text-primary" /> : isOffline ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+            <span className="hidden md:inline">{isOffline ? 'Saved' : 'Offline'}</span>
+          </button>
+
           <button
             onClick={() => setIsFullscreenOpen(true)}
             className="p-2 text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-xl transition flex items-center gap-1"
             title="Open Synced Lyrics & Fullscreen Player"
           >
             <AlignLeft className="w-4 h-4" />
-            <span className="text-xs font-semibold">Lyrics</span>
+            <span className="text-xs font-semibold hidden md:inline">Lyrics</span>
           </button>
           <div className="flex items-center gap-2">
             <button
@@ -130,7 +178,7 @@ export function MusicPlayer() {
               step="0.01"
               value={volume}
               onChange={(e) => setVolume(parseFloat(e.target.value))}
-              className="w-20 h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              className="w-16 md:w-20 h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
               aria-label="Volume"
             />
           </div>

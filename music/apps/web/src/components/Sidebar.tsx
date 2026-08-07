@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Music, Home, Compass, Search, Heart, Settings, LogIn, Upload, ListMusic, Menu, X, RefreshCw } from 'lucide-react';
+import { Music, Home, Compass, Search, Heart, Settings, LogIn, Upload, ListMusic, Menu, X, RefreshCw, BarChart3, Sparkles } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useState } from 'react';
 
@@ -16,6 +16,7 @@ export function Sidebar() {
   const routes = [
     { label: 'Home', icon: Home, href: '/app' },
     { label: 'Browse', icon: Compass, href: '/browse' },
+    { label: 'Genre Hub', icon: Sparkles, href: '/browse/genres' },
     { label: 'Search', icon: Search, href: '/search' },
     { label: 'Converter', icon: RefreshCw, href: '/converter' },
     { label: 'Playlists', icon: ListMusic, href: '/playlists', authRequired: true },
@@ -63,19 +64,33 @@ export function Sidebar() {
           );
         })}
 
-        {isAuthenticated && isAdmin && (
-          <Link
-            href="/admin"
-            onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
-              pathname === '/admin'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Upload className="w-5 h-5 flex-shrink-0" />
-            Admin Panel
-          </Link>
+        {isAdmin && (
+          <div className="pt-2 space-y-1">
+            <Link
+              href="/admin"
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                pathname === '/admin'
+                  ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+            >
+              <Upload className="w-5 h-5 flex-shrink-0" />
+              Admin Panel
+            </Link>
+            <Link
+              href="/creator/analytics"
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                pathname === '/creator/analytics'
+                  ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+            >
+              <BarChart3 className="w-5 h-5 flex-shrink-0" />
+              Artist Analytics
+            </Link>
+          </div>
         )}
       </nav>
 
