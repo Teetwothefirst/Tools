@@ -14,6 +14,7 @@
     --text-secondary: #475569;
     --text-muted: #64748b;
     --accent-emerald: #008751;
+    --accent-gold: #eab308;
   }
 
   .dark {
@@ -27,6 +28,7 @@
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
     --accent-emerald: #10b981;
+    --accent-gold: #facc15;
   }
 }
 
@@ -55,15 +57,4 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-emerald);
-}
-
-/* Shimmer & Glow Effects */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(12px);
-}
-
-.light .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
 }

@@ -81,26 +81,26 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Filter & Search Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 transition-colors">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 transition-colors">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-4">
           {/* Search Input */}
           <div className="relative w-full lg:w-96">
-            <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-3.5 text-slate-400" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search Name, Phone, or Serial No..."
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-medium"
             />
           </div>
 
           {/* Filter Dropdowns & View Mode */}
-          <div className="flex items-center gap-3 flex-wrap w-full lg:w-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex items-center gap-2 sm:gap-3 w-full lg:w-auto">
             <select
               value={selectedLga}
               onChange={(e) => setSelectedLga(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none font-semibold"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs rounded-xl px-2.5 py-2 focus:outline-none font-semibold truncate"
             >
               <option value="all">All LGAs ({uniqueLgas.length})</option>
               {uniqueLgas.map((lga) => (
@@ -113,19 +113,19 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
             <select
               value={selectedProfileStatus}
               onChange={(e) => setSelectedProfileStatus(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none font-semibold"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs rounded-xl px-2.5 py-2 focus:outline-none font-semibold truncate"
             >
               <option value="all">All Profile States</option>
               <option value="complete">Complete Profile</option>
-              <option value="incomplete">Incomplete Profile (Partial)</option>
+              <option value="incomplete">Incomplete Profile</option>
             </select>
 
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none font-semibold"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs rounded-xl px-2.5 py-2 focus:outline-none font-semibold truncate"
             >
-              <option value="all">All Business Statuses</option>
+              <option value="all">All Statuses</option>
               <option value="active">Active Business</option>
               <option value="inactive">Inactive / Failed</option>
               <option value="unreachable">Unreachable</option>
@@ -134,47 +134,47 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none font-semibold"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs rounded-xl px-2.5 py-2 focus:outline-none font-semibold truncate"
             >
-              <option value="all">All Asset Types</option>
+              <option value="all">All Assets</option>
               <option value="sewing">Sewing Machine</option>
               <option value="grinding">Grinding Machine</option>
               <option value="unassigned">Unassigned</option>
             </select>
 
             {/* View Mode Toggle Switch */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
+            <div className="col-span-2 sm:col-span-4 lg:col-span-1 flex items-center justify-end gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-lg transition ${
-                  viewMode === 'table' ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-400'
+                className={`flex-1 lg:flex-initial p-1.5 rounded-lg transition flex items-center justify-center gap-1 text-xs font-bold ${
+                  viewMode === 'table' ? 'bg-white dark:bg-slate-800 text-[#008751] dark:text-emerald-400 shadow-sm' : 'text-slate-400'
                 }`}
                 title="Table View"
               >
-                <List className="w-4 h-4" />
+                <List className="w-4 h-4" /> <span className="lg:hidden">Table</span>
               </button>
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-lg transition ${
-                  viewMode === 'grid' ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-400'
+                className={`flex-1 lg:flex-initial p-1.5 rounded-lg transition flex items-center justify-center gap-1 text-xs font-bold ${
+                  viewMode === 'grid' ? 'bg-white dark:bg-slate-800 text-[#008751] dark:text-emerald-400 shadow-sm' : 'text-slate-400'
                 }`}
                 title="Grid Cards View"
               >
-                <LayoutGrid className="w-4 h-4" />
+                <LayoutGrid className="w-4 h-4" /> <span className="lg:hidden">Cards</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Counter Summary & Bulk Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-3 gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-3 gap-3">
           <div>
             Showing <strong className="text-slate-900 dark:text-slate-100">{filteredBeneficiaries.length}</strong> of{' '}
             <strong className="text-slate-900 dark:text-slate-100">{beneficiaries.length}</strong> Beneficiaries
           </div>
 
           {selectedIds.length > 0 ? (
-            <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 px-3 py-1.5 rounded-xl">
+            <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 px-3 py-1.5 rounded-xl flex-wrap w-full sm:w-auto">
               <span className="font-bold text-emerald-800 dark:text-emerald-300">{selectedIds.length} Selected</span>
               <select
                 value={bulkAgentId}
@@ -191,7 +191,7 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
               <button
                 onClick={handleBulkAssign}
                 disabled={!bulkAgentId}
-                className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold px-2.5 py-1 rounded-lg text-xs transition"
+                className="bg-[#008751] hover:bg-[#006838] disabled:opacity-40 text-white font-bold px-2.5 py-1 rounded-lg text-xs transition"
               >
                 Apply
               </button>
@@ -199,21 +199,21 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
                 onClick={handleBulkExport}
                 className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs flex items-center gap-1 transition"
               >
-                <Download className="w-3 h-3" /> Export Selected
+                <Download className="w-3 h-3" /> Export
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1.5">
+            <div className="flex items-center gap-3 sm:gap-4 flex-wrap text-[11px]">
+              <span className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Active:{' '}
                 {beneficiaries.filter((b) => b.status === 'active').length}
               </span>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-red-500"></span> Inactive:{' '}
                 {beneficiaries.filter((b) => b.status === 'inactive').length}
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span> Incomplete Profiles:{' '}
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span> Incomplete:{' '}
                 {beneficiaries.filter((b) => b.profile_status === 'incomplete').length}
               </span>
             </div>
@@ -224,8 +224,8 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
       {/* TABLE VIEW MODE */}
       {viewMode === 'table' && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+          <div className="overflow-x-auto scrollbar-thin">
+            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300 min-w-[700px]">
               <thead className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 uppercase font-bold border-b border-slate-200 dark:border-slate-800">
                 <tr>
                   <th className="p-3.5">
@@ -344,7 +344,7 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
                     <td className="p-3.5 text-right">
                       <button
                         onClick={() => onSelectBeneficiary(b)}
-                        className="bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition shadow-sm"
+                        className="bg-slate-100 dark:bg-slate-800 hover:bg-[#008751] hover:text-white text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition shadow-sm"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Profile
                       </button>
@@ -363,7 +363,7 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
           {filteredBeneficiaries.map((b) => (
             <div
               key={b.id}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:border-emerald-500/50 transition"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:border-[#008751]/50 transition"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -403,7 +403,7 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
 
                 <button
                   onClick={() => onSelectBeneficiary(b)}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow transition flex items-center gap-1"
+                  className="bg-[#008751] hover:bg-[#006838] text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow transition flex items-center gap-1"
                 >
                   <Eye className="w-3 h-3" /> View
                 </button>
