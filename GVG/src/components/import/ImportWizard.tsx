@@ -148,7 +148,7 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <FileUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <FileUp className="w-5 h-5 text-[#008751] dark:text-emerald-400" />
               Flexible Multi-Format Import Pipeline
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -182,14 +182,14 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
               }}
               rows={8}
               placeholder="Paste table columns here (Name, Phone, LGA, State, Machine Type)..."
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-mono"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-mono"
             />
 
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <button
                 onClick={() => processInputText(rawText)}
                 disabled={!rawText.trim()}
-                className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition"
+                className="bg-[#008751] hover:bg-[#006838] disabled:opacity-50 text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition"
               >
                 Parse & Match Headers <ArrowRight className="w-4 h-4" />
               </button>
@@ -210,9 +210,9 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
             <div className="space-y-2.5">
               <button
                 onClick={() => handleLoadSampleDataset('messy')}
-                className="w-full text-left bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition group"
+                className="w-full text-left bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition group"
               >
-                <div className="font-bold text-xs text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                <div className="font-bold text-xs text-slate-800 dark:text-slate-200 group-hover:text-[#008751] dark:group-hover:text-emerald-400">
                   📄 Messy Kano Field Sheet (CSV)
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -222,9 +222,9 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
 
               <button
                 onClick={() => handleLoadSampleDataset('incomplete')}
-                className="w-full text-left bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition group"
+                className="w-full text-left bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition group"
               >
-                <div className="font-bold text-xs text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                <div className="font-bold text-xs text-slate-800 dark:text-slate-200 group-hover:text-[#008751] dark:group-hover:text-emerald-400">
                   📋 Partial Contact List (DOCX/Pasted)
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -234,9 +234,9 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
 
               <button
                 onClick={() => handleLoadSampleDataset('clean')}
-                className="w-full text-left bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition group"
+                className="w-full text-left bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition group"
               >
-                <div className="font-bold text-xs text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                <div className="font-bold text-xs text-slate-800 dark:text-slate-200 group-hover:text-[#008751] dark:group-hover:text-emerald-400">
                   📊 National Social Register Bulk (XLSX)
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -292,7 +292,7 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
             <button
               onClick={handleProceedToPreview}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition"
+              className="bg-[#008751] hover:bg-[#006838] text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition"
             >
               Generate Deduplication Preview ({rawRows.length} Rows) &rarr;
             </button>
@@ -338,7 +338,7 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
                 {dedupeItems.map((item, idx) => {
                   const b = item.mappedBeneficiary;
                   return (
-                    <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-850">
+                    <tr key={idx} className="hover:bg-slate-100 dark:hover:bg-slate-800/80 transition">
                       <td className="p-3 font-mono text-slate-400">{idx + 1}</td>
                       <td className="p-3 font-bold text-slate-900 dark:text-slate-100">{b.full_name}</td>
                       <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400">{b.phone_number || 'Missing Phone'}</td>
@@ -388,7 +388,7 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
 
             <button
               onClick={handleCommit}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2"
+              className="bg-[#008751] hover:bg-[#006838] text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2"
             >
               <Save className="w-4 h-4" /> Commit Batch to Registry Database &rarr;
             </button>
@@ -399,7 +399,7 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
       {/* STEP 4: COMPLETE */}
       {step === 'complete' && batchSummary && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center space-y-6 shadow-sm">
-          <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950 border border-emerald-500 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-lg">
+          <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950 border border-emerald-500 text-[#008751] dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-lg">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
@@ -444,7 +444,7 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
       {/* IMPORT HISTORY AUDIT TRAIL LOG TABLE */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm">
         <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
-          <Table className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> System Import Audit Trail Log (import_batches)
+          <Table className="w-4 h-4 text-[#008751] dark:text-emerald-400" /> System Import Audit Trail Log (import_batches)
         </h3>
 
         <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
@@ -463,7 +463,7 @@ Chiamaka Eze,08139998877,Port Harcourt,Rivers,Sewing Machine,Senior Citizen,2026
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
               {importHistory.map((batch) => (
-                <tr key={batch.id} className="hover:bg-slate-50 dark:hover:bg-slate-850">
+                <tr key={batch.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/80 transition">
                   <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400 font-bold">{batch.id}</td>
                   <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">{batch.uploaded_by}</td>
                   <td className="p-3">{batch.filename}</td>

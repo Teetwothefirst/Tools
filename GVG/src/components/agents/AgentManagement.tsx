@@ -44,7 +44,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex items-center justify-between flex-wrap gap-4 transition-colors">
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> LGA Field Agent Management & RLS Scoping
+            <UserCheck className="w-5 h-5 text-[#008751] dark:text-emerald-400" /> LGA Field Agent Management & RLS Scoping
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Agents are restricted at row-level security (RLS) to their assigned LGA & beneficiary list.
@@ -53,7 +53,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 shadow transition"
+          className="bg-[#008751] hover:bg-[#006838] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 shadow transition"
         >
           <Plus className="w-4 h-4" /> Register New Field Agent
         </button>
@@ -71,7 +71,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Ibrahim Danjuma"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-medium"
                 required
               />
             </div>
@@ -83,7 +83,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="08031234567"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-mono font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-mono font-medium"
                 required
               />
             </div>
@@ -95,7 +95,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
                 value={assignedLga}
                 onChange={(e) => setAssignedLga(e.target.value)}
                 placeholder="Kano Municipal"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-medium"
                 required
               />
             </div>
@@ -107,7 +107,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 placeholder="Kano"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-500 font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#008751] font-medium"
                 required
               />
             </div>
@@ -123,7 +123,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
             </button>
             <button
               type="submit"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2 rounded-xl shadow"
+              className="bg-[#008751] hover:bg-[#006838] text-white font-bold px-5 py-2 rounded-xl shadow"
             >
               Save & Assign Agent Bounds
             </button>
@@ -147,17 +147,17 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({ agents, onAddA
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
               {agents.map((agent) => (
-                <tr key={agent.id} className="hover:bg-slate-50 dark:hover:bg-slate-850">
+                <tr key={agent.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/80 transition">
                   <td className="p-3.5 font-bold text-slate-900 dark:text-slate-100">{agent.name}</td>
                   <td className="p-3.5 font-mono text-emerald-600 dark:text-emerald-400">{agent.phone_number}</td>
                   <td className="p-3.5 font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> {agent.assigned_lga}
+                    <MapPin className="w-3.5 h-3.5 text-[#008751] dark:text-emerald-400" /> {agent.assigned_lga}
                   </td>
                   <td className="p-3.5">{agent.state} State</td>
                   <td className="p-3.5 capitalize font-mono text-slate-500">{agent.role}</td>
                   <td className="p-3.5">
                     <span className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-2 py-0.5 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1">
-                      <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> RLS Scoped ({agent.assigned_lga} only)
+                      <Lock className="w-3 h-3 text-[#008751] dark:text-emerald-400" /> RLS Scoped ({agent.assigned_lga} only)
                     </span>
                   </td>
                 </tr>

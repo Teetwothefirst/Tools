@@ -248,7 +248,7 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
                 {filteredBeneficiaries.map((b) => (
-                  <tr key={b.id} className="hover:bg-slate-50 dark:hover:bg-slate-850 transition">
+                  <tr key={b.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/80 transition">
                     <td className="p-3.5">
                       <input
                         type="checkbox"
@@ -344,7 +344,7 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
                     <td className="p-3.5 text-right">
                       <button
                         onClick={() => onSelectBeneficiary(b)}
-                        className="bg-slate-100 dark:bg-slate-800 hover:bg-[#008751] hover:text-white text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition shadow-sm"
+                        className="bg-slate-100 dark:bg-slate-800 hover:bg-[#008751] hover:text-white dark:hover:bg-[#008751] dark:hover:text-white text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition shadow-sm"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Profile
                       </button>
@@ -363,7 +363,7 @@ export const BeneficiaryRegistry: React.FC<BeneficiaryRegistryProps> = ({
           {filteredBeneficiaries.map((b) => (
             <div
               key={b.id}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:border-[#008751]/50 transition"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:border-[#008751]/50 dark:hover:border-[#008751]/80 transition"
             >
               <div className="flex items-start justify-between">
                 <div>
