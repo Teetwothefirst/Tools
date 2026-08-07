@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { UserRole } from '../../types/gvg';
-import { ShieldCheck, Wifi, WifiOff, RefreshCw, UserCheck, AlertTriangle, FileSpreadsheet, Activity, Sun, Moon, LogOut, User } from 'lucide-react';
+import { ShieldCheck, Wifi, WifiOff, RefreshCw, UserCheck, AlertTriangle, FileSpreadsheet, Activity, Sun, Moon, LogOut, User, Globe, Phone } from 'lucide-react';
 
 interface NavbarProps {
   currentRole: UserRole;
@@ -17,6 +17,7 @@ interface NavbarProps {
   onToggleTheme: () => void;
   loggedInUser?: { name: string; emailOrPhone: string };
   onLogout: () => void;
+  onGoToLanding: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -32,6 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleTheme,
   loggedInUser,
   onLogout,
+  onGoToLanding,
 }) => {
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white sticky top-0 z-40 shadow-sm transition-colors duration-300">
@@ -39,9 +41,13 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
         {/* Logo & Tagline */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400">
+          <button
+            onClick={onGoToLanding}
+            className="w-10 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400 transition"
+            title="Return to GVG Overview Landing Page"
+          >
             GVG
-          </div>
+          </button>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-slate-100">
@@ -52,13 +58,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Grant for Vulnerable Groups • Post-Disbursement Impact & Monitoring
+              Grant for Vulnerable Groups • Support: +234 802 126 6483 | info@nsipa.gov.ng
             </p>
           </div>
         </div>
 
         {/* Status Indicators, Theme Toggle & User Account Pill */}
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Public Landing Link */}
+          <button
+            onClick={onGoToLanding}
+            className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold transition"
+          >
+            <Globe className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Public GVG Page
+          </button>
+
           {/* Offline / Online Sync Badge */}
           <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
             {isOnline ? (

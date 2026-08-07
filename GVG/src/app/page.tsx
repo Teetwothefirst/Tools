@@ -5,6 +5,7 @@ import { UserRole, Beneficiary, Agent, CheckIn, Escalation, ImportBatch } from '
 import { MockDataStore } from '../lib/data/mockStore';
 import { OfflineCheckinQueue } from '../lib/offline/checkinQueue';
 import { Navbar } from '../components/layout/Navbar';
+import { GVGLandingPage } from '../components/landing/GVGLandingPage';
 import { AuthPage } from '../components/auth/AuthPage';
 import { BeneficiaryRegistry } from '../components/registry/BeneficiaryRegistry';
 import { BeneficiaryDetailModal } from '../components/registry/BeneficiaryDetailModal';
@@ -20,8 +21,11 @@ export default function Home() {
   const [store] = useState(() => MockDataStore.getInstance());
   const [offlineQueue] = useState(() => OfflineCheckinQueue.getInstance());
 
-  // Authentication Session State
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  // View Navigation State: 'landing' | 'auth' | 'workspace'
+  const [viewMode, setViewMode] = useState<'landing' | 'auth' | 'workspace'>('landing');
+
+  // Auth Session State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loggedInUser, setLoggedInUser] = useState<{ name: string; emailOrPhone: string; lga?: string }>({
     name: 'Director General (NSIPA)',
     emailOrPhone: 'superadmin@nsipa.gov.ng',
@@ -30,7 +34,7 @@ export default function Home() {
   // Theme Mode State
   const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
 
-  // Role & Navigation
+  // Role & Navigation Tabs
   const [currentRole, setCurrentRole] = useState<UserRole>('super_admin');
   const [activeTab, setActiveTab] = useState<string>('registry');
 
@@ -48,7 +52,6 @@ export default function Home() {
   // Selected Beneficiary Modal
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
 
-  // Refresh data from mock database
   const refreshData = () => {
     setBeneficiaries(store.getBeneficiaries());
     setAgents(store.getAgents());
@@ -61,7 +64,6 @@ export default function Home() {
   useEffect(() => {
     refreshData();
 
-    // Theme initialization
     if (typeof window !== 'undefined') {
       const savedTheme = (localStorage.getItem('gvg_theme_mode') as 'dark' | 'light') || 'dark';
       setThemeMode(savedTheme);
@@ -115,6 +117,7 @@ export default function Home() {
     setCurrentRole(role);
     setLoggedInUser(userDetails);
     setIsAuthenticated(true);
+    setViewMode('workspace');
 
     if (role === 'agent') {
       setActiveTab('checkin');
@@ -125,8 +128,29 @@ export default function Home() {
     }
   };
 
+  const handleQuickRoleLogin = (role: UserRole) => {
+    const name =
+      role === 'super_admin'
+        ? 'Director General (NSIPA)'
+        : role === 'admin'
+        ? 'Kano State Admin'
+        : role === 'agent'
+        ? 'Aminu Bello (Agent)'
+        : 'Fatima Abubakar';
+
+    const contact =
+      role === 'super_admin'
+        ? 'superadmin@nsipa.gov.ng'
+        : role === 'admin'
+        ? 'admin.kano@nsipa.gov.ng'
+        : '+2348031234567';
+
+    handleLogin(role, { name, emailOrPhone: contact, lga: 'Kano Municipal' });
+  };
+
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setViewMode('auth');
   };
 
   const syncOfflineQueue = () => {
@@ -220,7 +244,6 @@ export default function Home() {
     }
   };
 
-  // Agent RLS Scoping
   const currentAgent = agents[0] || {
     id: 'agent-101',
     name: 'Aminu Bello',
@@ -236,10 +259,30 @@ export default function Home() {
 
   const openEscalationsCount = escalations.filter((e) => e.status === 'open').length;
 
-  if (!isAuthenticated) {
-    return <AuthPage onLogin={handleLogin} themeMode={themeMode} onToggleTheme={handleToggleTheme} />;
+  // View 1: Public Landing Page
+  if (viewMode === 'landing') {
+    return (
+      <GVGLandingPage
+        onEnterWorkspace={() => setViewMode('auth')}
+        onQuickRoleLogin={handleQuickRoleLogin}
+        themeMode={themeMode}
+        onToggleTheme={handleToggleTheme}
+      />
+    );
   }
 
+  // View 2: Authentication Portal
+  if (viewMode === 'auth' || !isAuthenticated) {
+    return (
+      <AuthPage
+        onLogin={handleLogin}
+        themeMode={themeMode}
+        onToggleTheme={handleToggleTheme}
+      />
+    );
+  }
+
+  // View 3: Operational Field & Admin Tracking Workspace
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
       {/* Top Navbar */}
@@ -256,6 +299,7 @@ export default function Home() {
         onToggleTheme={handleToggleTheme}
         loggedInUser={loggedInUser}
         onLogout={handleLogout}
+        onGoToLanding={() => setViewMode('landing')}
       />
 
       {/* Main Container Body */}
@@ -340,9 +384,15 @@ export default function Home() {
       <footer className="border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <strong>NSIPA GVG Progress Tracker</strong> • Independent Civic-Tech Solution for Grant for Vulnerable Groups (Nigeria)
+            <strong>NSIPA GVG Progress Tracker</strong> • Support: +234 802 126 6483 | info@nsipa.gov.ng
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setViewMode('landing')}
+              className="text-slate-400 hover:text-emerald-500 transition"
+            >
+              Public GVG Overview
+            </button>
             <button
               onClick={handleResetDemoData}
               className="text-slate-400 hover:text-amber-500 flex items-center gap-1 transition"

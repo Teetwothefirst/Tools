@@ -7,21 +7,17 @@ export function generateImpactPDFReport(
   reportTitle: string = 'NSIPA GVG Post-Disbursement Impact Report'
 ) {
   const activeCount = beneficiaries.filter((b) => b.status === 'active').length;
-  const inactiveCount = beneficiaries.filter((b) => b.status === 'inactive').length;
-  const unreachableCount = beneficiaries.filter((b) => b.status === 'unreachable').length;
   const total = beneficiaries.length || 1;
   const activePercent = ((activeCount / total) * 100).toFixed(1);
 
   const sewingCount = beneficiaries.filter((b) => b.category === 'sewing').length;
   const grindingCount = beneficiaries.filter((b) => b.category === 'grinding').length;
 
-  const resolvedEscalations = escalations.filter((e) => e.status === 'resolved').length;
   const openEscalations = escalations.filter((e) => e.status === 'open').length;
 
   const totalMonthlyIncome = checkIns.reduce((acc, curr) => acc + (curr.estimated_monthly_income || 0), 0);
   const avgIncome = checkIns.length ? Math.round(totalMonthlyIncome / checkIns.length) : 0;
 
-  // Build clean HTML print window for reliable high-fidelity PDF output
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     alert('Please allow popups to generate and download the PDF report.');
@@ -36,7 +32,7 @@ export function generateImpactPDFReport(
         <style>
           body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #1a202c;
+            color: #0f172a;
             padding: 40px;
             margin: 0;
             line-height: 1.5;
@@ -57,13 +53,13 @@ export function generateImpactPDFReport(
           }
           .sub-logo {
             font-size: 13px;
-            color: #4a5568;
-            font-weight: 500;
+            color: #475569;
+            font-weight: 600;
           }
           .report-meta {
             text-align: right;
             font-size: 12px;
-            color: #718096;
+            color: #64748b;
           }
           .title-section {
             margin-bottom: 25px;
@@ -71,7 +67,7 @@ export function generateImpactPDFReport(
           h1 {
             font-size: 20px;
             margin: 0 0 8px 0;
-            color: #2d3748;
+            color: #0f172a;
           }
           .badge {
             display: inline-block;
@@ -80,7 +76,7 @@ export function generateImpactPDFReport(
             color: #234e52;
             border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
           }
           .kpi-grid {
             display: grid;
@@ -89,7 +85,7 @@ export function generateImpactPDFReport(
             margin-bottom: 30px;
           }
           .kpi-card {
-            background-color: #f7fafc;
+            background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             padding: 16px;
@@ -97,15 +93,16 @@ export function generateImpactPDFReport(
           }
           .kpi-value {
             font-size: 22px;
-            font-weight: 700;
+            font-weight: 800;
             color: #008751;
           }
           .kpi-label {
             font-size: 11px;
-            color: #718096;
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-top: 4px;
+            font-weight: 600;
           }
           section {
             margin-bottom: 30px;
@@ -115,7 +112,7 @@ export function generateImpactPDFReport(
             border-left: 4px solid #008751;
             padding-left: 10px;
             margin-bottom: 12px;
-            color: #2d3748;
+            color: #0f172a;
           }
           table {
             width: 100%;
@@ -129,19 +126,29 @@ export function generateImpactPDFReport(
             text-align: left;
           }
           th {
-            background-color: #edf2f7;
-            font-weight: 600;
-            color: #4a5568;
+            background-color: #f1f5f9;
+            font-weight: 700;
+            color: #334155;
           }
           tr:nth-child(even) {
-            background-color: #f7fafc;
+            background-color: #f8fafc;
+          }
+          .contact-bar {
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 11px;
+            color: #475569;
+            margin-bottom: 20px;
+            text-align: center;
           }
           .footer-sign {
             margin-top: 50px;
             display: flex;
             justify-content: space-between;
             padding-top: 20px;
-            border-top: 1px dashed #cbd5e0;
+            border-top: 1px dashed #cbd5e1;
             font-size: 12px;
           }
           .sign-box {
@@ -149,7 +156,7 @@ export function generateImpactPDFReport(
             text-align: center;
           }
           .sign-line {
-            border-bottom: 1px solid #718096;
+            border-bottom: 1px solid #64748b;
             margin-top: 40px;
             margin-bottom: 5px;
           }
@@ -171,9 +178,13 @@ export function generateImpactPDFReport(
           </div>
         </div>
 
+        <div class="contact-bar">
+          <strong>NSIPA Official Hotline:</strong> +234 802 126 6483 | +234 806 199 5335 &nbsp;&bull;&nbsp; <strong>Support Email:</strong> info@nsipa.gov.ng
+        </div>
+
         <div class="title-section">
           <h1>${reportTitle}</h1>
-          <span class="badge">Official Federal Impact Record</span>
+          <span class="badge">Official Federal Impact Record (774 LGAs)</span>
         </div>
 
         <div class="kpi-grid">
@@ -227,7 +238,7 @@ export function generateImpactPDFReport(
         </section>
 
         <section>
-          <h2>Beneficiary Status Summary (Sample Registry Audit)</h2>
+          <h2>Beneficiary Registry Sample Audit</h2>
           <table>
             <thead>
               <tr>
