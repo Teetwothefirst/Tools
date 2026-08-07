@@ -102,9 +102,9 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
                 <span className="font-black text-base sm:text-xl tracking-tight text-[#008751] dark:text-emerald-400">
                   NSIPA GVG
                 </span>
-                <span className="text-[9px] sm:text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-full font-extrabold uppercase">
+                {/* <span className="text-[9px] sm:text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-full font-extrabold uppercase">
                   Flagship Drive
-                </span>
+                </span> */}
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-semibold line-clamp-1">
                 Grant for Vulnerable Groups • Post-Disbursement Tracking
@@ -115,7 +115,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
           {/* Desktop Navigation Links & Action */}
           <div className="hidden lg:flex items-center gap-6">
             <nav className="flex items-center space-x-6 text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-              <a href="#about" className="hover:text-[#008751] dark:hover:text-emerald-400 transition">About GVG</a>
+              <a href="#about" className="hover:text-[#008751] dark:hover:text-emerald-400 transition">About</a>
               <a href="#package" className="hover:text-[#008751] dark:hover:text-emerald-400 transition">Programme Package</a>
               <a href="#lgas" className="hover:text-[#008751] dark:hover:text-emerald-400 transition">774 LGAs Scope</a>
               <a href="#faqs" className="hover:text-[#008751] dark:hover:text-emerald-400 transition">FAQs</a>
@@ -229,7 +229,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
             <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-sm">
                 <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
-                Federal Republic of Nigeria • Social Safety-Nets
+                Federal Republic of Nigeria • NSIPA
               </div>
 
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-none">
@@ -240,7 +240,7 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
               </h1>
 
               <p className="text-emerald-100 text-xs sm:text-base leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Providing <strong>₦40,000 direct cash support</strong> and <strong>starter trade equipment</strong> (industrial sewing machines & agro-grinding mills) to low-income households, persons with disabilities, senior citizens, and widows across all <strong>774 Local Government Areas</strong> in Nigeria.
+                Providing <strong> direct financial support</strong> and <strong>starter trade equipment</strong> (industrial sewing machines, agro-grinding mills etc) to low-income households, persons with disabilities, senior citizens, and widows across all <strong>774 Local Government Areas</strong> in Nigeria.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
@@ -262,8 +262,9 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
               {/* Stats Highlights */}
               <div className="pt-6 grid grid-cols-3 gap-2 sm:gap-4 border-t border-emerald-600/60">
                 <div className="p-2 sm:p-0">
-                  <div className="text-xl sm:text-3xl font-black text-amber-300">₦40,000</div>
-                  <div className="text-[10px] sm:text-xs text-emerald-100 font-medium">Direct Cash Credit Alert</div>
+                  {/* <div className="text-xl sm:text-3xl font-black text-amber-300">₦40,000</div> */}
+                  <div className="text-xl sm:text-3xl font-black text-amber-300">80+</div>
+                  <div className="text-[10px] sm:text-xs text-emerald-100 font-medium">Directly impacted</div>
                 </div>
                 <div className="p-2 sm:p-0">
                   <div className="text-xl sm:text-3xl font-black text-white">774 LGAs</div>
@@ -362,7 +363,8 @@ export const GVGLandingPage: React.FC<GVGLandingPageProps> = ({
                 ₦
               </div>
               <h3 className="font-extrabold text-slate-900 dark:text-slate-100 text-base sm:text-lg">
-                ₦40,000 Direct Cash Credit
+                {/* ₦40,000  */}
+                Direct Cash Credit
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 Direct financial grant credited to beneficiary bank accounts to cover working capital, raw materials, and initial operational setup costs.
