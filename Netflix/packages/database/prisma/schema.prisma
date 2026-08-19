@@ -1,0 +1,445 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  USER
+  CONTENT_MANAGER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum MaturityRating {
+  G
+  PG
+  PG13
+  R
+  NC17
+  TV_Y
+  TV_Y7
+  TV_G
+  TV_PG
+  TV_14
+  TV_MA
+}
+
+enum ContentType {
+  MOVIE
+  TV_SHOW
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  EXPIRED
+}
+
+model User {
+  id            String           @id @default(uuid())
+  email         String           @unique
+  passwordHash  String
+  role          UserRole         @default(USER)
+  emailVerified Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  profiles      Profile[]
+  sessions      AccountSession[]
+  subscriptions Subscription[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+model AccountSession {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique
+  ipAddress    String?
+  userAgent    String?
+  isRevoked    Boolean  @default(false)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account_sessions")
+}
+
+model Profile {
+  id               String          @id @default(uuid())
+  userId           String
+  name             String
+  avatarUrl        String
+  isKids           Boolean         @default(false)
+  maturityRating   MaturityRating  @default(TV_MA)
+  language         String          @default("en")
+  autoplayNext     Boolean         @default(true)
+  subtitleLanguage String          @default("en")
+  audioLanguage    String          @default("en")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchlist        Watchlist[]
+  playbackProgress PlaybackProgress[]
+  watchHistory     WatchHistory[]
+  ratings          ContentRating[]
+
+  @@index([userId])
+  @@map("profiles")
+}
+
+model ContentItem {
+  id             String          @id @default(uuid())
+  title          String
+  description    String
+  type           ContentType
+  releaseYear    Int
+  maturityRating MaturityRating  @default(TV_MA)
+  posterUrl      String
+  backdropUrl    String
+  logoUrl        String?
+  trailerUrl     String?
+  featured       Boolean         @default(false)
+  trendingScore  Float           @default(0.0)
+  viewCount      Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  movie          Movie?
+  tvShow         TVShow?
+  genres         ContentGenre[]
+  credits        ContentCredit[]
+  watchlist      Watchlist[]
+  playbackProgress PlaybackProgress[]
+  watchHistory   WatchHistory[]
+  ratings        ContentRating[]
+
+  @@index([title])
+  @@index([type])
+  @@index([featured])
+  @@map("content_items")
+}
+
+model Movie {
+  id             String      @id @default(uuid())
+  contentId      String      @unique
+  runtimeMinutes Int
+  director       String?
+  mediaAssetId   String?     @unique
+
+  contentItem    ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  mediaAsset     MediaAsset? @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+
+  @@map("movies")
+}
+
+model TVShow {
+  id            String      @id @default(uuid())
+  contentId     String      @unique
+  totalSeasons  Int         @default(1)
+  totalEpisodes Int         @default(0)
+
+  contentItem   ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  seasons       Season[]
+
+  @@map("tv_shows")
+}
+
+model Season {
+  id           String      @id @default(uuid())
+  showId       String
+  seasonNumber Int
+  title        String
+  overview     String?
+  posterUrl    String?
+
+  tvShow       TVShow      @relation(fields: [showId], references: [id], onDelete: Cascade)
+  episodes     Episode[]
+
+  @@unique([showId, seasonNumber])
+  @@map("seasons")
+}
+
+model Episode {
+  id             String             @id @default(uuid())
+  seasonId       String
+  episodeNumber  Int
+  title          String
+  overview       String
+  runtimeMinutes Int
+  thumbnailUrl   String
+  introStartSec  Int?
+  introEndSec    Int?
+  outroStartSec  Int?
+  mediaAssetId   String             @unique
+  createdAt      DateTime           @default(now())
+
+  season         Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  mediaAsset     MediaAsset         @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+  progress       PlaybackProgress[]
+
+  @@unique([seasonId, episodeNumber])
+  @@map("episodes")
+}
+
+model Genre {
+  id        String         @id @default(uuid())
+  name      String         @unique
+  slug      String         @unique
+
+  contents  ContentGenre[]
+
+  @@map("genres")
+}
+
+model ContentGenre {
+  contentId String
+  genreId   String
+
+  contentItem ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  genre       Genre       @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, genreId])
+  @@map("content_genres")
+}
+
+model CastPerson {
+  id        String          @id @default(uuid())
+  name      String
+  photoUrl  String?
+
+  credits   ContentCredit[]
+
+  @@map("cast_people")
+}
+
+model ContentCredit {
+  id            String      @id @default(uuid())
+  contentId     String
+  personId      String
+  characterName String?
+  roleTitle     String      @default("Actor")
+
+  contentItem   ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  person        CastPerson  @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@map("content_credits")
+}
+
+model MediaAsset {
+  id               String           @id @default(uuid())
+  originalFilename String
+  storagePath      String
+  status           ProcessingStatus @default(PENDING)
+  masterManifestUrl String?
+  durationSeconds  Float?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  movie            Movie?
+  episode          Episode?
+  variants         VideoVariant[]
+  subtitles        SubtitleTrack[]
+  audioTracks      AudioTrack[]
+  processingJobs   ProcessingJob[]
+
+  @@map("media_assets")
+}
+
+model VideoVariant {
+  id           String     @id @default(uuid())
+  mediaAssetId String
+  quality      String
+  playlistUrl  String
+  bitrate      Int
+
+  mediaAsset   MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@index([mediaAssetId])
+  @@map("video_variants")
+}
+
+model SubtitleTrack {
+  id           String     @id @default(uuid())
+  mediaAssetId String
+  language     String
+  label        String
+  vttUrl       String
+  isDefault    Boolean    @default(false)
+
+  mediaAsset   MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@index([mediaAssetId])
+  @@map("subtitle_tracks")
+}
+
+model AudioTrack {
+  id           String     @id @default(uuid())
+  mediaAssetId String
+  language     String
+  label        String
+  audioUrl     String
+  isDefault    Boolean    @default(false)
+
+  mediaAsset   MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@index([mediaAssetId])
+  @@map("audio_tracks")
+}
+
+model PlaybackProgress {
+  id                   String      @id @default(uuid())
+  profileId            String
+  contentId            String
+  episodeId            String?
+  progressSeconds      Float
+  durationSeconds      Float
+  completionPercentage Float
+  lastWatchedAt        DateTime    @default(now())
+
+  profile              Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  contentItem          ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  episode              Episode?    @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, contentId, episodeId])
+  @@map("playback_progress")
+}
+
+model WatchHistory {
+  id            String      @id @default(uuid())
+  profileId     String
+  contentId     String
+  watchedAt     DateTime    @default(now())
+
+  profile       Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  contentItem   ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("watch_history")
+}
+
+model Watchlist {
+  id          String      @id @default(uuid())
+  profileId   String
+  contentId   String
+  addedAt     DateTime    @default(now())
+
+  profile     Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  contentItem ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, contentId])
+  @@map("watchlists")
+}
+
+model ContentRating {
+  id          String      @id @default(uuid())
+  profileId   String
+  contentId   String
+  isLike      Boolean
+  createdAt   DateTime    @default(now())
+
+  profile     Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  contentItem ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, contentId])
+  @@map("content_ratings")
+}
+
+model SubscriptionPlan {
+  id           String         @id @default(uuid())
+  name         String         @unique
+  priceMonthly Float
+  videoQuality String
+  maxScreens   Int
+  has4K        Boolean        @default(false)
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id             String             @id @default(uuid())
+  userId         String
+  planId         String
+  status         SubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd DateTime
+  createdAt      DateTime           @default(now())
+
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan           SubscriptionPlan   @relation(fields: [planId], references: [id])
+  payments       PaymentTransaction[]
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model PaymentTransaction {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  amount         Float
+  currency       String       @default("USD")
+  status         String
+  provider       String       @default("stripe")
+  transactionId  String       @unique
+  createdAt      DateTime     @default(now())
+
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("payment_transactions")
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  profileId String?
+  eventName String
+  metadata  String?
+  timestamp DateTime @default(now())
+
+  @@index([eventName])
+  @@map("analytics_events")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  details   String
+  timestamp DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+model ProcessingJob {
+  id           String           @id @default(uuid())
+  mediaAssetId String
+  status       ProcessingStatus @default(PENDING)
+  attempts     Int              @default(0)
+  errorMessage String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  mediaAsset   MediaAsset       @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@map("processing_jobs")
+}

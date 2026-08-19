@@ -1,0 +1,28 @@
+{
+  "name": "netflix-clone-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade Netflix-inspired video streaming platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun --filter '*' dev",
+    "build": "bun --filter '*' build",
+    "lint": "bun --filter '*' lint",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "test": "bun --filter '*' test",
+    "db:generate": "bun --cwd packages/database db:generate",
+    "db:push": "bun --cwd packages/database db:push",
+    "db:seed": "bun --cwd packages/database db:seed"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.0",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "ecdsa-sig-formatter": "^1.0.11",
+    "tslib": "^2.8.1"
+  }
+}
