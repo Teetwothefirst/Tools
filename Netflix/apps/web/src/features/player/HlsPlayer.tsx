@@ -16,7 +16,7 @@ import {
   RotateCcw,
   RotateCw,
   Subtitles,
-  AudioCc,
+  AudioLines,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 

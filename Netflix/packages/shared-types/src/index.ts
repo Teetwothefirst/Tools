@@ -84,6 +84,7 @@ export interface GenreDto {
   id: string;
   name: string;
   slug: string;
+  genre?: { id?: string; name?: string; slug?: string };
 }
 
 export interface VideoVariantDto {
@@ -137,6 +138,8 @@ export interface ContentItemDto {
   director?: string;
   runtimeMinutes?: number;
   mediaAsset?: MediaAssetDto;
+  movie?: { id?: string; runtimeMinutes?: number; director?: string; mediaAsset?: MediaAssetDto };
+  tvShow?: { id?: string; totalSeasons?: number; totalEpisodes?: number; seasons?: SeasonDto[] };
   seasons?: SeasonDto[];
 }
 

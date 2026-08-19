@@ -34,8 +34,8 @@ export class AuthService {
       include: { profiles: true },
     });
 
-    const tokens = this.generateTokens(user.id, user.email, user.role);
-    return { user: { id: user.id, email: user.email, role: user.role }, profiles: user.profiles, ...tokens };
+    const tokens = this.generateTokens(user.id, user.email, user.role as any);
+    return { user: { id: user.id, email: user.email, role: user.role as any }, profiles: user.profiles, ...tokens };
   }
 
   async login(email: string, password: string) {
@@ -53,9 +53,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const tokens = this.generateTokens(user.id, user.email, user.role);
+    const tokens = this.generateTokens(user.id, user.email, user.role as any);
     return {
-      user: { id: user.id, email: user.email, role: user.role },
+      user: { id: user.id, email: user.email, role: user.role as any },
       profiles: user.profiles,
       ...tokens,
     };

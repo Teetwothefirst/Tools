@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { HlsPlayer } from '@/features/player/HlsPlayer';
 import { ContentItemDto } from '@netflix/shared-types';
@@ -8,7 +8,7 @@ import { apiClient } from '@/lib/api';
 
 const sampleHlsStream = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 
-export default function WatchPage() {
+function WatchContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const id = params?.id as string;
@@ -44,5 +44,13 @@ export default function WatchPage() {
         episodeId={episodeId}
       />
     </div>
+  );
+}
+
+export default function WatchPage() {
+  return (
+    <Suspense fallback={<div className="w-screen h-screen bg-black" />}>
+      <WatchContent />
+    </Suspense>
   );
 }
