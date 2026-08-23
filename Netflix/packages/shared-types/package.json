@@ -5,6 +5,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
+    "dev": "echo '@netflix/shared-types active'",
     "build": "tsc",
     "lint": "tsc --noEmit"
   },

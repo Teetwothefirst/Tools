@@ -64,6 +64,24 @@ export interface ProfileDto {
     subtitleLanguage: string;
     audioLanguage: string;
 }
+export interface CreateProfileDto {
+    userId: string;
+    name: string;
+    avatarUrl?: string;
+    isKids?: boolean;
+    maturityRating?: MaturityRating;
+    language?: string;
+}
+export interface UpdateProfileDto {
+    name?: string;
+    avatarUrl?: string;
+    isKids?: boolean;
+    maturityRating?: MaturityRating;
+    language?: string;
+    autoplayNext?: boolean;
+    subtitleLanguage?: string;
+    audioLanguage?: string;
+}
 export interface GenreDto {
     id: string;
     name: string;
@@ -178,6 +196,15 @@ export interface ContinueWatchingItemDto {
     episode?: EpisodeDto;
     progress: PlaybackProgressDto;
 }
+export interface WatchlistToggleDto {
+    profileId: string;
+    contentId: string;
+}
+export interface RateContentDto {
+    profileId: string;
+    contentId: string;
+    isLike: boolean;
+}
 export interface SubscriptionPlanDto {
     id: string;
     name: string;
@@ -185,4 +212,28 @@ export interface SubscriptionPlanDto {
     videoQuality: string;
     maxScreens: number;
     has4K: boolean;
+}
+export interface TranscodeJobDto {
+    id: string;
+    mediaAssetId: string;
+    status: ProcessingStatus;
+    attempts: number;
+    errorMessage?: string;
+    createdAt: string;
+    updatedAt: string;
+    mediaAsset?: MediaAssetDto;
+}
+export interface CreateContentItemDto {
+    title: string;
+    description: string;
+    type: 'MOVIE' | 'TV_SHOW';
+    releaseYear: number;
+    maturityRating: MaturityRating;
+    posterUrl: string;
+    backdropUrl: string;
+    featured?: boolean;
+    genreSlugs: string[];
+    director?: string;
+    runtimeMinutes?: number;
+    masterManifestUrl?: string;
 }

@@ -79,6 +79,26 @@ export interface ProfileDto {
   audioLanguage: string;
 }
 
+export interface CreateProfileDto {
+  userId: string;
+  name: string;
+  avatarUrl?: string;
+  isKids?: boolean;
+  maturityRating?: MaturityRating;
+  language?: string;
+}
+
+export interface UpdateProfileDto {
+  name?: string;
+  avatarUrl?: string;
+  isKids?: boolean;
+  maturityRating?: MaturityRating;
+  language?: string;
+  autoplayNext?: boolean;
+  subtitleLanguage?: string;
+  audioLanguage?: string;
+}
+
 // Media & Catalog Types
 export interface GenreDto {
   id: string;
@@ -168,7 +188,7 @@ export interface EpisodeDto {
   mediaAsset?: MediaAssetDto;
 }
 
-// Playback Tracking Types
+// Playback Tracking & Rating Types
 export interface PlaybackProgressDto {
   id: string;
   profileId: string;
@@ -186,6 +206,17 @@ export interface ContinueWatchingItemDto {
   progress: PlaybackProgressDto;
 }
 
+export interface WatchlistToggleDto {
+  profileId: string;
+  contentId: string;
+}
+
+export interface RateContentDto {
+  profileId: string;
+  contentId: string;
+  isLike: boolean;
+}
+
 // Subscription Plan
 export interface SubscriptionPlanDto {
   id: string;
@@ -194,4 +225,31 @@ export interface SubscriptionPlanDto {
   videoQuality: string;
   maxScreens: number;
   has4K: boolean;
+}
+
+// Admin & Processing Types
+export interface TranscodeJobDto {
+  id: string;
+  mediaAssetId: string;
+  status: ProcessingStatus;
+  attempts: number;
+  errorMessage?: string;
+  createdAt: string;
+  updatedAt: string;
+  mediaAsset?: MediaAssetDto;
+}
+
+export interface CreateContentItemDto {
+  title: string;
+  description: string;
+  type: 'MOVIE' | 'TV_SHOW';
+  releaseYear: number;
+  maturityRating: MaturityRating;
+  posterUrl: string;
+  backdropUrl: string;
+  featured?: boolean;
+  genreSlugs: string[];
+  director?: string;
+  runtimeMinutes?: number;
+  masterManifestUrl?: string;
 }

@@ -8,6 +8,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "bun run prisma/seed.ts",
+    "dev": "echo '@netflix/database active'",
     "build": "prisma generate"
   },
   "dependencies": {

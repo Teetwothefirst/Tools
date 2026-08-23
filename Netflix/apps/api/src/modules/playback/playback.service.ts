@@ -30,6 +30,14 @@ export class PlaybackService {
       },
     });
 
+    // Also record watch history
+    await db.watchHistory.create({
+      data: {
+        profileId,
+        contentId,
+      },
+    }).catch(() => {});
+
     return progress;
   }
 
@@ -37,7 +45,7 @@ export class PlaybackService {
     const items = await db.playbackProgress.findMany({
       where: {
         profileId,
-        completionPercentage: { lt: 90 }, // exclude finished items
+        completionPercentage: { lt: 90 },
       },
       orderBy: { lastWatchedAt: 'desc' },
       take: 10,
@@ -78,5 +86,23 @@ export class PlaybackService {
       });
       return { inWatchlist: true };
     }
+  }
+
+  async rateContent(profileId: string, contentId: string, isLike: boolean) {
+    return db.contentRating.upsert({
+      where: {
+        profileId_contentId: { profileId, contentId },
+      },
+      update: { isLike },
+      create: { profileId, contentId, isLike },
+    });
+  }
+
+  async getRating(profileId: string, contentId: string) {
+    return db.contentRating.findUnique({
+      where: {
+        profileId_contentId: { profileId, contentId },
+      },
+    });
   }
 }

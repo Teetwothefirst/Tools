@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { PlaybackService } from './playback.service';
 import { AuthGuard } from '../../common/guards/auth.guard';
 
@@ -31,5 +31,15 @@ export class PlaybackController {
   @Post('watchlist/toggle')
   async toggleWatchlist(@Body() body: any) {
     return this.playbackService.toggleWatchlist(body.profileId, body.contentId);
+  }
+
+  @Post('rate')
+  async rateContent(@Body() body: any) {
+    return this.playbackService.rateContent(body.profileId, body.contentId, body.isLike);
+  }
+
+  @Get('rate')
+  async getRating(@Query('profileId') profileId: string, @Query('contentId') contentId: string) {
+    return this.playbackService.getRating(profileId, contentId);
   }
 }

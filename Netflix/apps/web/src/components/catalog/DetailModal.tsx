@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { X, Play, Plus, Check, Star, Clock, Film, Tv, ChevronDown } from 'lucide-react';
+import { X, Play, Plus, Check, Star, Clock, ThumbsUp, ThumbsDown, Sparkles } from 'lucide-react';
 import { ContentItemDto } from '@netflix/shared-types';
+import { apiClient } from '@/lib/api';
 
 interface DetailModalProps {
   item: ContentItemDto | null;
@@ -19,11 +20,18 @@ export const DetailModal: React.FC<DetailModalProps> = ({
   onToggleWatchlist,
 }) => {
   const [selectedSeasonIndex, setSelectedSeasonIndex] = useState(0);
+  const [likedState, setLikedState] = useState<boolean | null>(null);
 
   if (!item) return null;
 
   const seasons = item.tvShow?.seasons || [];
   const currentSeason = seasons[selectedSeasonIndex];
+
+  const handleRate = (isLike: boolean) => {
+    const newState = likedState === isLike ? null : isLike;
+    setLikedState(newState);
+    apiClient.post('/playback/rate', { profileId: 'p1', contentId: item.id, isLike }).catch(() => {});
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
@@ -65,10 +73,35 @@ export const DetailModal: React.FC<DetailModalProps> = ({
                 <button
                   onClick={() => onToggleWatchlist(item.id)}
                   className="p-2.5 bg-black/50 hover:bg-black/70 text-white rounded-full border border-white/30 transition-transform hover:scale-110"
+                  title={isInWatchlist ? 'Remove from My List' : 'Add to My List'}
                 >
-                  {isInWatchlist ? <Check className="w-5 h-5 text-green-400" /> : <Plus className="w-5 h-5" />}
+                  {isInWatchlist ? <Check className="w-5 h-5 text-emerald-400" /> : <Plus className="w-5 h-5" />}
                 </button>
               )}
+
+              <button
+                onClick={() => handleRate(true)}
+                className={`p-2.5 rounded-full border transition-transform hover:scale-110 ${
+                  likedState === true
+                    ? 'bg-emerald-600/80 border-emerald-400 text-white'
+                    : 'bg-black/50 border-white/30 text-white hover:bg-black/70'
+                }`}
+                title="I like this"
+              >
+                <ThumbsUp className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => handleRate(false)}
+                className={`p-2.5 rounded-full border transition-transform hover:scale-110 ${
+                  likedState === false
+                    ? 'bg-red-600/80 border-red-400 text-white'
+                    : 'bg-black/50 border-white/30 text-white hover:bg-black/70'
+                }`}
+                title="Not for me"
+              >
+                <ThumbsDown className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
@@ -78,17 +111,18 @@ export const DetailModal: React.FC<DetailModalProps> = ({
           {/* Metadata Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-4">
-              <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-300">
-                <span className="text-green-400 font-bold">98% Match</span>
+              <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-300">
+                <span className="text-emerald-400 font-bold">98% Match</span>
                 <span>{item.releaseYear}</span>
-                <span className="border border-gray-600 px-1.5 py-0.5 rounded">{item.maturityRating || 'TV-MA'}</span>
+                <span className="border border-gray-600 px-1.5 py-0.5 rounded font-mono">{item.maturityRating || 'TV-MA'}</span>
                 {item.movie?.runtimeMinutes && (
                   <span className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5 text-gray-400" />
                     {item.movie.runtimeMinutes} mins
                   </span>
                 )}
-                <span className="border border-white/30 px-1 rounded text-[10px]">HD</span>
+                <span className="border border-white/30 px-1 rounded text-[10px] font-bold">4K Ultra HD</span>
+                <span className="border border-white/30 px-1 rounded text-[10px]">5.1 Audio</span>
               </div>
 
               <p className="text-sm sm:text-base text-gray-200 leading-relaxed">{item.description}</p>
