@@ -35,7 +35,7 @@ export const Navbar: React.FC = () => {
   };
 
   const navLinks = [
-    { label: 'Home', href: '/' },
+    { label: 'Home', href: '/browse' },
     { label: 'TV Shows', href: '/tv' },
     { label: 'Movies', href: '/movies' },
     { label: 'My List', href: '/my-list' },

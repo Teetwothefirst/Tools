@@ -15,8 +15,6 @@ import {
   SkipForward,
   RotateCcw,
   RotateCw,
-  Subtitles,
-  AudioLines,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 
@@ -61,13 +59,33 @@ export const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Helper to safely invoke play() and catch AbortError / NotAllowedError
+  const safePlay = (video: HTMLVideoElement) => {
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((error) => {
+          setIsPlaying(false);
+          // Suppress AbortError & NotAllowedError (autoplay browser restrictions)
+          if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') {
+            console.warn('Playback notice:', error.message);
+          }
+        });
+    }
+  };
+
   // Initialize HLS.js
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !streamUrl) return;
+
+    let hls: Hls | null = null;
 
     if (Hls.isSupported()) {
-      const hls = new Hls({ enableWorker: true });
+      hls = new Hls({ enableWorker: true });
       hls.loadSource(streamUrl);
       hls.attachMedia(video);
 
@@ -77,18 +95,20 @@ export const HlsPlayer: React.FC<HlsPlayerProps> = ({
           label: `${level.height}p`,
         }));
         setQualities([{ id: -1, label: 'Auto' }, ...levels]);
-        video.play().catch(() => {});
+        safePlay(video);
       });
 
       setHlsInstance(hls);
-
-      return () => {
-        hls.destroy();
-      };
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = streamUrl;
-      video.play().catch(() => {});
+      safePlay(video);
     }
+
+    return () => {
+      if (hls) {
+        hls.destroy();
+      }
+    };
   }, [streamUrl]);
 
   // Video Progress & Throttled Sync
@@ -110,13 +130,15 @@ export const HlsPlayer: React.FC<HlsPlayerProps> = ({
     // Sync progress to backend every 10 seconds
     const syncInterval = setInterval(() => {
       if (video.currentTime > 0 && video.duration > 0) {
-        apiClient.post('/playback/progress', {
-          profileId,
-          contentId,
-          episodeId,
-          progressSeconds: video.currentTime,
-          durationSeconds: video.duration,
-        }).catch(() => {});
+        apiClient
+          .post('/playback/progress', {
+            profileId,
+            contentId,
+            episodeId,
+            progressSeconds: video.currentTime,
+            durationSeconds: video.duration,
+          })
+          .catch(() => {});
       }
     }, 10000);
 
@@ -164,8 +186,7 @@ export const HlsPlayer: React.FC<HlsPlayerProps> = ({
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      video.play();
-      setIsPlaying(true);
+      safePlay(video);
     } else {
       video.pause();
       setIsPlaying(false);

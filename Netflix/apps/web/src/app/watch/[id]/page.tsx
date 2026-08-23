@@ -2,9 +2,21 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import { HlsPlayer } from '@/features/player/HlsPlayer';
+import dynamic from 'next/dynamic';
 import { ContentItemDto } from '@netflix/shared-types';
 import { apiClient } from '@/lib/api';
+
+const HlsPlayer = dynamic(
+  () => import('@/features/player/HlsPlayer').then((mod) => mod.HlsPlayer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-screen h-screen bg-black flex items-center justify-center text-white text-sm font-semibold">
+        Loading StreamFlix Video Player...
+      </div>
+    ),
+  }
+);
 
 const sampleHlsStream = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 
