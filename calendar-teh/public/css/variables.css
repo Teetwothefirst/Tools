@@ -1,0 +1,120 @@
+/* Design System Tokens: Vibrant Nigerian/African Inspired Palette */
+:root {
+  /* African/Nigerian Flag & Cultural Hues */
+  --color-ng-green: #008751;
+  --color-ng-green-dark: #005a36;
+  --color-ng-green-light: #e8f5e9;
+  --color-ng-green-border: #a5d6a7;
+  --color-ng-green-glow: rgba(0, 135, 81, 0.25);
+
+  --color-terracotta: #D9531E;
+  --color-terracotta-dark: #a83c11;
+  --color-terracotta-light: #FFF3E0;
+  --color-terracotta-border: #FFCC80;
+
+  --color-sungold: #F4B41A;
+  --color-sungold-dark: #b88204;
+  --color-sungold-light: #FFFDE7;
+  --color-sungold-border: #FFF59D;
+
+  --color-indigo: #1B1947;
+  --color-indigo-dark: #110f30;
+  --color-indigo-light: #EEF2FF;
+  --color-indigo-border: #C7D2FE;
+
+  --color-coral: #D9383A;
+  --color-coral-light: #FEE2E2;
+  --color-coral-border: #FECACA;
+
+  /* Layer Colors */
+  --layer-nigeria: #008751;
+  --layer-nigeria-bg: #E8F5E9;
+  --layer-nigeria-text: #005a36;
+
+  --layer-africa: #D9531E;
+  --layer-africa-bg: #FFF3E0;
+  --layer-africa-text: #9A3412;
+
+  --layer-energy: #F4B41A;
+  --layer-energy-bg: #FEF9C3;
+  --layer-energy-text: #854D0E;
+
+  --layer-global: #1B1947;
+  --layer-global-bg: #EEF2FF;
+  --layer-global-text: #1E1B4B;
+
+  /* Surfaces & Backgrounds */
+  --bg-primary: #FDFBF7;
+  --bg-secondary: #F7F4EE;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-card-hover: #FBF9F4;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  /* Typography */
+  --font-family-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --text-primary: #1F2937;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+  --text-inverse: #FFFFFF;
+
+  /* Borders & Dividers */
+  --border-light: #E5E7EB;
+  --border-subtle: #F3F4F6;
+  --border-focus: var(--color-ng-green);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(0, 135, 81, 0.2);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+  --border-radius-full: 9999px;
+
+  --container-max-width: 1320px;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --bg-primary: #0F1117;
+  --bg-secondary: #171923;
+  --bg-surface: #1E2230;
+  --bg-surface-elevated: #262B3D;
+  --bg-card-hover: #2B3145;
+  --bg-glass: rgba(30, 34, 48, 0.88);
+
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-muted: #9CA3AF;
+  --border-light: #2D3748;
+  --border-subtle: #242B3B;
+
+  --layer-nigeria-bg: rgba(0, 135, 81, 0.2);
+  --layer-nigeria-text: #4ADE80;
+
+  --layer-africa-bg: rgba(217, 83, 30, 0.2);
+  --layer-africa-text: #FB923C;
+
+  --layer-energy-bg: rgba(244, 180, 26, 0.2);
+  --layer-energy-text: #FDE047;
+
+  --layer-global-bg: rgba(99, 102, 241, 0.2);
+  --layer-global-text: #A5B4FC;
+
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
