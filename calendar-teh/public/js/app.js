@@ -86,6 +86,16 @@ function updateLayerCounts(events, userTaskCount = 0) {
       badge.textContent = counts[layer];
     }
   });
+
+  const bStatNg = document.getElementById('bentoStatNigeria');
+  const bStatEnergy = document.getElementById('bentoStatEnergy');
+  const bStatAfrica = document.getElementById('bentoStatAfrica');
+  const bStatGlobal = document.getElementById('bentoStatGlobal');
+
+  if (bStatNg) bStatNg.textContent = counts.nigeria;
+  if (bStatEnergy) bStatEnergy.textContent = counts.energy;
+  if (bStatAfrica) bStatAfrica.textContent = counts.africa;
+  if (bStatGlobal) bStatGlobal.textContent = counts.global;
 }
 
 function populateHeroSpotlight(events) {
@@ -128,7 +138,11 @@ function populateHeroSpotlight(events) {
     day: 'numeric'
   });
 
-  document.getElementById('spotlightDaysBadge').textContent = daysTag;
+  const badgeEl = document.getElementById('spotlightDaysBadge');
+  if (badgeEl) {
+    badgeEl.textContent = daysTag;
+    badgeEl.className = 'spotlight-strip-tag ' + (nextEvent.scope || 'nigeria');
+  }
   document.getElementById('spotlightTitle').textContent = nextEvent.name;
   document.getElementById('spotlightDateText').textContent = friendlyDate;
   document.getElementById('spotlightDesc').textContent = nextEvent.description;
@@ -204,12 +218,7 @@ function bindGlobalControls() {
 
   // Header Nav Actions
   document.getElementById('navGetAlertsBtn')?.addEventListener('click', () => window.Modals.openSignupModal());
-  document.getElementById('navManageAlertsBtn')?.addEventListener('click', () => window.Modals.openManageAlertsModal());
-  document.getElementById('navAdminHubBtn')?.addEventListener('click', () => window.AdminHub.openAdminModal());
-  document.getElementById('navAboutBtn')?.addEventListener('click', () => window.Modals.openAboutModal());
-  document.getElementById('heroJoinAlertsBtn')?.addEventListener('click', () => {
-    document.getElementById('mailingSection')?.scrollIntoView({ behavior: 'smooth' });
-  });
+  document.getElementById('heroJoinAlertsBtn')?.addEventListener('click', () => window.Modals.openSignupModal());
 
   // Authentication Buttons
   document.getElementById('navLoginBtn')?.addEventListener('click', () => window.Auth.openAuthModal('login'));
@@ -258,10 +267,6 @@ function bindGlobalControls() {
   document.getElementById('footerAdminHub')?.addEventListener('click', (e) => {
     e.preventDefault();
     window.AdminHub.openAdminModal();
-  });
-  document.getElementById('footerAbout')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.Modals.openAboutModal();
   });
   document.getElementById('footerPrivacy')?.addEventListener('click', (e) => {
     e.preventDefault();

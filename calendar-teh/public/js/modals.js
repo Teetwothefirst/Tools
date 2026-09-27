@@ -382,7 +382,7 @@ const Modals = {
   },
 
   openAboutModal() {
-    this.open('aboutModal');
+    // About and Sources removed per specification
   },
 
   openPrivacyModal() {

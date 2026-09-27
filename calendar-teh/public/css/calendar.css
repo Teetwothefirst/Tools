@@ -1,4 +1,4 @@
-/* Calendar Views: Month Grid, Year-at-a-Glance, and Agenda Timeline */
+/* Calendar Views: Month Grid, Year-at-a-Glance, and Agenda Timeline (Adaptive Apple-Clean & Luxury Raycast Grade) */
 
 /* ---------------- Month Grid View ---------------- */
 .calendar-month-container {
@@ -7,6 +7,11 @@
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-md);
   overflow: hidden;
+  transition: box-shadow var(--transition-normal);
+}
+
+.calendar-month-container:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .calendar-weekdays-header {
@@ -19,11 +24,11 @@
 
 .weekday-header-cell {
   padding: 12px 6px;
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
 }
 
 .weekday-header-cell.weekend {
@@ -33,44 +38,38 @@
 .calendar-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  background-color: var(--border-light);
+  background-color: var(--border-subtle);
   gap: 1px;
 }
 
 .calendar-day-cell {
   background-color: var(--bg-surface);
-  min-height: 124px;
-  padding: 8px;
+  min-height: 126px;
+  padding: 9px 10px;
   display: flex;
   flex-direction: column;
   position: relative;
   cursor: pointer;
-  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .calendar-day-cell:hover {
   background-color: var(--bg-card-hover);
   z-index: 5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 0 0 1.5px rgba(16, 185, 129, 0.45);
 }
 
 .calendar-day-cell.other-month {
   background-color: var(--bg-secondary);
-  opacity: 0.55;
+  opacity: 0.45;
 }
 
 .calendar-day-cell.today {
-  background-color: var(--bg-surface);
+  background-color: rgba(16, 185, 129, 0.04);
 }
 
-.calendar-day-cell.today::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background-color: var(--color-ng-green);
+[data-theme="dark"] .calendar-day-cell.today {
+  background-color: rgba(52, 211, 153, 0.07);
 }
 
 .day-header-row {
@@ -81,7 +80,7 @@
 }
 
 .day-number {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
   width: 26px;
@@ -90,31 +89,35 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--border-radius-full);
+  transition: all var(--transition-fast);
 }
 
 .calendar-day-cell.today .day-number {
   background-color: var(--color-ng-green);
   color: #FFFFFF;
+  box-shadow: 0 0 12px var(--color-ng-green-glow);
+  font-weight: 800;
 }
 
 .day-badges-summary {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 3.5px;
 }
 
 .mini-layer-dot {
-  width: 7px;
-  height: 7px;
+  width: 6.5px;
+  height: 6.5px;
   border-radius: var(--border-radius-full);
 }
 
 .mini-layer-dot.nigeria { background-color: var(--color-ng-green); }
-.mini-layer-dot.africa { background-color: var(--color-terracotta); }
-.mini-layer-dot.energy { background-color: var(--color-sungold); }
-.mini-layer-dot.global { background-color: var(--color-indigo); }
+.mini-layer-dot.africa { background-color: var(--color-africa); }
+.mini-layer-dot.energy { background-color: var(--color-energy); }
+.mini-layer-dot.global { background-color: var(--color-global); }
+.mini-layer-dot.user_task { background-color: var(--color-task-purple); }
 
-/* Event Items inside day cell */
+/* Event Items inside day cell (Apple-Style Tinted Tags) */
 .day-events-list {
   display: flex;
   flex-direction: column;
@@ -124,46 +127,55 @@
 }
 
 .day-event-pill {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 3px 6px;
-  border-radius: var(--border-radius-sm);
+  padding: 3px 7px;
+  border-radius: var(--border-radius-xs);
   display: flex;
   align-items: center;
   gap: 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-left: 3px solid transparent;
-  transition: transform var(--transition-fast);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(8px);
 }
 
 .day-event-pill:hover {
-  transform: translateX(2px);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .day-event-pill.nigeria {
   background-color: var(--layer-nigeria-bg);
   color: var(--layer-nigeria-text);
-  border-left-color: var(--color-ng-green);
+  border-color: var(--layer-nigeria-border);
 }
 
 .day-event-pill.africa {
   background-color: var(--layer-africa-bg);
   color: var(--layer-africa-text);
-  border-left-color: var(--color-terracotta);
+  border-color: var(--layer-africa-border);
 }
 
 .day-event-pill.energy {
   background-color: var(--layer-energy-bg);
   color: var(--layer-energy-text);
-  border-left-color: var(--color-sungold-dark);
+  border-color: var(--layer-energy-border);
 }
 
 .day-event-pill.global {
   background-color: var(--layer-global-bg);
   color: var(--layer-global-text);
-  border-left-color: var(--color-indigo);
+  border-color: var(--layer-global-border);
+}
+
+.day-event-pill.user_task {
+  background-color: var(--layer-task-bg);
+  color: var(--layer-task-text);
+  border-color: var(--layer-task-border);
+  font-weight: 700;
 }
 
 .event-pill-icon {
@@ -181,17 +193,18 @@
   font-size: 10px;
   font-weight: 700;
   color: var(--text-muted);
-  padding: 2px 4px;
+  padding: 2px 6px;
   background-color: var(--bg-secondary);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-full);
   align-self: flex-start;
   margin-top: 2px;
+  border: 1px solid var(--border-light);
 }
 
 /* ---------------- Year-at-a-Glance View ---------------- */
 .year-view-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 20px;
 }
 
@@ -201,12 +214,13 @@
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
   padding: 16px;
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  transition: all var(--transition-normal);
 }
 
 .year-month-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: rgba(16, 185, 129, 0.35);
 }
 
 .year-month-header {
@@ -220,9 +234,10 @@
 }
 
 .year-month-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .year-month-count-badge {
@@ -232,12 +247,13 @@
   border-radius: var(--border-radius-full);
   background-color: var(--bg-secondary);
   color: var(--text-secondary);
+  border: 1px solid var(--border-light);
 }
 
 .year-mini-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 3px;
   text-align: center;
 }
 
@@ -256,31 +272,38 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-xs);
   cursor: pointer;
   position: relative;
+  transition: all var(--transition-fast);
 }
 
 .year-mini-day:hover {
   background-color: var(--bg-secondary);
+  transform: scale(1.1);
+  z-index: 2;
 }
 
 .year-mini-day.has-events {
   font-weight: 800;
   background-color: var(--layer-nigeria-bg);
+  color: var(--layer-nigeria-text);
 }
 
 .year-mini-day.has-events.energy-day {
   background-color: var(--layer-energy-bg);
+  color: var(--layer-energy-text);
 }
 
 .year-mini-day.has-events.africa-day {
   background-color: var(--layer-africa-bg);
+  color: var(--layer-africa-text);
 }
 
 .year-mini-day.is-today {
   border: 1.5px solid var(--color-ng-green);
   font-weight: 800;
+  color: var(--color-ng-green);
 }
 
 /* ---------------- Agenda / List View ---------------- */
@@ -288,14 +311,14 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto;
 }
 
 .agenda-month-group {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .agenda-month-header {
@@ -305,23 +328,25 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
   border-bottom: 2px solid var(--color-ng-green);
+  letter-spacing: -0.01em;
 }
 
 .agenda-month-badge {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   padding: 3px 10px;
   border-radius: var(--border-radius-full);
-  background-color: var(--color-ng-green-light);
-  color: var(--color-ng-green-dark);
+  background-color: var(--layer-nigeria-bg);
+  color: var(--layer-nigeria-text);
+  border: 1px solid var(--layer-nigeria-border);
 }
 
 .agenda-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .agenda-event-card {
@@ -330,18 +355,18 @@
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
   display: grid;
-  grid-template-columns: 90px 1fr auto;
+  grid-template-columns: 85px 1fr auto;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   padding: 16px 20px;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: all var(--transition-fast);
   cursor: pointer;
   position: relative;
   overflow: hidden;
 }
 
 .agenda-event-card:hover {
-  transform: translateX(4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   border-color: var(--color-ng-green);
 }
@@ -352,13 +377,14 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 5px;
+  width: 4px;
 }
 
 .agenda-event-card.nigeria::before { background-color: var(--color-ng-green); }
-.agenda-event-card.africa::before { background-color: var(--color-terracotta); }
-.agenda-event-card.energy::before { background-color: var(--color-sungold); }
-.agenda-event-card.global::before { background-color: var(--color-indigo); }
+.agenda-event-card.africa::before { background-color: var(--color-africa); }
+.agenda-event-card.energy::before { background-color: var(--color-energy); }
+.agenda-event-card.global::before { background-color: var(--color-global); }
+.agenda-event-card.user_task::before { background-color: var(--color-task-purple); }
 
 .agenda-date-col {
   text-align: center;
@@ -385,11 +411,12 @@
 .agenda-countdown-tag {
   font-size: 10px;
   font-weight: 700;
-  color: var(--color-ng-green-dark);
-  background-color: var(--color-ng-green-light);
+  color: var(--layer-nigeria-text);
+  background-color: var(--layer-nigeria-bg);
+  border: 1px solid var(--layer-nigeria-border);
   padding: 2px 6px;
-  border-radius: var(--border-radius-sm);
-  margin-top: 4px;
+  border-radius: var(--border-radius-full);
+  margin-top: 5px;
   display: inline-block;
 }
 
@@ -407,43 +434,48 @@
 }
 
 .agenda-scope-pill {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 2px 8px;
   border-radius: var(--border-radius-full);
+  border: 1px solid transparent;
 }
 
-.agenda-scope-pill.nigeria { background-color: var(--layer-nigeria-bg); color: var(--layer-nigeria-text); }
-.agenda-scope-pill.africa { background-color: var(--layer-africa-bg); color: var(--layer-africa-text); }
-.agenda-scope-pill.energy { background-color: var(--layer-energy-bg); color: var(--layer-energy-text); }
-.agenda-scope-pill.global { background-color: var(--layer-global-bg); color: var(--layer-global-text); }
+.agenda-scope-pill.nigeria { background-color: var(--layer-nigeria-bg); color: var(--layer-nigeria-text); border-color: var(--layer-nigeria-border); }
+.agenda-scope-pill.africa { background-color: var(--layer-africa-bg); color: var(--layer-africa-text); border-color: var(--layer-africa-border); }
+.agenda-scope-pill.energy { background-color: var(--layer-energy-bg); color: var(--layer-energy-text); border-color: var(--layer-energy-border); }
+.agenda-scope-pill.global { background-color: var(--layer-global-bg); color: var(--layer-global-text); border-color: var(--layer-global-border); }
+.agenda-scope-pill.user_task { background-color: var(--layer-task-bg); color: var(--layer-task-text); border-color: var(--layer-task-border); }
 
 .agenda-official-badge {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: var(--border-radius-sm);
+  padding: 2px 7px;
+  border-radius: var(--border-radius-full);
   background-color: var(--bg-secondary);
   color: var(--text-muted);
+  border: 1px solid var(--border-light);
 }
 
 .agenda-official-badge.official {
-  color: var(--color-ng-green-dark);
-  background-color: var(--color-ng-green-light);
+  color: var(--layer-nigeria-text);
+  background-color: var(--layer-nigeria-bg);
+  border-color: var(--layer-nigeria-border);
 }
 
 .agenda-event-name {
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .agenda-event-desc {
   font-size: 13px;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.45;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -457,8 +489,8 @@
 }
 
 .agenda-action-btn {
-  padding: 6px 12px;
-  border-radius: var(--border-radius-sm);
+  padding: 7px 14px;
+  border-radius: var(--border-radius-full);
   font-size: 12px;
   font-weight: 700;
   border: 1px solid var(--border-light);
@@ -468,38 +500,40 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
+  transition: all var(--transition-fast);
 }
 
 .agenda-action-btn:hover {
   border-color: var(--color-ng-green);
-  background-color: var(--color-ng-green-light);
-  color: var(--color-ng-green-dark);
+  background-color: var(--layer-nigeria-bg);
+  color: var(--layer-nigeria-text);
 }
 
 /* Empty State */
 .calendar-empty-state {
   text-align: center;
-  padding: 60px 20px;
+  padding: 60px 24px;
   background-color: var(--bg-surface);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .empty-state-icon {
-  font-size: 44px;
-  margin-bottom: 14px;
-  opacity: 0.6;
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.7;
 }
 
 .empty-state-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .empty-state-text {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--text-secondary);
   max-width: 440px;
   margin: 0 auto 20px auto;
@@ -508,16 +542,17 @@
 /* Responsive Calendar */
 @media (max-width: 768px) {
   .calendar-day-cell {
-    min-height: 90px;
-    padding: 4px;
+    min-height: 85px;
+    padding: 5px;
   }
   .day-event-pill {
     padding: 2px 4px;
     font-size: 10px;
   }
   .agenda-event-card {
-    grid-template-columns: 70px 1fr;
+    grid-template-columns: 65px 1fr;
     gap: 12px;
+    padding: 12px 14px;
   }
   .agenda-actions-col {
     grid-column: 1 / -1;

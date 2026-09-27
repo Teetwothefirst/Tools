@@ -1,77 +1,89 @@
-/* Ankara & African Geometric Patterns (Subtle SVG background textures) */
+/* Cultural Accents & Modern Atmospheric Effects (Apple & Linear Grade) */
 
-/* Ankara Geometric Chevron Pattern */
-.bg-ankara-pattern {
-  background-color: var(--color-indigo);
-  background-image: 
-    radial-gradient(circle at 100% 150%, var(--color-indigo) 24%, var(--color-terracotta) 25%, var(--color-terracotta) 28%, var(--color-indigo) 29%, var(--color-indigo) 36%, var(--color-sungold) 37%, var(--color-sungold) 40%, transparent 40%, transparent),
-    radial-gradient(circle at 0 150%, var(--color-indigo) 24%, var(--color-terracotta) 25%, var(--color-terracotta) 28%, var(--color-indigo) 29%, var(--color-indigo) 36%, var(--color-sungold) 37%, var(--color-sungold) 40%, transparent 40%, transparent),
-    radial-gradient(circle at 50% 100%, var(--color-terracotta) 10%, var(--color-indigo) 11%, var(--color-indigo) 23%, var(--color-sungold) 24%, var(--color-sungold) 30%, var(--color-ng-green) 31%, var(--color-ng-green) 43%, var(--color-indigo) 44%, var(--color-indigo) 53%, transparent 54%, transparent),
-    radial-gradient(circle at 100% 50%, var(--color-terracotta) 5%, var(--color-indigo) 6%, var(--color-indigo) 15%, var(--color-sungold) 16%, var(--color-sungold) 20%, var(--color-ng-green) 21%, var(--color-ng-green) 30%, var(--color-indigo) 31%, var(--color-indigo) 38%, transparent 39%, transparent),
-    radial-gradient(circle at 0 50%, var(--color-terracotta) 5%, var(--color-indigo) 6%, var(--color-indigo) 15%, var(--color-sungold) 16%, var(--color-sungold) 20%, var(--color-ng-green) 21%, var(--color-ng-green) 30%, var(--color-indigo) 31%, var(--color-indigo) 38%, transparent 39%, transparent);
-  background-size: 80px 40px;
+/* Atmospheric Ambient Glow Mesh */
+.ambient-glow-mesh {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 1100px);
+  height: 420px;
+  background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.12) 0%, rgba(245, 158, 11, 0.07) 35%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(50px);
 }
 
-/* Subtle Geometric Diamond Grid for Hero Cards */
-.bg-ankara-subtle {
-  background-color: var(--bg-surface);
-  background-image: 
-    linear-gradient(135deg, rgba(0, 135, 81, 0.04) 25%, transparent 25%), 
-    linear-gradient(225deg, rgba(217, 83, 30, 0.04) 25%, transparent 25%), 
-    linear-gradient(45deg, rgba(244, 180, 26, 0.04) 25%, transparent 25%), 
-    linear-gradient(315deg, rgba(27, 25, 71, 0.04) 25%, var(--bg-surface) 25%);
-  background-position: 16px 0, 16px 0, 0 0, 0 0;
-  background-size: 32px 32px;
-  background-repeat: repeat;
+[data-theme="dark"] .ambient-glow-mesh {
+  background: radial-gradient(circle at 50% 20%, rgba(52, 211, 153, 0.16) 0%, rgba(251, 191, 36, 0.08) 40%, transparent 70%);
 }
 
-/* Warm African Ribbon Stripe */
+/* Glassmorphic Elevated Surfaces */
+.glass-card {
+  background: var(--bg-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+/* Live Pulse Indicator Dot */
+.pulse-dot-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-ng-green);
+  position: relative;
+  display: inline-block;
+}
+
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-ng-green);
+  opacity: 0.8;
+  animation: pulseRing 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Hairline Nigerian / Energy Accent Ribbon */
 .ankara-ribbon {
-  height: 6px;
+  height: 2px;
   width: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--color-ng-green) 0%,
-    var(--color-ng-green) 25%,
-    var(--color-sungold) 25%,
-    var(--color-sungold) 50%,
-    var(--color-terracotta) 50%,
-    var(--color-terracotta) 75%,
-    var(--color-indigo) 75%,
-    var(--color-indigo) 100%
-  );
+  background: linear-gradient(90deg, var(--color-ng-green) 0%, #10B981 40%, var(--color-sungold) 100%);
+  opacity: 0.9;
 }
 
 .ankara-ribbon-subtle {
-  height: 3px;
+  height: 1px;
   width: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--color-ng-green) 0%,
-    var(--color-sungold) 35%,
-    var(--color-terracotta) 70%,
-    var(--color-indigo) 100%
-  );
-}
-
-/* Decorative Card Accents */
-.ankara-card-accent {
-  position: relative;
-  overflow: hidden;
-}
-
-.ankara-card-accent::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--color-ng-green) 0%,
-    var(--color-sungold) 35%,
-    var(--color-terracotta) 70%,
-    var(--color-coral) 100%
-  );
+  background: linear-gradient(90deg, transparent 0%, var(--border-light) 50%, transparent 100%);
 }
