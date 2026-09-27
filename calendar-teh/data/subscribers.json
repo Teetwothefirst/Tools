@@ -1,0 +1,80 @@
+[
+  {
+    "id": "sub-sample-001",
+    "email": "ade.tomiwa@energytransition.org",
+    "email_type": "work",
+    "name": "Adetomiwa Adejumo",
+    "interests": [
+      "nigeria",
+      "energy",
+      "africa",
+      "global"
+    ],
+    "lead_times_days": [
+      7,
+      3,
+      1
+    ],
+    "consent_given": true,
+    "consent_timestamp": "2026-09-20T09:15:00.000Z",
+    "status": "active",
+    "token": "tok_demo_ade_001",
+    "created_at": "2026-09-20T09:15:00.000Z"
+  },
+  {
+    "id": "sub-sample-002",
+    "email": "partnerships@lagossolarhub.ng",
+    "email_type": "business",
+    "name": "Folake Balogun",
+    "interests": [
+      "energy",
+      "nigeria"
+    ],
+    "lead_times_days": [
+      7,
+      1
+    ],
+    "consent_given": true,
+    "consent_timestamp": "2026-09-22T14:30:00.000Z",
+    "status": "active",
+    "token": "tok_demo_folake_002",
+    "created_at": "2026-09-22T14:30:00.000Z"
+  },
+  {
+    "id": "sub-sample-003",
+    "email": "chidi.okafor@gmail.com",
+    "email_type": "personal",
+    "name": "Chidi Okafor",
+    "interests": [
+      "nigeria",
+      "africa"
+    ],
+    "lead_times_days": [
+      1
+    ],
+    "consent_given": true,
+    "consent_timestamp": "2026-09-24T18:00:00.000Z",
+    "status": "active",
+    "token": "tok_demo_chidi_003",
+    "created_at": "2026-09-24T18:00:00.000Z"
+  },
+  {
+    "id": "de5ef376-b812-4ddc-852c-acfaecde7037",
+    "email": "engr.chidinma@nerc.gov.ng",
+    "email_type": "work",
+    "name": "Engr. Chidinma Okonkwo",
+    "interests": [
+      "nigeria",
+      "energy"
+    ],
+    "lead_times_days": [
+      7,
+      1
+    ],
+    "consent_given": true,
+    "consent_timestamp": "2026-09-26T19:17:15.495Z",
+    "status": "active",
+    "token": "tok_ce8d5c318cc8498c9aceed951eca8842",
+    "created_at": "2026-09-26T19:17:15.495Z"
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "description": "Astronomical and NSCIA/Sultanate moon-sighting dates for lunar Islamic holidays in Nigeria. Non-developers and admins can update these via the Admin Portal without redeploying code.",
+  "years": {
+    "2024": {
+      "ng-eid-al-fitr": { "month": 4, "day": 10, "source": "NSCIA Moon Sighting Declaration" },
+      "ng-eid-al-adha": { "month": 6, "day": 16, "source": "NSCIA Moon Sighting Declaration" },
+      "ng-eid-el-maulud": { "month": 9, "day": 16, "source": "NSCIA Moon Sighting Declaration" }
+    },
+    "2025": {
+      "ng-eid-al-fitr": { "month": 3, "day": 31, "source": "Astronomical projection (1 Shawwal 1446)" },
+      "ng-eid-al-adha": { "month": 6, "day": 6, "source": "Astronomical projection (10 Dhu al-Hijjah 1446)" },
+      "ng-eid-el-maulud": { "month": 9, "day": 5, "source": "Astronomical projection (12 Rabi' al-Awwal 1447)" }
+    },
+    "2026": {
+      "ng-eid-al-fitr": { "month": 3, "day": 20, "source": "Astronomical projection (1 Shawwal 1447)" },
+      "ng-eid-al-adha": { "month": 5, "day": 27, "source": "Astronomical projection (10 Dhu al-Hijjah 1447)" },
+      "ng-eid-el-maulud": { "month": 8, "day": 26, "source": "Astronomical projection (12 Rabi' al-Awwal 1448)" }
+    },
+    "2027": {
+      "ng-eid-al-fitr": { "month": 3, "day": 10, "source": "Astronomical projection (1 Shawwal 1448)" },
+      "ng-eid-al-adha": { "month": 5, "day": 17, "source": "Astronomical projection (10 Dhu al-Hijjah 1448)" },
+      "ng-eid-el-maulud": { "month": 8, "day": 15, "source": "Astronomical projection (12 Rabi' al-Awwal 1449)" }
+    },
+    "2028": {
+      "ng-eid-al-fitr": { "month": 2, "day": 27, "source": "Astronomical projection (1 Shawwal 1449)" },
+      "ng-eid-al-adha": { "month": 5, "day": 5, "source": "Astronomical projection (10 Dhu al-Hijjah 1449)" },
+      "ng-eid-el-maulud": { "month": 8, "day": 4, "source": "Astronomical projection (12 Rabi' al-Awwal 1450)" }
+    }
+  }
+}
