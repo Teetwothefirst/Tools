@@ -1,5 +1,5 @@
 /**
- * API Client for Calendar Backend
+ * API Client for Calendar & Personal Task/KPI Tracker Backend
  */
 
 const API = {
@@ -11,6 +11,11 @@ const API = {
       'Content-Type': 'application/json',
       ...(options.headers || {})
     };
+
+    // Auto-attach auth token if available and not explicitly overridden
+    if (!headers.Authorization && window.Auth && window.Auth.getToken()) {
+      headers.Authorization = `Bearer ${window.Auth.getToken()}`;
+    }
 
     try {
       const response = await fetch(url, { ...options, headers });
@@ -25,7 +30,41 @@ const API = {
     }
   },
 
-  // Events
+  // ----------------- Authentication -----------------
+  async login(email, password) {
+    return this.request('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+  },
+
+  async register(data) {
+    return this.request('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  async getMe(token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request('/api/auth/me', { headers });
+  },
+
+  async forgotPassword(email) {
+    return this.request('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+  },
+
+  async resetPassword(token, newPassword) {
+    return this.request('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, new_password: newPassword })
+    });
+  },
+
+  // ----------------- Events (Public + User Merged) -----------------
   async getEvents(params = {}) {
     const query = new URLSearchParams();
     if (params.year) query.set('year', params.year);
@@ -63,7 +102,87 @@ const API = {
     });
   },
 
-  // Subscribers
+  // ----------------- Tasks & KPIs -----------------
+  async getTasks(params = {}, token) {
+    const query = new URLSearchParams();
+    if (params.view) query.set('view', params.view);
+    if (params.objective) query.set('objective', params.objective);
+    if (params.priority) query.set('priority', params.priority);
+    if (params.entity_type) query.set('entity_type', params.entity_type);
+
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const qs = query.toString() ? `?${query.toString()}` : '';
+    return this.request(`/api/tasks${qs}`, { headers });
+  },
+
+  async getTask(id, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request(`/api/tasks/${id}`, { headers });
+  },
+
+  async createTask(taskData, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request('/api/tasks', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(taskData)
+    });
+  },
+
+  async updateTask(id, updates, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request(`/api/tasks/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(updates)
+    });
+  },
+
+  async deleteTask(id, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request(`/api/tasks/${id}`, {
+      method: 'DELETE',
+      headers
+    });
+  },
+
+  async getTaskStats(token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request('/api/tasks/stats', { headers });
+  },
+
+  async importTehCommunicationsTemplate(quarter = 'Q3', year = 2026, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request('/api/tasks/template/teh-communications', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ quarter, year })
+    });
+  },
+
+  // ----------------- In-App Notifications -----------------
+  async getNotifications(token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request('/api/notifications', { headers });
+  },
+
+  async markNotificationRead(id, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request(`/api/notifications/${id}/read`, {
+      method: 'PUT',
+      headers
+    });
+  },
+
+  async markAllNotificationsRead(token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    return this.request('/api/notifications/read-all', {
+      method: 'PUT',
+      headers
+    });
+  },
+
+  // ----------------- Public Subscribers -----------------
   async subscribe(subData) {
     return this.request('/api/subscribers', {
       method: 'POST',
@@ -96,7 +215,7 @@ const API = {
     return this.request('/api/subscribers');
   },
 
-  // Alerts & Outbox
+  // ----------------- Alerts & Outbox -----------------
   async runAlertCycle(simulatedDate) {
     return this.request('/api/alerts/run', {
       method: 'POST',
@@ -116,7 +235,7 @@ const API = {
     return this.request('/api/outbox', { method: 'DELETE' });
   },
 
-  // Lunar
+  // ----------------- Lunar -----------------
   async getLunarOverrides() {
     return this.request('/api/lunar');
   },
@@ -128,7 +247,7 @@ const API = {
     });
   },
 
-  // Status
+  // ----------------- Status -----------------
   async getSystemStatus() {
     return this.request('/api/system/status');
   }

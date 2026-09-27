@@ -1,23 +1,29 @@
 /**
  * Main Application Orchestrator
+ * Coordinates Theme, Calendar, Personal Task/KPI Tracker, Auth, and Notifications.
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Initialize Theme (Light / Dark)
   initTheme();
 
-  // 2. Initialize Components
+  // 2. Initialize Core Components
   window.CalendarRenderer.init();
   window.Modals.init();
   window.AdminHub.init();
 
-  // 3. Load Initial Event Data
+  // 3. Initialize Authentication & Session
+  if (window.Auth) {
+    await window.Auth.init();
+  }
+
+  // 4. Load Initial Event Data (Public + User Merged if logged in)
   await loadInitialData();
 
-  // 4. Bind Global UI Events
+  // 5. Bind Global UI Events
   bindGlobalControls();
 
-  // 5. Check URL Parameters for direct routes (?view=manage-alerts&token=... or ?view=admin)
+  // 6. Check URL Parameters for direct routes (?view=manage-alerts, ?view=reset-password, ?view=admin)
   handleUrlRouting();
 });
 
@@ -57,19 +63,20 @@ async function loadInitialData() {
     const events = res.events || [];
 
     window.CalendarRenderer.setEvents(events);
-    updateLayerCounts(events);
+    updateLayerCounts(events, res.userTaskCount || 0);
     populateHeroSpotlight(events);
   } catch (err) {
     console.error('Failed to load initial calendar events:', err);
   }
 }
 
-function updateLayerCounts(events) {
+function updateLayerCounts(events, userTaskCount = 0) {
   const counts = {
     nigeria: events.filter(e => e.scope === 'nigeria').length,
     africa: events.filter(e => e.scope === 'africa').length,
     energy: events.filter(e => e.scope === 'energy').length,
-    global: events.filter(e => e.scope === 'global').length
+    global: events.filter(e => e.scope === 'global').length,
+    user_task: events.filter(e => e.scope === 'user_task').length || userTaskCount
   };
 
   document.querySelectorAll('.layer-chip').forEach(chip => {
@@ -103,7 +110,6 @@ function populateHeroSpotlight(events) {
     }
   });
 
-  // Fallback to first event if all in year are past
   if (!nextEvent) {
     nextEvent = events[0];
     minDiffDays = 0;
@@ -205,6 +211,45 @@ function bindGlobalControls() {
     document.getElementById('mailingSection')?.scrollIntoView({ behavior: 'smooth' });
   });
 
+  // Authentication Buttons
+  document.getElementById('navLoginBtn')?.addEventListener('click', () => window.Auth.openAuthModal('login'));
+  document.getElementById('navRegisterBtn')?.addEventListener('click', () => window.Auth.openAuthModal('register'));
+  document.getElementById('headerLogoutBtn')?.addEventListener('click', () => {
+    if (confirm('Log out of your personal account?')) {
+      window.Auth.logout();
+    }
+  });
+
+  // Notification Bell Toggle
+  const bellBtn = document.getElementById('notifBellBtn');
+  if (bellBtn) {
+    bellBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.NotificationsCenter.toggleDropdown();
+    });
+  }
+
+  document.getElementById('notifMarkAllReadBtn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.NotificationsCenter.markAllRead();
+  });
+
+  // Close notification dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('notifDropdown');
+    const bell = document.getElementById('headerNotificationBell');
+    if (dropdown && dropdown.classList.contains('active')) {
+      if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
+        dropdown.classList.remove('active');
+      }
+    }
+  });
+
+  // Create Task button inside Task dashboard
+  document.getElementById('btnCreateTask')?.addEventListener('click', () => {
+    window.TasksManager.openCreateModal();
+  });
+
   // Footer Links
   document.getElementById('footerManageAlerts')?.addEventListener('click', (e) => {
     e.preventDefault();
@@ -231,13 +276,17 @@ function handleUrlRouting() {
   const token = urlParams.get('token');
   const email = urlParams.get('email');
 
-  if (view === 'manage-alerts' || view === 'unsubscribe' || token || email) {
+  if (view === 'manage-alerts' || view === 'unsubscribe' || (token && !view)) {
     setTimeout(() => {
       window.Modals.openManageAlertsModal(token, email);
     }, 400);
   } else if (view === 'admin') {
     setTimeout(() => {
       window.AdminHub.openAdminModal();
+    }, 400);
+  } else if (view === 'tasks') {
+    setTimeout(() => {
+      if (window.TasksManager) window.TasksManager.toggleDashboard();
     }, 400);
   }
 }

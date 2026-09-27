@@ -9,7 +9,7 @@ const CalendarRenderer = {
   selectedMonth: new Date().getMonth() + 1, // 1 - 12
   weekStartsOn: 0, // 0 = Sunday, 1 = Monday
   currentView: 'month', // 'month' | 'year' | 'agenda'
-  activeLayers: ['nigeria', 'africa', 'global', 'energy'],
+  activeLayers: ['nigeria', 'africa', 'global', 'energy', 'user_task'],
   searchQuery: '',
   allEvents: [],
 
@@ -161,12 +161,21 @@ const CalendarRenderer = {
     const visibleEvents = dayEvents.slice(0, 3);
     visibleEvents.forEach(ev => {
       let icon = '🌐';
+      let extraClass = '';
       if (ev.scope === 'nigeria') icon = '🇳🇬';
       else if (ev.scope === 'africa') icon = '🌍';
       else if (ev.scope === 'energy') icon = '⚡';
+      else if (ev.scope === 'user_task') {
+        icon = '📌';
+        extraClass = `${ev.status || ''} ${ev.completed ? 'completed' : ''}`;
+      }
+
+      const titleAttr = ev.scope === 'user_task'
+        ? `${ev.name} (${ev.current_progress}/${ev.target_metric} ${ev.unit}) - ${ev.status}`
+        : ev.name;
 
       pillsHtml += `
-        <div class="day-event-pill ${ev.scope}" data-event-id="${ev.id}" title="${ev.name}">
+        <div class="day-event-pill ${ev.scope} ${extraClass}" data-event-id="${ev.id}" title="${titleAttr}">
           <span class="event-pill-icon">${icon}</span>
           <span class="event-pill-title">${ev.name}</span>
         </div>
@@ -338,10 +347,13 @@ const CalendarRenderer = {
         else if (ev.scope === 'africa') scopeLabel = '🌍 Africa';
         else if (ev.scope === 'energy') scopeLabel = '⚡ Clean Energy';
         else if (ev.scope === 'global') scopeLabel = '🌐 Global';
+        else if (ev.scope === 'user_task') scopeLabel = `📌 My Task / KPI [${(ev.status || '').toUpperCase()}]`;
 
-        const officialTag = ev.official
-          ? `<span class="agenda-official-badge official">Official Observance</span>`
-          : `<span class="agenda-official-badge">Industry Recognized</span>`;
+        const officialTag = ev.isUserTask
+          ? `<span class="agenda-official-badge" style="background:#F3E8FF; color:#6B21A8; font-weight:800;">${ev.priority ? ev.priority.toUpperCase() : 'TASK'} · ${ev.current_progress || 0}/${ev.target_metric || 1} ${ev.unit || ''}</span>`
+          : (ev.official
+            ? `<span class="agenda-official-badge official">Official Observance</span>`
+            : `<span class="agenda-official-badge">Industry Recognized</span>`);
 
         html += `
           <div class="agenda-event-card ${ev.scope}" data-event-id="${ev.id}">
@@ -359,12 +371,18 @@ const CalendarRenderer = {
               <div class="agenda-event-desc">${ev.description}</div>
             </div>
             <div class="agenda-actions-col">
-              <button class="agenda-action-btn notify-quick-btn" data-event-id="${ev.id}">
-                🔔 Notify Me
-              </button>
-              <button class="agenda-action-btn export-ics-btn" data-event-id="${ev.id}">
-                📅 Add to Cal
-              </button>
+              ${ev.isUserTask ? `
+                <button class="agenda-action-btn edit-task-btn" data-task-id="${ev.id}">
+                  ✏️ Edit Task
+                </button>
+              ` : `
+                <button class="agenda-action-btn notify-quick-btn" data-event-id="${ev.id}">
+                  🔔 Notify Me
+                </button>
+                <button class="agenda-action-btn export-ics-btn" data-event-id="${ev.id}">
+                  📅 Add to Cal
+                </button>
+              `}
             </div>
           </div>
         `;
@@ -383,10 +401,25 @@ const CalendarRenderer = {
     document.querySelectorAll('[data-event-id]').forEach(el => {
       el.addEventListener('click', (e) => {
         // Prevent opening event detail if clicked on action button
-        if (e.target.closest('.notify-quick-btn') || e.target.closest('.export-ics-btn')) return;
+        if (e.target.closest('.notify-quick-btn') || e.target.closest('.export-ics-btn') || e.target.closest('.edit-task-btn')) return;
         const eventId = el.getAttribute('data-event-id');
-        if (window.Modals && window.Modals.openEventDetail) {
+        if (eventId.startsWith('tsk-')) {
+          if (window.TasksManager) {
+            window.TasksManager.openEditModal(eventId);
+          }
+        } else if (window.Modals && window.Modals.openEventDetail) {
           window.Modals.openEventDetail(eventId, this.selectedYear);
+        }
+      });
+    });
+
+    // Edit task button
+    document.querySelectorAll('.edit-task-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const taskId = btn.getAttribute('data-task-id');
+        if (window.TasksManager) {
+          window.TasksManager.openEditModal(taskId);
         }
       });
     });

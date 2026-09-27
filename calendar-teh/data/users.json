@@ -1,0 +1,15 @@
+[
+  {
+    "id": "usr-adejumo-001",
+    "email": "adejumo@teh.energy",
+    "password_hash": "47439f89aea93772208a7d4004c1ce49:a8831058aa678f09b59a25962c54bf3955db7275737f62813642a61dc5a51c09d0f208d5fef1d830a91e26089aa019091a5b3ad9d0be5edf467bd09280de2c04",
+    "name": "Adetomiwa Adejumo",
+    "role": "Communications Analyst",
+    "bu": "The Electricity Hub (TEH)",
+    "line_manager": "Practice Lead",
+    "calendar_token": "cal_token_adejumo_001",
+    "reset_token": null,
+    "reset_token_expires": null,
+    "created_at": "2026-09-01T08:00:00.000Z"
+  }
+]
