@@ -13,7 +13,10 @@ export const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response.data?.data ?? response.data,
   (error) => {
-    const message = error.response?.data?.error?.details || error.message || 'API request failed';
-    return Promise.reject(new Error(message));
+    let message = error.response?.data?.error?.details || error.message;
+    if (!error.response || error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+      message = 'Could not connect to the server. Please check your internet connection.';
+    }
+    return Promise.reject(new Error(message || 'API request failed'));
   }
 );
