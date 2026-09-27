@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Layers, FileCode, FileText, Wrench, Shield, Zap, Cpu, ScanText } from 'lucide-react';
+import { Layers, FileCode, FileText, Wrench, Shield, Zap, Cpu, ScanText, ImageIcon } from 'lucide-react';
 import { ToolCard } from '@/components/ToolCard';
 
 export default function Home() {
@@ -94,11 +94,20 @@ export default function Home() {
 
         <ToolCard
           title="PDF Repair Utility"
-          description="Fix corrupted PDF XRef tables, broken stream headers, and invalid structures using Ghostscript & PyMuPDF engines."
+          description="Fix corrupted PDF XRef tables, broken stream headers, and invalid structures using Ghostscript &amp; PyMuPDF engines."
           href="/repair"
           icon={Wrench}
           gradient="from-slate-700 to-slate-900"
           badge="Ghostscript / fitz"
+        />
+
+        <ToolCard
+          title="Image & PDF → Word"
+          description="Extract sharp text, tables, and attendance forms from images (PNG, JPG, TIFF, WEBP) or multi-page PDFs into a formatted .docx Word document."
+          href="/image-to-text"
+          icon={ImageIcon}
+          gradient="from-violet-600 to-purple-700"
+          badge="Tesseract + OpenCV"
         />
       </div>
     </div>

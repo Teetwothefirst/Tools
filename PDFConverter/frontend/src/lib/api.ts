@@ -57,6 +57,28 @@ export async function uploadForOcr(
   return res.json();
 }
 
+export async function uploadForImageToText(
+  file: File,
+  options: { language?: string; dpi?: number } = {}
+): Promise<TaskInitResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('language', options.language || 'eng');
+  formData.append('dpi', String(options.dpi ?? 300));
+
+  const res = await fetch(`${API_BASE_URL}/image-to-text/extract`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ detail: 'Image extraction failed' }));
+    throw new Error(errData.detail || `Extraction failed with status ${res.status}`);
+  }
+
+  return res.json();
+}
+
 export async function pollTaskStatus(taskId: string): Promise<TaskStatusResponse> {
   const res = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
   
