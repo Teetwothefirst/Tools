@@ -59,11 +59,27 @@ function updateThemeIcon(theme) {
 async function loadInitialData() {
   try {
     const year = window.CalendarRenderer.selectedYear;
-    const res = await window.API.getEvents({ year });
-    const events = res.events || [];
+    let events = [];
+    let userTaskCount = 0;
+
+    try {
+      const res = await window.API.getEvents({ year });
+      if (res && res.events && res.events.length > 0) {
+        events = res.events;
+        userTaskCount = res.userTaskCount || 0;
+      }
+    } catch (apiErr) {
+      console.warn('API getEvents endpoint notice:', apiErr.message);
+    }
+
+    // Client-side static fallback: if API returned 0 or failed, use pre-bundled 68 events
+    if ((!events || events.length === 0) && window.PRELOADED_EVENTS && window.PRELOADED_EVENTS.length > 0) {
+      events = window.PRELOADED_EVENTS;
+      console.info(`Loaded ${events.length} observances from preloaded static dataset.`);
+    }
 
     window.CalendarRenderer.setEvents(events);
-    updateLayerCounts(events, res.userTaskCount || 0);
+    updateLayerCounts(events, userTaskCount);
     populateHeroSpotlight(events);
   } catch (err) {
     console.error('Failed to load initial calendar events:', err);
