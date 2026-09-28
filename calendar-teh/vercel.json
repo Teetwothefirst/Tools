@@ -35,10 +35,6 @@
       "dest": "/public/images/$1"
     },
     {
-      "src": "/Connecting_the_globe.jpg",
-      "dest": "/public/Connecting_the_globe.jpg"
-    },
-    {
       "src": "/(login|register|dashboard|admin)/?",
       "dest": "/public/index.html"
     },
