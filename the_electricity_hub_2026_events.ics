@@ -1,0 +1,756 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//The Electricity Hub//Observance Calendar 2026//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:The Electricity Hub 2026 Observances
+X-WR-TIMEZONE:Africa/Lagos
+BEGIN:VEVENT
+UID:teh-ng-new-year-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260101
+DTEND;VALUE=DATE:20260102
+SUMMARY:New Year's Day
+DESCRIPTION:Celebration of the first day of the year under the Gregorian calendar. A statutory public holiday across all 36 states and the Federal Capital Territory.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-armed-forces-remembrance-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260115
+DTEND;VALUE=DATE:20260116
+SUMMARY:Armed Forces Remembrance Day
+DESCRIPTION:Commemorates the surrender of Biafran troops on 15 January 1970, honoring fallen servicemen and military veterans of the Nigerian Armed Forces.
+CATEGORIES:NIGERIA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-ecowas-human-rights-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260116
+DTEND;VALUE=DATE:20260117
+SUMMARY:ECOWAS Human Rights Day
+DESCRIPTION:Established by the ECOWAS Authority to promote regional human rights, civic freedoms, social justice, and constitutional rule across West African member states.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-education-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260124
+DTEND;VALUE=DATE:20260125
+SUMMARY:International Day of Education
+DESCRIPTION:Celebrates the role of education for peace, sustainable development, and economic opportunity worldwide.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-clean-energy-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260126
+DTEND;VALUE=DATE:20260127
+SUMMARY:International Day of Clean Energy
+DESCRIPTION:Declared by the UN General Assembly (Resolution 77/327) and coinciding with IRENA's founding date, this day mobilizes global action for inclusive and just clean energy transitions to achieve SDG 7.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-wetlands-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260202
+DTEND;VALUE=DATE:20260203
+SUMMARY:World Wetlands Day
+DESCRIPTION:Raises global awareness about the vital role of wetlands for biodiversity, water security, and climate resilience.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-sustainable-energy-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260228
+DTEND;VALUE=DATE:20260301
+SUMMARY:World Sustainable Energy Day
+DESCRIPTION:One of the premier international conferences and observances advancing energy efficiency, biomass, solar heating, and industrial decarbonization.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-environment-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260303
+DTEND;VALUE=DATE:20260304
+SUMMARY:Africa Environment and Wangari Maathai Day
+DESCRIPTION:Established by the African Union to raise awareness on pressing environmental challenges, land restoration, and honoring the legacy of Nobel Laureate Wangari Maathai.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-womens-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260308
+DTEND;VALUE=DATE:20260309
+SUMMARY:International Women's Day
+DESCRIPTION:Global celebration of the social, economic, cultural, and political achievements of women, accelerating gender equality and empowerment.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-eid-al-fitr-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260320
+DTEND;VALUE=DATE:20260321
+SUMMARY:Eid al-Fitr (Sallah)
+DESCRIPTION:Islamic 'Festival of Breaking the Fast' marking the conclusion of Ramadan. The Federal Government declares a 2-day national public holiday based on moon sighting confirmation.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-forests-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260321
+DTEND;VALUE=DATE:20260322
+SUMMARY:International Day of Forests & Biomass
+DESCRIPTION:Celebrates and raises awareness of the importance of all types of forests for carbon sequestration, watershed protection, and sustainable biomass energy.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-water-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260322
+DTEND;VALUE=DATE:20260323
+SUMMARY:World Water Day
+DESCRIPTION:Advocates for the sustainable management of freshwater resources and highlights the vital nexus between clean water and clean hydropower generation.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-un-meteorological-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260323
+DTEND;VALUE=DATE:20260324
+SUMMARY:World Meteorological Day
+DESCRIPTION:Commemorates the 1950 entry into force of the Convention establishing the World Meteorological Organization (WMO), vital for renewable resource forecasting (solar irradiance, wind corridors) and climate early warning.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-tb-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260324
+DTEND;VALUE=DATE:20260325
+SUMMARY:World Tuberculosis Day
+DESCRIPTION:Official WHO global public health day commemorating Dr. Robert Koch discovery of Mycobacterium tuberculosis in 1882, mobilizing investment in primary healthcare and epidemic control.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-zero-waste-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260330
+DTEND;VALUE=DATE:20260331
+SUMMARY:International Day of Zero Waste
+DESCRIPTION:Promotes sustainable consumption and production patterns, circular economy models, and waste-to-energy technologies that minimize greenhouse emissions.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-good-friday-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260403
+DTEND;VALUE=DATE:20260404
+SUMMARY:Good Friday
+DESCRIPTION:Solemn Christian holy day commemorating the crucifixion and death of Jesus Christ at Calvary. Observed as a statutory federal public holiday in Nigeria.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-easter-monday-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260406
+DTEND;VALUE=DATE:20260407
+SUMMARY:Easter Monday
+DESCRIPTION:Celebrates the resurrection of Jesus Christ and concludes the Easter weekend. A recognized nationwide public holiday with community and family festivities.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-health-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260407
+DTEND;VALUE=DATE:20260408
+SUMMARY:World Health Day
+DESCRIPTION:Marks the founding of the World Health Organization (WHO), focusing attention on primary healthcare access, clean indoor air, and healthcare electrification.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-earth-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260422
+DTEND;VALUE=DATE:20260423
+SUMMARY:Earth Day
+DESCRIPTION:Worldwide event demonstrating support for environmental protection, reforestation, renewable power expansion, and climate change mitigation.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-vaccination-week-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260424
+DTEND;VALUE=DATE:20260425
+SUMMARY:African Vaccination Week
+DESCRIPTION:African Union initiative to promote immunization across the continent, highlighting the critical role of solar-powered cold chains and clinic electrification.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-malaria-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260425
+DTEND;VALUE=DATE:20260426
+SUMMARY:World Malaria Day
+DESCRIPTION:Official World Health Organization (WHO) observance highlighting global and African efforts to control and eradicate malaria, vector management, and public health clinic electrification.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-workers-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260501
+DTEND;VALUE=DATE:20260502
+SUMMARY:Workers' Day (May Day)
+DESCRIPTION:Celebrates the achievements and contributions of Nigerian workers across labor unions, energy utilities, civil service, and private enterprise.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-europe-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260509
+DTEND;VALUE=DATE:20260510
+SUMMARY:Europe Day
+DESCRIPTION:The official annual day of the European Union, commemorating the 1950 Schuman Declaration which proposed pooling European coal and steel production, laying the foundation for modern European cooperation and clean energy transitions.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260525
+DTEND;VALUE=DATE:20260526
+SUMMARY:Africa Day
+DESCRIPTION:Commemorates the founding of the Organisation of African Unity (now African Union) in 1963. Celebrates African unity, pan-African cultural pride, and Agenda 2063 aspirations.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-childrens-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260527
+DTEND;VALUE=DATE:20260528
+SUMMARY:Children's Day
+DESCRIPTION:National observance celebrating the welfare, rights, and education of Nigerian children with state school parades, youth programs, and cultural festivities.
+CATEGORIES:NIGERIA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-eid-al-adha-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260527
+DTEND;VALUE=DATE:20260528
+SUMMARY:Eid al-Adha (Feast of Sacrifice)
+DESCRIPTION:Major Islamic holiday honoring the willingness of Prophet Ibrahim to sacrifice his son. A statutory 2-day federal holiday featuring communal prayers and charity distributions.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-ecowas-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260528
+DTEND;VALUE=DATE:20260529
+SUMMARY:ECOWAS Day
+DESCRIPTION:Commemorates the signing of the Treaty of Lagos on 28 May 1975 founding the Economic Community of West African States (ECOWAS) in Lagos, Nigeria, advancing regional integration, free movement, and joint power development.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-tobacco-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260531
+DTEND;VALUE=DATE:20260601
+SUMMARY:World No Tobacco Day
+DESCRIPTION:Created by WHO Member States in 1987 to draw attention to tobacco epidemic risks, secondhand smoke, and corporate sustainability.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-environment-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260605
+DTEND;VALUE=DATE:20260606
+SUMMARY:World Environment Day
+DESCRIPTION:The United Nations flagship day for inspiring worldwide awareness and action for the environment, from biodiversity protection to rapid clean energy deployment.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-oceans-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260608
+DTEND;VALUE=DATE:20260609
+SUMMARY:World Oceans Day
+DESCRIPTION:Highlights the crucial role of oceans in climate regulation, marine biodiversity, and the growing potential of offshore wind and marine tidal energy.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-eu-sustainable-energy-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260610
+DTEND;VALUE=DATE:20260611
+SUMMARY:European Sustainable Energy Week (EUSEW)
+DESCRIPTION:The European Commission flagship observance dedicated to renewable energy, energy efficiency, cross-border grid interconnections, and clean tech development partnerships between Europe and Africa.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-democracy-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260612
+DTEND;VALUE=DATE:20260613
+SUMMARY:Democracy Day
+DESCRIPTION:Commemorates Nigeria's transition to civilian democracy and honors the historic June 12, 1993 presidential election won by Chief M.K.O. Abiola.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-blood-donor-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260614
+DTEND;VALUE=DATE:20260615
+SUMMARY:World Blood Donor Day
+DESCRIPTION:Official WHO global campaign celebrating voluntary unpaid blood donors and emphasizing reliable cold-chain refrigeration for transfusion safety in rural clinics.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-wind-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260615
+DTEND;VALUE=DATE:20260616
+SUMMARY:Global Wind Day
+DESCRIPTION:Coordinated by the Global Wind Energy Council (GWEC) and WindEurope, celebrating wind energy's power to reshape global electricity markets and decarbonize economies.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-child-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260616
+DTEND;VALUE=DATE:20260617
+SUMMARY:Day of the African Child
+DESCRIPTION:Honors the courageous students who marched for right to quality education in Soweto, South Africa in 1976. Spotlights children's education and child rights across Africa.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-solar-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260621
+DTEND;VALUE=DATE:20260622
+SUMMARY:World Solar Day
+DESCRIPTION:Observed on the summer solstice, celebrating solar photovoltaic and thermal energy as the fastest growing electricity generation technologies worldwide.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-cooling-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260626
+DTEND;VALUE=DATE:20260627
+SUMMARY:World Refrigeration & Clean Cooling Day
+DESCRIPTION:Raises awareness about energy-efficient, climate-friendly cooling technologies, cold chain logistics for agriculture, and sustainable HVAC solutions.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-ecreee-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260706
+DTEND;VALUE=DATE:20260707
+SUMMARY:ECOWAS Renewable Energy & Energy Efficiency Day (ECREEE Day)
+DESCRIPTION:Marks the official inauguration of the ECOWAS Centre for Renewable Energy and Energy Efficiency (ECREEE), driving off-grid solar, mini-grids, clean cooking, and energy transition standards across West Africa.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-mandela-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260718
+DTEND;VALUE=DATE:20260719
+SUMMARY:Nelson Mandela International Day
+DESCRIPTION:In recognition of the former South African President's contribution to freedom, peace, and reconciliation. Encourages individuals to spend 67 minutes serving their communities.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-hepatitis-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260728
+DTEND;VALUE=DATE:20260729
+SUMMARY:World Hepatitis Day
+DESCRIPTION:Official WHO observance raising global awareness of viral hepatitis, promoting universal screening, and expanding vaccine coverage across vulnerable populations.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-womens-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260731
+DTEND;VALUE=DATE:20260801
+SUMMARY:Pan-African Women's Day
+DESCRIPTION:Commemorates the 1962 Pan-African Women's Conference in Dar es Salaam, championing women's leadership in governance, agriculture, and clean energy entrepreneurship.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-youth-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+SUMMARY:International Youth Day
+DESCRIPTION:Spotlights youth-led innovations in technology, green jobs, and civic leadership across developing and developed nations.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-eid-el-maulud-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260826
+DTEND;VALUE=DATE:20260827
+SUMMARY:Eid el-Maulud (Mawlid al-Nabi)
+DESCRIPTION:Celebrates the birth and life of the Holy Prophet Muhammad (peace be upon him). A statutory federal public holiday in Nigeria marked by prayer and charitable gifts.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-clean-air-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260907
+DTEND;VALUE=DATE:20260908
+SUMMARY:International Day of Clean Air for Blue Skies
+DESCRIPTION:Established by the UN to emphasize the urgent link between air pollution and combustion of fossil fuels, advocating for clean electric cooking and renewable transport.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-au-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260909
+DTEND;VALUE=DATE:20260910
+SUMMARY:African Union Day
+DESCRIPTION:Commemorates the historic Sirte Declaration of 9 September 1999 that decided the establishment of the African Union, accelerating continental economic integration.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-patient-safety-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260917
+DTEND;VALUE=DATE:20260918
+SUMMARY:World Patient Safety Day
+DESCRIPTION:Established by the 72nd World Health Assembly to foster global awareness of healthcare safety, clinical infrastructure reliability, and quality medical service delivery.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-peace-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260921
+DTEND;VALUE=DATE:20260922
+SUMMARY:International Day of Peace
+DESCRIPTION:Dedicated to world peace, ceasefire, and non-violence, highlighting the role of resource equity and sustainable infrastructure in conflict prevention.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-zero-emissions-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20260921
+DTEND;VALUE=DATE:20260922
+SUMMARY:International Zero Emissions Day (ZeDay)
+DESCRIPTION:Global annual observance designed to give the planet a day off from fossil fuel emissions, accelerating 100% renewable power generation, electric mobility, and clean industrial decarbonization.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-independence-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261001
+DTEND;VALUE=DATE:20261002
+SUMMARY:Independence Day
+DESCRIPTION:Commemorates Nigeria's proclamation of independence from British colonial rule on 1 October 1960. The premier national holiday celebrated with state addresses and cultural parades.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-efficiency-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261007
+DTEND;VALUE=DATE:20261008
+SUMMARY:Energy Efficiency Day
+DESCRIPTION:Collaborative campaign by utilities, clean tech companies, and consumer advocacy groups emphasizing that saving energy is the quickest, cheapest way to reduce emissions.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-hydrogen-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261008
+DTEND;VALUE=DATE:20261009
+SUMMARY:National & Global Hydrogen Day
+DESCRIPTION:Observed on 10/08 in reference to hydrogen's standard atomic weight of 1.008, championing green hydrogen, fuel cells, and hard-to-abate industrial decarbonization.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-mental-health-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261010
+DTEND;VALUE=DATE:20261011
+SUMMARY:World Mental Health Day
+DESCRIPTION:Recognized by WHO and the World Federation for Mental Health to champion mental health advocacy, eliminate stigma, and expand workplace and community psychosocial support.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-un-disaster-reduction-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261013
+DTEND;VALUE=DATE:20261014
+SUMMARY:International Day for Disaster Risk Reduction
+DESCRIPTION:United Nations observance (UNDRR) promoting disaster resilience, resilient critical energy infrastructure, flood mitigation, and early warning systems across vulnerable developing nations.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-food-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261016
+DTEND;VALUE=DATE:20261017
+SUMMARY:World Food Day
+DESCRIPTION:Marks the founding of the UN Food and Agriculture Organization (FAO). Highlights agrisolar, solar irrigation pumps, and productive use of energy in food security.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-geothermal-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261017
+DTEND;VALUE=DATE:20261018
+SUMMARY:World Geothermal Energy Day
+DESCRIPTION:Highlights baseload renewable geothermal heat and electricity production, celebrating innovations in continuous clean power from Kenya Olkaria fields to global rift zones.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-human-rights-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261021
+DTEND;VALUE=DATE:20261022
+SUMMARY:Africa Human Rights Day
+DESCRIPTION:Commemorates the entry into force of the African Charter on Human and Peoples' Rights in 1986, reaffirming justice, civil liberties, and the right to development.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-world-energy-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261022
+DTEND;VALUE=DATE:20261023
+SUMMARY:World Energy Day
+DESCRIPTION:Initiated during the World Energy Forum in 2012 and endorsed by numerous national energy ministries, this day raises awareness about universal energy access, smart grids, and clean power investment.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-un-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261024
+DTEND;VALUE=DATE:20261025
+SUMMARY:United Nations Day
+DESCRIPTION:Marks the anniversary of the entry into force of the UN Charter in 1945, celebrating multilateral cooperation, human rights, and the Sustainable Development Goals.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-un-cities-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261031
+DTEND;VALUE=DATE:20261101
+SUMMARY:World Cities Day
+DESCRIPTION:Designated by the UN General Assembly to promote global interest in sustainable urbanization, distributed rooftop solar, clean transit networks, and urban resilience.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-youth-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261101
+DTEND;VALUE=DATE:20261102
+SUMMARY:Africa Youth Day & National Youth Day
+DESCRIPTION:Proclaimed by the African Union Assembly and concurrently recognized in Nigeria to celebrate youth empowerment, digital tech skills, and green entrepreneurship.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-africa-energy-week-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261104
+DTEND;VALUE=DATE:20261105
+SUMMARY:Africa Energy Transition Observance
+DESCRIPTION:Dedicated to highlighting pan-African energy security, grid interconnection (WAPP), off-grid solar mini-grids, and gas-to-power transition frameworks.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-offgrid-solar-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261115
+DTEND;VALUE=DATE:20261116
+SUMMARY:World Off-Grid Solar Day
+DESCRIPTION:Celebrated by GOGLA, off-grid energy companies, and rural electrification agencies to spotlight stand-alone solar home systems and productive use equipment powering unserved rural communities.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-africa-industrialization-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261120
+DTEND;VALUE=DATE:20261121
+SUMMARY:Africa Industrialization Day
+DESCRIPTION:Established by the African Union and the UN to promote sustainable manufacturing, value addition, renewable energy industrialization, and AfCFTA trade.
+CATEGORIES:AFRICA,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-who-aids-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261201
+DTEND;VALUE=DATE:20261202
+SUMMARY:World AIDS Day
+DESCRIPTION:Designated by WHO and UNAIDS to unite worldwide efforts against HIV/AIDS, remember lives lost, and accelerate equitable access to antiviral treatments and testing.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-energy-nuclear-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261202
+DTEND;VALUE=DATE:20261203
+SUMMARY:World Nuclear Energy Day
+DESCRIPTION:Celebrates peaceful, low-carbon nuclear power and small modular reactors (SMRs) providing reliable zero-emission baseload electricity.
+CATEGORIES:ENERGY,ENERGY_SECTOR
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-global-human-rights-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261210
+DTEND;VALUE=DATE:20261211
+SUMMARY:Human Rights Day
+DESCRIPTION:Commemorates the adoption of the Universal Declaration of Human Rights by the United Nations in 1948, including the evolving recognition of energy access as an essential right.
+CATEGORIES:GLOBAL,OBSERVANCE
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-christmas-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261225
+DTEND;VALUE=DATE:20261226
+SUMMARY:Christmas Day
+DESCRIPTION:Celebrates the birth of Jesus Christ. A major nationwide public holiday characterized by church services, family reunions, homecoming feasts, and carol services across Nigeria.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:teh-ng-boxing-day-2026@theelectricityhub.com
+DTSTAMP:20260928T125427Z
+DTSTART;VALUE=DATE:20261226
+DTEND;VALUE=DATE:20261227
+SUMMARY:Boxing Day
+DESCRIPTION:Follows Christmas Day as a statutory public holiday dedicated to charitable giving, gift-sharing, and community gatherings throughout Nigeria.
+CATEGORIES:NIGERIA,PUBLIC_HOLIDAY
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR
