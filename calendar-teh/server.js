@@ -729,10 +729,10 @@ app.get('/api/subscribers', (req, res) => {
 // ALERT ENGINE & DISPATCH RUNNER
 // -------------------------------------------------------------
 
-// POST /api/alerts/run - Run alert engine manually or with simulated date
-app.post('/api/alerts/run', async (req, res) => {
+// POST or GET /api/alerts/run, /api/cron - Run alert engine (Manual, API, or Vercel Cron)
+app.all(['/api/alerts/run', '/api/cron'], async (req, res) => {
   try {
-    const { simulated_date } = req.body;
+    const simulated_date = req.body?.simulated_date || req.query?.simulated_date || null;
     const appBaseUrl = `${req.protocol}://${req.get('host')}`;
     const result = await scheduler.triggerManualRun(simulated_date || null, appBaseUrl);
 
@@ -844,19 +844,29 @@ app.get('/api/system/status', (req, res) => {
   });
 });
 
+// Explicit SPA navigation routes
+app.get(['/login', '/login/', '/register', '/register/', '/dashboard', '/dashboard/', '/admin', '/admin/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Single Page App fallback for HTML
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`======================================================`);
-  console.log(`Celebration & Energy Calendar with Task/KPI Tracker`);
-  console.log(`URL: http://localhost:${PORT}`);
-  console.log(`Mode: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`======================================================`);
+// Start Server if run directly (local development)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`======================================================`);
+    console.log(`The Electricity Hub & Observance Calendar with Task/KPI Tracker`);
+    console.log(`URL: http://localhost:${PORT}`);
+    console.log(`Mode: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`======================================================`);
 
-  const appBaseUrl = `http://localhost:${PORT}`;
-  scheduler.initScheduler(appBaseUrl);
-});
+    const appBaseUrl = `http://localhost:${PORT}`;
+    scheduler.initScheduler(appBaseUrl);
+  });
+}
+
+// Export Express app for Vercel Serverless Function deployment
+module.exports = app;

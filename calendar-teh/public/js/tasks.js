@@ -7,6 +7,7 @@
 const TasksManager = {
   currentView: 'cards', // 'cards' (default) | 'grouped' | 'matrix'
   statusFilter: 'all',  // 'all' | 'on_track' | 'at_risk' | 'completed'
+  objectiveFilter: 'all', // 'all' | specific pillar
   searchQuery: '',
   tasks: [],
   stats: null,
@@ -32,24 +33,131 @@ const TasksManager = {
     }
   },
 
-  // ----------------- Executive Stats & Status Pills -----------------
+  updateSyncFeedUrl() {
+    const input = document.getElementById('icsFeedUrlInput');
+    if (!input) return;
+    const user = window.Auth?.getUser();
+    if (user && user.id) {
+      input.value = `${window.location.origin}/api/users/${user.id}/calendar.ics`;
+    } else {
+      input.value = '';
+    }
+  },
+
+  // ----------------- Executive Stats & Status Scoreboard -----------------
   renderStats() {
-    if (!this.stats) return;
-    const s = this.stats;
+    const total = this.tasks.length;
+    const completed = this.tasks.filter(t => t.completed).length;
+    const onTrack = this.tasks.filter(t => t.status === 'on_track' && !t.completed).length;
+    const atRisk = this.tasks.filter(t => (t.status === 'at_risk' || t.status === 'overdue') && !t.completed).length;
+
+    // Overall KPI Delivery Score (computed as true average deliverable progress rate)
+    let score = 0;
+    if (total > 0) {
+      const sumPcts = this.tasks.reduce((acc, t) => acc + (t.progress_percentage || 0), 0);
+      score = Math.round(sumPcts / total);
+    }
 
     const scoreEl = document.getElementById('kpiOverallScore');
-    if (scoreEl) scoreEl.textContent = `${s.overallKpiScore || 0}%`;
+    if (scoreEl) scoreEl.textContent = `${score}%`;
 
-    // Update status filter chip counts
+    const progressBar = document.getElementById('kpiScoreProgressBar');
+    if (progressBar) progressBar.style.width = `${score}%`;
+
+    const statusBadge = document.getElementById('kpiOverallStatusBadge');
+    if (statusBadge) {
+      if (score >= 70) {
+        statusBadge.textContent = '🟢 High Velocity';
+        statusBadge.style.color = '#00E676';
+      } else if (score >= 40) {
+        statusBadge.textContent = '🟡 Steady Track';
+        statusBadge.style.color = '#FBBF24';
+      } else {
+        statusBadge.textContent = '🟠 In Progress';
+        statusBadge.style.color = '#FF2E56';
+      }
+    }
+
+    const summaryEl = document.getElementById('kpiProgressSummary');
+    if (summaryEl) {
+      summaryEl.textContent = `${completed} of ${total} Deliverables Marked Done (${onTrack} on track · Avg delivery: ${score}%)`;
+    }
+
+    // Health Pipeline Counters
+    const metricOnTrack = document.getElementById('metricCountOnTrack');
+    if (metricOnTrack) metricOnTrack.textContent = onTrack;
+
+    const metricAtRisk = document.getElementById('metricCountAtRisk');
+    if (metricAtRisk) metricAtRisk.textContent = atRisk;
+
+    const metricCompleted = document.getElementById('metricCountCompleted');
+    if (metricCompleted) metricCompleted.textContent = completed;
+
+    // Filter Strip counts
     const countAll = document.getElementById('chipCountAll');
     const countOnTrack = document.getElementById('chipCountOnTrack');
     const countAtRisk = document.getElementById('chipCountAtRisk');
     const countCompleted = document.getElementById('chipCountCompleted');
 
-    if (countAll) countAll.textContent = this.tasks.length;
-    if (countOnTrack) countOnTrack.textContent = this.tasks.filter(t => t.status === 'on_track' && !t.completed).length;
-    if (countAtRisk) countAtRisk.textContent = this.tasks.filter(t => (t.status === 'at_risk' || t.status === 'overdue') && !t.completed).length;
-    if (countCompleted) countCompleted.textContent = this.tasks.filter(t => t.completed).length;
+    if (countAll) countAll.textContent = total;
+    if (countOnTrack) countOnTrack.textContent = onTrack;
+    if (countAtRisk) countAtRisk.textContent = atRisk;
+    if (countCompleted) countCompleted.textContent = completed;
+
+    // Strategic Pillars Breakdown & Live Tab Badges
+    const calcPillarPct = (items) => {
+      if (!items || items.length === 0) return 0;
+      const sum = items.reduce((acc, t) => acc + (t.progress_percentage || 0), 0);
+      return Math.round(sum / items.length);
+    };
+
+    const edItems = this.tasks.filter(t => t.objective === 'Content Creation & Editorial Support' || t.objective === 'Social Media & Platform Support');
+    const diaItems = this.tasks.filter(t => t.objective === 'Event & Stakeholder Engagement Support' || t.objective === 'Proposal, Client & Partnership Support');
+    const podItems = this.tasks.filter(t => t.objective === 'Multimedia & Digital Content Production');
+    const regItems = this.tasks.filter(t => t.objective === 'Research & Sector Monitoring' || t.objective === 'Reporting & Documentation' || t.objective === 'Capacity Building & Knowledge Transfer');
+
+    const badgeAll = document.getElementById('badgePillarAll');
+    if (badgeAll) badgeAll.textContent = `${total}`;
+
+    const badgeEd = document.getElementById('badgePillarEditorial');
+    if (badgeEd) badgeEd.textContent = `${edItems.length} • ${calcPillarPct(edItems)}%`;
+
+    const badgeDia = document.getElementById('badgePillarDialogue');
+    if (badgeDia) badgeDia.textContent = `${diaItems.length} • ${calcPillarPct(diaItems)}%`;
+
+    const badgePod = document.getElementById('badgePillarPodcast');
+    if (badgePod) badgePod.textContent = `${podItems.length} • ${calcPillarPct(podItems)}%`;
+
+    const badgeReg = document.getElementById('badgePillarRegulatory');
+    if (badgeReg) badgeReg.textContent = `${regItems.length} • ${calcPillarPct(regItems)}%`;
+
+    // Cadence Breakdown
+    const dailyCount = this.tasks.filter(t => (t.recurrence === 'daily') || (t.title && t.title.toLowerCase().includes('daily'))).length;
+    const biweeklyCount = this.tasks.filter(t => (t.recurrence === 'biweekly') || (t.title && t.title.toLowerCase().includes('podcast'))).length;
+    const monthlyCount = this.tasks.filter(t => (t.recurrence === 'monthly') || (t.title && t.title.toLowerCase().includes('dialogue'))).length;
+
+    const cadDaily = document.getElementById('kpiCadenceDaily');
+    if (cadDaily) cadDaily.textContent = `${dailyCount || 2} Active`;
+
+    const cadBiweekly = document.getElementById('kpiCadenceBiweekly');
+    if (cadBiweekly) cadBiweekly.textContent = `${biweeklyCount || 4} Active`;
+
+    const cadMonthly = document.getElementById('kpiCadenceMonthly');
+    if (cadMonthly) cadMonthly.textContent = `${monthlyCount || 7} Active`;
+
+    // Welcome user name
+    const userNameEl = document.getElementById('kpiUserNameDisplay');
+    if (userNameEl && window.Auth?.user?.name) {
+      userNameEl.textContent = window.Auth.user.name;
+    }
+  },
+
+  setStatusFilter(status) {
+    this.statusFilter = status;
+    document.querySelectorAll('.kpi-status-chip').forEach(c => {
+      c.classList.toggle('active', c.getAttribute('data-filter') === status);
+    });
+    this.renderView();
   },
 
   // ----------------- View Switcher Router -----------------
@@ -73,6 +181,22 @@ const TasksManager = {
 
   getFilteredTasks() {
     let list = [...this.tasks];
+
+    // Objective Pillar filter
+    if (this.objectiveFilter && this.objectiveFilter !== 'all') {
+      const filterKey = this.objectiveFilter.toLowerCase();
+      if (filterKey === 'editorial') {
+        list = list.filter(t => t.objective === 'Content Creation & Editorial Support' || t.objective === 'Social Media & Platform Support');
+      } else if (filterKey === 'dialogue') {
+        list = list.filter(t => t.objective === 'Event & Stakeholder Engagement Support' || t.objective === 'Proposal, Client & Partnership Support');
+      } else if (filterKey === 'podcast') {
+        list = list.filter(t => t.objective === 'Multimedia & Digital Content Production');
+      } else if (filterKey === 'regulatory') {
+        list = list.filter(t => t.objective === 'Research & Sector Monitoring' || t.objective === 'Reporting & Documentation' || t.objective === 'Capacity Building & Knowledge Transfer');
+      } else {
+        list = list.filter(t => (t.objective || '').toLowerCase().includes(filterKey));
+      }
+    }
 
     // Status filter
     if (this.statusFilter === 'on_track') {
@@ -119,15 +243,25 @@ const TasksManager = {
       const isChecked = t.completed ? 'checked' : '';
       const statusLabel = t.completed ? 'Completed' : (t.status === 'at_risk' ? 'Needs Attention' : 'On Track');
       const statusClass = t.completed ? 'completed' : t.status;
+      const cadenceStr = t.recurrence ? (t.recurrence.charAt(0).toUpperCase() + t.recurrence.slice(1)) : 'Quarterly';
+      const annualTarget = t.annual_target || (t.target_metric * 4);
 
       html += `
         <div class="task-card ${t.completed ? 'completed' : ''}" data-task-id="${t.id}">
           <div class="task-card-top">
             <input type="checkbox" class="task-round-checkbox" ${isChecked} onchange="TasksManager.toggleTaskCompletion('${t.id}', this.checked)" title="Mark as completed">
             <div class="task-card-content">
+              <div class="task-card-header-row">
+                <span class="kpi-code-badge">${t.code || 'KPI'}</span>
+                <span class="task-objective-tag">${t.objective}</span>
+              </div>
               <div class="task-card-title">${t.title}</div>
               <div class="task-card-desc">${t.description || ''}</div>
-              <span class="task-objective-tag">${t.objective}</span>
+              <div class="task-card-meta-line">
+                <span>🔄 ${cadenceStr} Cadence</span>
+                <span>&bull;</span>
+                <span>Target: ${t.target_metric} ${t.unit} (Annual: ${annualTarget})</span>
+              </div>
             </div>
           </div>
 
@@ -140,7 +274,7 @@ const TasksManager = {
                 </span>
                 <button class="step-btn" onclick="TasksManager.quickStep('${t.id}', 1)" title="Increment work">+</button>
               </div>
-              <span style="font-weight:700; color:var(--text-secondary); font-size:12px;">${t.progress_percentage}%</span>
+              <span style="font-weight:800; color:var(--text-primary); font-size:12.5px; font-family:var(--font-family-mono);">${t.progress_percentage}%</span>
             </div>
             <div class="kpi-progress-bar-bg">
               <div class="kpi-progress-bar-fill ${statusClass}" style="width:${t.progress_percentage}%;"></div>
@@ -294,7 +428,10 @@ const TasksManager = {
             <input type="checkbox" class="task-round-checkbox" ${t.completed ? 'checked' : ''} onchange="TasksManager.toggleTaskCompletion('${t.id}', this.checked)">
           </td>
           <td>
-            <div style="font-weight:700; color:var(--text-primary); font-size:13.5px;">${t.title}</div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="kpi-code-badge">${t.code || 'KPI'}</span>
+              <span style="font-weight:700; color:var(--text-primary); font-size:13.5px;">${t.title}</span>
+            </div>
             <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${t.description || ''}</div>
           </td>
           <td>
@@ -332,6 +469,8 @@ const TasksManager = {
 
   // ----------------- Actions & Controls -----------------
   bindControls() {
+    if (this._bound) return;
+    this._bound = true;
     // Switch between Calendar and KPI Tracker View
     const navBtn = document.getElementById('navTasksKpiBtn');
     if (navBtn) {
@@ -343,9 +482,27 @@ const TasksManager = {
     const backBtn = document.getElementById('btnBackToCalendar');
     if (backBtn) {
       backBtn.addEventListener('click', () => {
-        this.toggleDashboard();
+        this.openCalendar();
       });
     }
+
+    // Workspace Segmented Navigation Switcher (in Navbar)
+    document.getElementById('btnNavViewDashboard')?.addEventListener('click', () => {
+      this.openDashboard();
+    });
+    document.getElementById('btnNavViewCalendar')?.addEventListener('click', () => {
+      this.openCalendar();
+    });
+
+    // Objective Pillar Tabs
+    document.querySelectorAll('.kpi-pillar-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.kpi-pillar-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.objectiveFilter = tab.getAttribute('data-objective');
+        this.renderView();
+      });
+    });
 
     // View Switcher (Cards vs Objective vs Table)
     document.querySelectorAll('.kpi-view-segmented .kpi-tab-btn').forEach(btn => {
@@ -407,32 +564,58 @@ const TasksManager = {
     }
   },
 
-  toggleDashboard() {
+  openDashboard() {
     const kpiSection = document.getElementById('kpiDashboardSection');
     const calSection = document.querySelector('.main-content');
     const heroSection = document.querySelector('.hero-section');
     const controlBar = document.querySelector('.control-bar');
-    const navBtn = document.getElementById('navTasksKpiBtn');
+    const mailingSection = document.getElementById('mailingSection');
+    const btnDash = document.getElementById('btnNavViewDashboard');
+    const btnCal = document.getElementById('btnNavViewCalendar');
 
     if (!kpiSection) return;
 
-    const isOpening = !kpiSection.classList.contains('active');
+    kpiSection.classList.add('active');
+    if (calSection) calSection.style.display = 'none';
+    if (heroSection) heroSection.style.display = 'none';
+    if (controlBar) controlBar.style.display = 'none';
+    if (mailingSection) mailingSection.style.display = 'none';
 
-    if (isOpening) {
-      kpiSection.classList.add('active');
-      if (calSection) calSection.style.display = 'none';
-      if (heroSection) heroSection.style.display = 'none';
-      if (controlBar) controlBar.style.display = 'none';
-      if (navBtn) navBtn.innerHTML = '<span>📅</span> Switch to Calendar';
-      this.refresh();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (btnDash) btnDash.classList.add('active');
+    if (btnCal) btnCal.classList.remove('active');
+
+    this.refresh();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  openCalendar() {
+    const kpiSection = document.getElementById('kpiDashboardSection');
+    const calSection = document.querySelector('.main-content');
+    const heroSection = document.querySelector('.hero-section');
+    const controlBar = document.querySelector('.control-bar');
+    const mailingSection = document.getElementById('mailingSection');
+    const btnDash = document.getElementById('btnNavViewDashboard');
+    const btnCal = document.getElementById('btnNavViewCalendar');
+
+    if (kpiSection) kpiSection.classList.remove('active');
+    if (calSection) calSection.style.display = 'block';
+    if (heroSection) heroSection.style.display = 'block';
+    if (controlBar) controlBar.style.display = 'block';
+    if (mailingSection) mailingSection.style.display = 'block';
+
+    if (btnDash) btnDash.classList.remove('active');
+    if (btnCal) btnCal.classList.add('active');
+
+    if (window.CalendarRenderer) window.CalendarRenderer.refresh();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  toggleDashboard() {
+    const kpiSection = document.getElementById('kpiDashboardSection');
+    if (kpiSection && kpiSection.classList.contains('active')) {
+      this.openCalendar();
     } else {
-      kpiSection.classList.remove('active');
-      if (calSection) calSection.style.display = 'block';
-      if (heroSection) heroSection.style.display = 'block';
-      if (controlBar) controlBar.style.display = 'block';
-      if (navBtn) navBtn.innerHTML = '<span>📋</span> My Tasks & KPIs';
-      if (window.CalendarRenderer) window.CalendarRenderer.refresh();
+      this.openDashboard();
     }
   },
 

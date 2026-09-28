@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "4685a9c7-c353-4f99-9086-c7dfe677def5",
+    "subscriber_id": "sub-sample-001",
+    "email": "ade.tomiwa@energytransition.org",
+    "event_id": "ng-independence-day",
+    "year": 2026,
+    "lead_time_days": 3,
+    "sent_at": "2026-09-28T07:00:00.159Z"
+  }
+]

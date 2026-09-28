@@ -233,66 +233,18 @@
   white-space: nowrap;
 }
 
-/* ---------------- Workspace Navigation Segmented Switcher in Navbar ---------------- */
-.workspace-nav-segmented {
-  display: inline-flex;
-  align-items: center;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--border-radius-full);
-  padding: 3px;
-  box-shadow: var(--shadow-sm);
-  gap: 2px;
-}
-
-.workspace-segment-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: var(--border-radius-full);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.workspace-segment-btn:hover {
-  color: var(--text-primary);
-}
-
-.workspace-segment-btn.active {
-  background-color: var(--text-primary);
-  color: var(--bg-primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="dark"] .workspace-segment-btn.active {
-  background-color: var(--color-energy);
-  color: #FFFFFF;
-}
-
 /* ---------------- Dedicated Task & KPI Dashboard ---------------- */
 .kpi-dashboard-section {
   display: none;
   padding: 24px 0 60px 0;
-  animation: dashboardFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .kpi-dashboard-section.active {
   display: block;
 }
 
-@keyframes dashboardFadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* 1. Executive Workspace Hero Banner */
-.kpi-exec-banner {
+/* Executive Header Bar */
+.kpi-apple-banner {
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--border-radius-lg);
@@ -304,340 +256,67 @@
   justify-content: space-between;
   gap: 20px;
   box-shadow: var(--shadow-sm);
-  position: relative;
-  overflow: hidden;
 }
 
-.kpi-exec-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 800;
-  border-radius: var(--border-radius-full);
-  background: rgba(225, 29, 72, 0.1);
-  color: var(--color-energy);
-  border: 1px solid rgba(225, 29, 72, 0.25);
-  font-family: var(--font-family-mono);
-}
-
-.kpi-exec-title {
-  font-family: var(--font-family-display);
-  font-size: 26px;
+.kpi-apple-info h2 {
+  font-size: 22px;
   font-weight: 800;
   color: var(--text-primary);
-  margin: 8px 0 4px 0;
-  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  letter-spacing: -0.015em;
 }
 
-.kpi-exec-desc {
+.kpi-apple-subtitle {
   font-size: 13.5px;
   color: var(--text-secondary);
-  line-height: 1.5;
-  margin: 0;
-  max-width: 680px;
 }
 
-.kpi-exec-actions {
+.kpi-apple-score-box {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 18px;
 }
 
-/* 2. High-Impact Executive KPI Scoreboard (Bento Grid) */
-.kpi-scoreboard-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.kpi-metric-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--border-radius-md);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
+.kpi-score-circle-display {
   display: flex;
   flex-direction: column;
-  transition: all var(--transition-normal);
-  position: relative;
-}
-
-.kpi-metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: rgba(225, 29, 72, 0.3);
-}
-
-.kpi-metric-card.primary {
-  background: radial-gradient(circle at 100% 0%, rgba(0, 135, 81, 0.06) 0%, var(--bg-surface) 70%);
-  border-color: rgba(0, 135, 81, 0.3);
-}
-
-[data-theme="dark"] .kpi-metric-card.primary {
-  background: radial-gradient(circle at 100% 0%, rgba(0, 230, 118, 0.08) 0%, var(--bg-surface) 70%);
-}
-
-.metric-card-top {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--border-radius-full);
+  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 }
 
-.metric-label {
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  font-family: var(--font-family-mono);
-}
-
-.metric-icon {
-  font-size: 16px;
-}
-
-.metric-value-row {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.metric-big-score {
-  font-family: var(--font-family-display);
-  font-size: 32px;
+.kpi-score-number {
+  font-size: 18px;
   font-weight: 900;
-  color: var(--text-primary);
   line-height: 1;
 }
 
-.metric-score-status {
-  font-size: 11px;
+.kpi-score-unit {
+  font-size: 10px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--border-radius-full);
-  background-color: var(--layer-nigeria-bg);
-  color: var(--layer-nigeria-text);
-  border: 1px solid var(--layer-nigeria-border);
+  opacity: 0.9;
+  text-transform: uppercase;
 }
 
-.metric-progress-track {
-  height: 7px;
-  border-radius: var(--border-radius-full);
-  background-color: var(--bg-secondary);
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.metric-progress-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #008751 0%, #10B981 100%);
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-[data-theme="dark"] .metric-progress-fill {
-  background: linear-gradient(90deg, #00E676 0%, #00B0FF 100%);
-}
-
-.metric-footer-note {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: auto;
-}
-
-.metric-health-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.health-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 4px;
-  border-radius: 8px;
-  background-color: var(--bg-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-align: center;
-}
-
-.health-item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-light);
-}
-
-.health-num {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text-primary);
-  font-family: var(--font-family-mono);
-}
-
-.health-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  margin-top: 2px;
-  color: var(--text-secondary);
-}
-
-.metric-cadence-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.cadence-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11.5px;
-  color: var(--text-secondary);
-  padding: 3px 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.cadence-val {
-  font-weight: 700;
-  color: var(--text-primary);
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-}
-
-.sync-desc {
-  font-size: 11.5px;
-  color: var(--text-secondary);
-  line-height: 1.4;
-  margin: 0 0 10px 0;
-}
-
-.sync-input-group {
-  display: flex;
-  gap: 6px;
-  margin-top: auto;
-}
-
-.sync-input-group input {
-  flex: 1;
-  font-size: 11px;
-  font-family: var(--font-family-mono);
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-light);
-  background-color: var(--bg-secondary);
-  color: var(--text-secondary);
-}
-
-/* 3. Objective Pillar Tabs (The 4 TEH Core Pillars) */
-.kpi-pillar-bar {
+.kpi-apple-actions {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 18px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-light);
 }
 
-.kpi-pillar-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 15px;
-  border-radius: var(--border-radius-full);
-  font-size: 12.5px;
-  font-weight: 700;
-  cursor: pointer;
-  border: 1px solid var(--border-light);
-  background-color: var(--bg-surface);
-  color: var(--text-secondary);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
-}
-
-.kpi-pillar-tab:hover {
-  border-color: var(--color-energy);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-}
-
-.kpi-pillar-tab.active {
-  background-color: var(--text-primary);
-  color: var(--bg-primary);
-  border-color: var(--text-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="dark"] .kpi-pillar-tab.active {
-  background-color: var(--color-energy);
-  color: #FFFFFF;
-  border-color: var(--color-energy);
-}
-
-.pillar-score-badge {
-  font-size: 11px;
-  font-weight: 800;
-  padding: 1.5px 7px;
-  border-radius: var(--border-radius-full);
-  background-color: rgba(0, 0, 0, 0.08);
-  color: var(--text-secondary);
-  font-family: var(--font-family-mono);
-  margin-left: 4px;
-}
-
-.kpi-pillar-tab.active .pillar-score-badge {
-  background-color: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
-}
-
-[data-theme="dark"] .pillar-score-badge {
-  background-color: rgba(255, 255, 255, 0.12);
-  color: var(--text-secondary);
-}
-
-/* 4. Controls Strip */
-.kpi-controls-strip {
+/* Minimal Interactive Status Filter Pills */
+.kpi-filter-strip {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
   flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 20px;
-}
-
-.kpi-toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .kpi-scoreboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .kpi-scoreboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .kpi-controls-strip {
-    flex-direction: column;
-    align-items: stretch;
-  }
 }
 
 .kpi-status-chip {
@@ -814,32 +493,6 @@
   margin-bottom: 8px;
 }
 
-.task-card-header-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 6px;
-}
-
-.kpi-code-badge {
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: 800;
-  padding: 2px 7px;
-  border-radius: var(--border-radius-xs);
-  background-color: rgba(225, 29, 72, 0.1);
-  color: var(--color-energy);
-  border: 1px solid rgba(225, 29, 72, 0.25);
-  letter-spacing: 0.04em;
-}
-
-[data-theme="dark"] .kpi-code-badge {
-  background-color: rgba(255, 46, 86, 0.15);
-  color: #FF6E86;
-  border-color: rgba(255, 46, 86, 0.35);
-}
-
 .task-objective-tag {
   display: inline-block;
   font-size: 11px;
@@ -849,16 +502,6 @@
   border: 1px solid var(--layer-nigeria-border);
   padding: 2px 8px;
   border-radius: var(--border-radius-full);
-}
-
-.task-card-meta-line {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
-  color: var(--text-muted);
-  margin-top: 6px;
-  font-family: var(--font-family-mono);
 }
 
 /* Progress bar inside task card */

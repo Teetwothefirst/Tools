@@ -1,0 +1,180 @@
+/* Design System Tokens: Adaptive Apple-Clean & Luxury Raycast System */
+:root {
+  /* ---------------- 1. NIGERIA: Bold & Striking Emerald Green ---------------- */
+  --color-ng-green: #008751;
+  --color-ng-green-dark: #005a36;
+  --color-ng-green-light: #E6F7ED;
+  --color-ng-green-border: #00A859;
+  --color-ng-green-glow: rgba(0, 168, 89, 0.35);
+
+  --layer-nigeria: #008751;
+  --layer-nigeria-bg: #E6F7ED;
+  --layer-nigeria-text: #00633C;
+  --layer-nigeria-border: #00A859;
+  --layer-nigeria-glow: rgba(0, 168, 89, 0.35);
+
+  /* ---------------- 2. ENERGY SECTOR: Very Striking High-Voltage Red ---------------- */
+  --color-energy: #E11D48;
+  --color-energy-dark: #9F1239;
+  --color-energy-light: #FFE4E8;
+  --color-energy-border: #F43F5E;
+  --color-energy-glow: rgba(225, 29, 72, 0.35);
+
+  --layer-energy: #E11D48;
+  --layer-energy-bg: #FFE4E8;
+  --layer-energy-text: #9F1239;
+  --layer-energy-border: #F43F5E;
+  --layer-energy-glow: rgba(225, 29, 72, 0.35);
+
+  /* ---------------- 3. AFRICA (AU & ECOWAS): Striking Solar Gold / Amber ---------------- */
+  --color-africa: #D97706;
+  --color-africa-dark: #92400E;
+  --color-africa-light: #FEF3C7;
+  --color-africa-border: #F59E0B;
+  --color-africa-glow: rgba(245, 158, 11, 0.35);
+
+  --layer-africa: #D97706;
+  --layer-africa-bg: #FEF3C7;
+  --layer-africa-text: #854D0E;
+  --layer-africa-border: #F59E0B;
+  --layer-africa-glow: rgba(245, 158, 11, 0.35);
+
+  /* Aliases for legacy tokens */
+  --color-terracotta: var(--color-africa);
+  --color-sungold: var(--color-africa);
+
+  /* ---------------- 4. GLOBAL (UN / WHO / EU): Striking Electric Cobalt Blue ---------------- */
+  --color-global: #2563EB;
+  --color-global-dark: #1E40AF;
+  --color-global-light: #EFF6FF;
+  --color-global-border: #3B82F6;
+  --color-global-glow: rgba(37, 99, 235, 0.35);
+
+  --layer-global: #2563EB;
+  --layer-global-bg: #EFF6FF;
+  --layer-global-text: #1E40AF;
+  --layer-global-border: #3B82F6;
+  --layer-global-glow: rgba(37, 99, 235, 0.35);
+
+  --color-indigo: var(--color-global);
+
+  /* ---------------- 5. PERSONAL TASKS & KPIS: Striking Electric Violet ---------------- */
+  --color-task-purple: #7C3AED;
+  --layer-task: #7C3AED;
+  --layer-task-bg: #F5F3FF;
+  --layer-task-text: #5B21B6;
+  --layer-task-border: #8B5CF6;
+  --layer-task-glow: rgba(124, 58, 237, 0.35);
+
+  --color-coral: #F43F5E;
+  --color-coral-light: #FFF1F2;
+  --color-coral-border: #FECDD3;
+
+  /* Surfaces & Canvas (Crisp Apple Pure Slate) */
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #F1F5F9;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-card-hover: #F8FAFC;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  /* Typography: Nextier DevFest & Apple Prestige Stack */
+  --font-family-display: 'Fraunces', 'Outfit', Georgia, serif;
+  --font-family-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
+
+  /* Borders & Dividers */
+  --border-light: rgba(226, 232, 240, 0.9);
+  --border-subtle: rgba(241, 245, 249, 0.95);
+  --border-focus: #00A859;
+
+  /* Silky Layered Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+  --shadow-xl: 0 24px 48px -12px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 0 24px rgba(0, 168, 89, 0.28);
+  --shadow-glow-red: 0 0 24px rgba(225, 29, 72, 0.28);
+
+  /* Apple Spring Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout Constants */
+  --border-radius-xs: 4px;
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 18px;
+  --border-radius-xl: 24px;
+  --border-radius-full: 9999px;
+
+  --container-max-width: 1340px;
+}
+
+/* ---------------- Luxury Raycast & Linear Dark Theme (Vibrant Neon Accents) ---------------- */
+[data-theme="dark"] {
+  --bg-primary: #0B0F19;
+  --bg-secondary: #111827;
+  --bg-surface: #141E33;
+  --bg-surface-elevated: #1B2642;
+  --bg-card-hover: #1F2D4E;
+  --bg-glass: rgba(16, 24, 40, 0.85);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --border-light: rgba(255, 255, 255, 0.09);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+
+  /* 1. NIGERIA: Electric Neon Green */
+  --color-ng-green: #00E676;
+  --layer-nigeria: #00E676;
+  --layer-nigeria-bg: rgba(0, 230, 118, 0.18);
+  --layer-nigeria-text: #69F0AE;
+  --layer-nigeria-border: rgba(0, 230, 118, 0.55);
+  --layer-nigeria-glow: rgba(0, 230, 118, 0.45);
+
+  /* 2. ENERGY SECTOR: High-Voltage Neon Red */
+  --color-energy: #FF2E56;
+  --layer-energy: #FF2E56;
+  --layer-energy-bg: rgba(255, 46, 86, 0.22);
+  --layer-energy-text: #FFA3B4;
+  --layer-energy-border: rgba(255, 46, 86, 0.6);
+  --layer-energy-glow: rgba(255, 46, 86, 0.5);
+
+  /* 3. AFRICA: Luminous Solar Gold */
+  --color-africa: #FBBF24;
+  --layer-africa: #FBBF24;
+  --layer-africa-bg: rgba(251, 191, 36, 0.18);
+  --layer-africa-text: #FDE68A;
+  --layer-africa-border: rgba(251, 191, 36, 0.55);
+  --layer-africa-glow: rgba(251, 191, 36, 0.4);
+
+  /* 4. GLOBAL: Electric Cyan / Sky Blue */
+  --color-global: #38BDF8;
+  --layer-global: #38BDF8;
+  --layer-global-bg: rgba(56, 189, 248, 0.18);
+  --layer-global-text: #BAE6FD;
+  --layer-global-border: rgba(56, 189, 248, 0.55);
+  --layer-global-glow: rgba(56, 189, 248, 0.4);
+
+  /* 5. TASKS: Electric Violet */
+  --color-task-purple: #C084FC;
+  --layer-task: #C084FC;
+  --layer-task-bg: rgba(168, 85, 247, 0.2);
+  --layer-task-text: #E9D5FF;
+  --layer-task-border: rgba(192, 132, 252, 0.6);
+  --layer-task-glow: rgba(192, 132, 252, 0.4);
+
+  --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.65);
+  --shadow-xl: 0 24px 50px -8px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 28px rgba(0, 230, 118, 0.4);
+  --shadow-glow-red: 0 0 28px rgba(255, 46, 86, 0.4);
+}

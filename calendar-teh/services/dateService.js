@@ -8,13 +8,17 @@
 
 const fs = require('fs');
 const path = require('path');
+const storage = require('./storageService');
 
-const LUNAR_FILE = path.join(__dirname, '../data/lunar_overrides.json');
+function getLunarFilePath() {
+  return storage.getDataFilePath ? storage.getDataFilePath('lunar_overrides.json') : path.join(__dirname, '../data/lunar_overrides.json');
+}
 
 function getLunarOverrides() {
+  const filePath = getLunarFilePath();
   try {
-    if (fs.existsSync(LUNAR_FILE)) {
-      const data = fs.readFileSync(LUNAR_FILE, 'utf8');
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf8');
       return JSON.parse(data);
     }
   } catch (err) {
@@ -24,8 +28,9 @@ function getLunarOverrides() {
 }
 
 function saveLunarOverrides(data) {
+  const filePath = getLunarFilePath();
   try {
-    fs.writeFileSync(LUNAR_FILE, JSON.stringify(data, null, 2), 'utf8');
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
     return true;
   } catch (err) {
     console.error('Error saving lunar overrides:', err);

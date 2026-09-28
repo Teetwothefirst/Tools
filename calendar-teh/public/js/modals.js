@@ -44,6 +44,13 @@ const Modals = {
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
     this.activeModalId = null;
     document.body.style.overflow = '';
+
+    // If modal was opened via direct /login or #login, cleanly reset URL
+    if (window.location.hash === '#login' || window.location.hash === '#register') {
+      history.replaceState(null, '', window.location.pathname);
+    } else if (window.location.pathname === '/login' || window.location.pathname === '/login/' || window.location.pathname === '/register' || window.location.pathname === '/register/') {
+      history.replaceState(null, '', '/');
+    }
   },
 
   // ----------------- Event Detail Modal -----------------

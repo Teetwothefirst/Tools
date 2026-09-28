@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Electricity Hub Calendar | Power Sector Intelligence & Observances</title>
-  <meta name="description" content="The Electricity Hub official observance calendar — collating and disseminating credible power industry data, statutory public holidays, clean energy milestones, and continental energy transition observances.">
+  <title>Celebration & Energy-Sector Calendar | Nigeria, Africa, Global & Power Observances</title>
+  <meta name="description" content="Interactive celebration calendar for Nigeria public holidays, African Union days, UN global observances, and power/energy sector milestones with automated advance email alerts.">
 
   <!-- Google Fonts: Fraunces (Editorial Display), Inter (Clean UI), JetBrains Mono (Dates & Metrics) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,23 +31,15 @@
         <a href="/" class="brand-logo">
           <div class="brand-icon">⚡</div>
           <div class="brand-text">
-            <h1>The Electricity Hub</h1>
-            <span class="brand-tagline">POWER SECTOR INTELLIGENCE</span>
+            <h1>Nigeria & Energy Calendar</h1>
           </div>
         </a>
 
         <div class="nav-actions">
-          <!-- When Logged In: Workspace Navigation Switcher (Dashboard vs Calendar) -->
-          <div class="workspace-nav-segmented" id="workspaceNavSegmented" style="display:none;">
-            <button type="button" class="workspace-segment-btn active" id="btnNavViewDashboard" title="Switch to KPI Dashboard">
-              <span>📊</span> Dashboard
-            </button>
-            <button type="button" class="workspace-segment-btn" id="btnNavViewCalendar" title="Switch to Observance Calendar">
-              <span>📅</span> Calendar
-            </button>
-          </div>
-          <!-- Hidden fallback for programmatic triggers -->
-          <button id="navTasksKpiBtn" style="display:none;"></button>
+          <!-- When Logged In: Task/KPI Switcher -->
+          <button class="nav-btn primary" id="navTasksKpiBtn" style="display:none;">
+            <span>📋</span> My Tasks & KPIs
+          </button>
 
           <!-- Notification Bell (Logged In) -->
           <div class="notification-bell-wrapper" id="headerNotificationBell" style="display:none;">
@@ -69,17 +61,17 @@
             <div class="user-avatar-circle" id="headerUserAvatar">👤</div>
             <div style="display:flex; flex-direction:column; line-height:1.2;">
               <span class="user-name-text" id="headerUserName">Adejumo Adetomiwa</span>
-              <span style="font-size:10.5px; color:var(--text-muted);" id="headerUserRole">Communications Analyst • The Electricity Hub</span>
+              <span style="font-size:10.5px; color:var(--text-muted);" id="headerUserRole">Communications Analyst</span>
             </div>
             <button type="button" class="user-logout-btn" id="headerLogoutBtn" title="Log Out" style="background:none; border:none; cursor:pointer; font-size:14px; margin-left:4px; color:var(--text-muted);">⎋</button>
           </div>
 
-          <!-- Public Actions (Logged Out - Login hidden from general visitors, accessed via /login) -->
+          <!-- Public Actions (Logged Out) -->
           <div class="header-auth-actions" id="headerAuthActions" style="display:flex; align-items:center; gap:8px;">
             <button class="nav-btn" id="navGetAlertsBtn">
               <span>🔔</span> Get Alerts
             </button>
-            <button class="nav-btn primary" id="navLoginBtn" style="display:none;">
+            <button class="nav-btn primary" id="navLoginBtn">
               <span>🔐</span> Log In
             </button>
           </div>
@@ -99,130 +91,83 @@
       <div class="hero-minimal-header">
         <div class="hero-badge-pill">
           <span class="pulse-dot"></span>
-          <span>⚡ A Nextier Platform &bull; Power Sector Intelligence</span>
+          <span>Official Nigerian & Global Energy Observances</span>
         </div>
-        <h2 class="hero-title">The Electricity Hub Calendar</h2>
+        <h2 class="hero-title">Nigeria & Energy Calendar</h2>
         <p class="hero-subtitle">
-          Collating and disseminating credible power industry data, statutory public holidays, clean energy milestones, and continental energy transition observances.
+          Statutory public holidays, African Union milestones, and clean power sector observances synchronized in one fluid calendar.
         </p>
       </div>
 
-      <!-- Bento Grid Showcase (Nextier Editorial Media Integration) -->
+      <!-- Bento Grid Showcase -->
       <div class="hero-bento-grid" id="heroSpotlight">
-        <!-- Bento Card 1: Nextier The Electricity Hub Visual Showcase -->
-        <div class="bento-card bento-card-teh-showcase">
-          <div class="teh-showcase-media">
-            <img src="images/teh-hero-energy-grid.jpg" alt="The Electricity Hub - Connecting the Globe & Clean Energy Transition" class="teh-showcase-img" id="tehHeroImage">
-            <div class="teh-showcase-overlay"></div>
-
-            <!-- Floating Top Badges -->
-            <div class="teh-media-top-badges">
-              <span class="teh-glass-pill teh-brand-pill">
-                <span class="pulse-bolt">⚡</span> THE ELECTRICITY HUB
-              </span>
-              <span class="teh-glass-pill teh-live-pill">
-                <span class="pulse-dot"></span> LIVE 2026 TRACK
-              </span>
+        <!-- Bento Card 1: Next Up Observance (Interactive Spotlight) -->
+        <div class="bento-card bento-card-spotlight">
+          <div class="bento-spotlight-header">
+            <div class="pulse-dot-container">
+              <span class="pulse-dot"></span>
+              <span class="bento-pulse-label">NEXT OBSERVANCE</span>
             </div>
+            <span class="spotlight-strip-tag" id="spotlightDaysBadge">UPCOMING</span>
+          </div>
 
-            <!-- Floating Bottom Content Overlay -->
-            <div class="teh-media-bottom-content">
-              <div class="teh-media-caption-group">
-                <span class="teh-media-kicker">POWER SECTOR INTELLIGENCE</span>
-                <h3 class="teh-media-headline">Connecting the Globe &amp; Clean Energy Transition</h3>
-                <p class="teh-media-sub">Collating and disseminating credible power industry data, statutory public holidays, and clean power milestones across Nigeria and Africa.</p>
-              </div>
+          <h3 class="bento-spotlight-title" id="spotlightTitle">Nigeria Independence Day</h3>
+          <div class="bento-spotlight-date">
+            <span>📅</span> <span id="spotlightDateText">Thursday, October 1, 2026</span>
+          </div>
+          <p class="bento-spotlight-desc" id="spotlightDesc">Commemorating national sovereignty and statutory public observance across the federation.</p>
 
-              <!-- Interactive Sector Micro-Pills (Quick Filter Triggers) -->
-              <div class="teh-media-stat-chips">
-                <button type="button" class="teh-chip-btn energy" onclick="window.CalendarRenderer.toggleLayer('energy')" title="Filter Power & Energy Sector">
-                  <span class="chip-dot"></span> 17 Power Days
-                </button>
-                <button type="button" class="teh-chip-btn nigeria" onclick="window.CalendarRenderer.toggleLayer('nigeria')" title="Filter Nigeria Statutory Holidays">
-                  <span class="chip-dot"></span> 13 Nigeria Public
-                </button>
-                <button type="button" class="teh-chip-btn africa" onclick="window.CalendarRenderer.toggleLayer('africa')" title="Filter AU & ECOWAS Days">
-                  <span class="chip-dot"></span> 12 AU / ECOWAS
-                </button>
-                <button type="button" class="teh-chip-btn global" onclick="window.CalendarRenderer.toggleLayer('global')" title="Filter UN & WHO Days">
-                  <span class="chip-dot"></span> 26 UN & WHO
-                </button>
-              </div>
-            </div>
+          <div class="bento-spotlight-actions">
+            <button class="btn btn-primary btn-sm" id="spotlightNotifyBtn">
+              <span>🔔</span> Get Alert
+            </button>
+            <button class="btn btn-secondary btn-sm" id="spotlightDetailsBtn">
+              Details →
+            </button>
           </div>
         </div>
 
-        <!-- Bento Right Column: Spotlight Next Up & Observance Pulse -->
-        <div class="bento-side-column">
-          <!-- Bento Card 2: Next Up Observance (Interactive Spotlight) -->
-          <div class="bento-card bento-card-spotlight">
-            <div class="bento-spotlight-header">
-              <div class="pulse-dot-container">
-                <span class="pulse-dot"></span>
-                <span class="bento-pulse-label">NEXT OBSERVANCE</span>
+        <!-- Bento Card 2: Sector & Observance Pulse -->
+        <div class="bento-card bento-card-pulse">
+          <div class="bento-pulse-header">
+            <span class="bento-card-icon" style="font-size:16px;">⚡</span>
+            <h4>2026 Observance Pulse</h4>
+          </div>
+
+          <div class="bento-stats-column">
+            <div class="bento-stat-row">
+              <div class="bento-stat-label">
+                <span class="mini-layer-dot nigeria"></span>
+                <span>Statutory Public Holidays</span>
               </div>
-              <span class="spotlight-strip-tag" id="spotlightDaysBadge">UPCOMING</span>
+              <span class="bento-stat-num" id="bentoStatNigeria">13</span>
             </div>
-
-            <h3 class="bento-spotlight-title" id="spotlightTitle">Nigeria Independence Day</h3>
-            <div class="bento-spotlight-date">
-              <span>📅</span> <span id="spotlightDateText">Thursday, October 1, 2026</span>
+            <div class="bento-stat-row">
+              <div class="bento-stat-label">
+                <span class="mini-layer-dot energy"></span>
+                <span>Clean Energy & Power Days</span>
+              </div>
+              <span class="bento-stat-num" id="bentoStatEnergy">17</span>
             </div>
-            <p class="bento-spotlight-desc" id="spotlightDesc">Commemorating national sovereignty and statutory public observance across the federation.</p>
-
-            <div class="bento-spotlight-actions">
-              <button class="btn btn-primary btn-sm" id="spotlightNotifyBtn">
-                <span>🔔</span> Get Alert
-              </button>
-              <button class="btn btn-secondary btn-sm" id="spotlightDetailsBtn">
-                Details →
-              </button>
+            <div class="bento-stat-row">
+              <div class="bento-stat-label">
+                <span class="mini-layer-dot africa"></span>
+                <span>AU & ECOWAS Observances</span>
+              </div>
+              <span class="bento-stat-num" id="bentoStatAfrica">12</span>
+            </div>
+            <div class="bento-stat-row">
+              <div class="bento-stat-label">
+                <span class="mini-layer-dot global"></span>
+                <span>UN, WHO & EU Observances</span>
+              </div>
+              <span class="bento-stat-num" id="bentoStatGlobal">26</span>
             </div>
           </div>
 
-          <!-- Bento Card 3: Sector & Observance Pulse -->
-          <div class="bento-card bento-card-pulse">
-            <div class="bento-pulse-header">
-              <span class="bento-card-icon" style="font-size:16px;">⚡</span>
-              <h4>Observance Pulse</h4>
-              <span class="bento-pulse-subtag">68 Events</span>
-            </div>
-
-            <div class="bento-stats-column">
-              <div class="bento-stat-row" onclick="window.CalendarRenderer.toggleLayer('energy')" style="cursor:pointer;" title="Click to filter Energy events">
-                <div class="bento-stat-label">
-                  <span class="mini-layer-dot energy"></span>
-                  <span>Power & Energy Sector</span>
-                </div>
-                <span class="bento-stat-num energy" id="bentoStatEnergy">17</span>
-              </div>
-              <div class="bento-stat-row" onclick="window.CalendarRenderer.toggleLayer('nigeria')" style="cursor:pointer;" title="Click to filter Nigeria events">
-                <div class="bento-stat-label">
-                  <span class="mini-layer-dot nigeria"></span>
-                  <span>Statutory Public Holidays</span>
-                </div>
-                <span class="bento-stat-num nigeria" id="bentoStatNigeria">13</span>
-              </div>
-              <div class="bento-stat-row" onclick="window.CalendarRenderer.toggleLayer('africa')" style="cursor:pointer;" title="Click to filter African Union & ECOWAS events">
-                <div class="bento-stat-label">
-                  <span class="mini-layer-dot africa"></span>
-                  <span>AU & ECOWAS Days</span>
-                </div>
-                <span class="bento-stat-num africa" id="bentoStatAfrica">12</span>
-              </div>
-              <div class="bento-stat-row" onclick="window.CalendarRenderer.toggleLayer('global')" style="cursor:pointer;" title="Click to filter UN & WHO events">
-                <div class="bento-stat-label">
-                  <span class="mini-layer-dot global"></span>
-                  <span>UN, WHO & EU Days</span>
-                </div>
-                <span class="bento-stat-num global" id="bentoStatGlobal">26</span>
-              </div>
-            </div>
-
-            <div class="bento-pulse-footer">
-              <span style="color:var(--color-ng-green); font-size:12px;">✓</span>
-              <span>Advance email alert engine active</span>
-            </div>
+          <div class="bento-pulse-footer">
+            <span style="color:var(--color-ng-green); font-size:12px;">✓</span>
+            <span>Advance email alert engine active</span>
           </div>
         </div>
       </div>
@@ -286,165 +231,64 @@
     </div>
   </section>
 
-  <!-- Dedicated Executive Task & KPI Tracker Dashboard (Completely Distinct Workspace) -->
+  <!-- Dedicated Task & KPI Tracker Dashboard (Apple Minimalist UX) -->
   <section class="kpi-dashboard-section" id="kpiDashboardSection">
     <div class="container">
-      <!-- 1. Executive Workspace Hero Banner -->
-      <div class="kpi-exec-banner">
-        <div class="kpi-exec-banner-left">
-          <div class="kpi-exec-badge">
-            <span class="pulse-bolt">⚡</span>
-            <span>THE ELECTRICITY HUB · EXECUTIVE WORKSPACE</span>
-          </div>
-          <h2 class="kpi-exec-title">Communications & Power Sector KPI Tracker</h2>
-          <p class="kpi-exec-desc">
-            Welcome back, <strong id="kpiUserNameDisplay">Adetomiwa Adejumo</strong> &mdash; Communications Analyst &bull; Managing 19 core power sector deliverables, Nextier Power Dialogues, and regulatory briefs.
-          </p>
-        </div>
-
-        <div class="kpi-exec-actions">
-          <button class="btn btn-secondary btn-sm" id="btnBackToCalendar" title="Switch to Observance Calendar View">
-            <span>📅</span> Observance Calendar
-          </button>
-          <button class="btn btn-primary btn-sm" id="btnCreateTask">
-            <span>➕</span> New Deliverable
-          </button>
-          <button class="btn btn-secondary btn-sm" id="btnImportTehKpiTemplate" title="Reset standard 19 deliverables">
-            <span>⚡</span> Reset 19 KPIs
-          </button>
-        </div>
-      </div>
-
-      <!-- 2. High-Impact Executive KPI Scoreboard (4 Bento Metric Cards) -->
-      <div class="kpi-scoreboard-grid">
-        <!-- Metric Card 1: Overall Delivery Rate -->
-        <div class="kpi-metric-card primary">
-          <div class="metric-card-top">
-            <span class="metric-label">OVERALL DELIVERY SCORE</span>
-            <span class="metric-icon">🎯</span>
-          </div>
-          <div class="metric-value-row">
-            <span class="metric-big-score" id="kpiOverallScore">0%</span>
-            <span class="metric-score-status" id="kpiOverallStatusBadge">Calculating...</span>
-          </div>
-          <div class="metric-progress-track">
-            <div class="metric-progress-fill" id="kpiScoreProgressBar" style="width: 0%;"></div>
-          </div>
-          <div class="metric-footer-note" id="kpiProgressSummary">
-            19 core deliverables tracked for FY 2026
+      <!-- Executive Header Bar -->
+      <div class="kpi-apple-banner">
+        <div class="kpi-apple-info">
+          <h2>My Deliverables & KPIs</h2>
+          <div class="kpi-apple-subtitle">
+            Communications Analyst · The Electricity Hub (TEH) · FY 2025/2026 Focus
           </div>
         </div>
 
-        <!-- Metric Card 2: Health Pipeline Breakdown -->
-        <div class="kpi-metric-card">
-          <div class="metric-card-top">
-            <span class="metric-label">STATUS PIPELINE</span>
-            <span class="metric-icon">⚡</span>
+        <div class="kpi-apple-score-box">
+          <div class="kpi-score-circle-display">
+            <span class="kpi-score-number" id="kpiOverallScore">--%</span>
+            <span class="kpi-score-unit">Done</span>
           </div>
-          <div class="metric-health-grid">
-            <div class="health-item on_track" onclick="window.TasksManager.setStatusFilter('on_track')" title="Filter On Track">
-              <span class="health-num" id="metricCountOnTrack">0</span>
-              <span class="health-label">🟢 On Track</span>
-            </div>
-            <div class="health-item at_risk" onclick="window.TasksManager.setStatusFilter('at_risk')" title="Filter Attention Needed">
-              <span class="health-num" id="metricCountAtRisk">0</span>
-              <span class="health-label">🟠 Attention</span>
-            </div>
-            <div class="health-item completed" onclick="window.TasksManager.setStatusFilter('completed')" title="Filter Completed">
-              <span class="health-num" id="metricCountCompleted">0</span>
-              <span class="health-label">✅ Completed</span>
-            </div>
-          </div>
-          <div class="metric-footer-note">
-            Interactive pipeline &bull; Click to filter
-          </div>
-        </div>
-
-        <!-- Metric Card 3: Publishing & Broadcast Cadence -->
-        <div class="kpi-metric-card">
-          <div class="metric-card-top">
-            <span class="metric-label">PUBLISHING CADENCE</span>
-            <span class="metric-icon">📡</span>
-          </div>
-          <div class="metric-cadence-list">
-            <div class="cadence-row">
-              <span class="cadence-name">Daily Digest & Socials</span>
-              <span class="cadence-val" id="kpiCadenceDaily">2 Active</span>
-            </div>
-            <div class="cadence-row">
-              <span class="cadence-name">Bi-Weekly Power Podcast</span>
-              <span class="cadence-val" id="kpiCadenceBiweekly">4 Active</span>
-            </div>
-            <div class="cadence-row">
-              <span class="cadence-name">Monthly Power Dialogue</span>
-              <span class="cadence-val" id="kpiCadenceMonthly">7 Active</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Metric Card 4: Live RFC 5545 iCalendar Sync -->
-        <div class="kpi-metric-card sync">
-          <div class="metric-card-top">
-            <span class="metric-label">CALENDAR FEED SYNC</span>
-            <span class="metric-icon">🔄</span>
-          </div>
-          <p class="sync-desc">
-            Sync your deliverables into Apple Calendar, Google Calendar, or Outlook.
-          </p>
-          <div class="sync-input-group">
-            <input type="text" id="icsFeedUrlInput" readonly value="" placeholder="Login to view feed URL">
-            <button type="button" class="btn btn-primary btn-sm" id="btnCopyIcsFeed">📋 Copy</button>
+          <div class="kpi-apple-actions">
+            <button class="btn btn-secondary btn-sm" id="btnBackToCalendar" title="Return to Observance Calendar">
+              <span>📅</span> Calendar
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnCreateTask">
+              <span>➕</span> New Deliverable
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btnImportTehKpiTemplate" title="Reload standard 19 deliverables">
+              <span>⚡</span> Reset 19 KPIs
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- 3. Objective Pillar Tabs (The 4 TEH Core Pillars) -->
-      <div class="kpi-pillar-bar">
-        <button class="kpi-pillar-tab active" data-objective="all">
-          <span>📁</span> All Deliverables <span class="pillar-score-badge" id="badgePillarAll">20</span>
+      <!-- Quick Interactive Status Filters -->
+      <div class="kpi-filter-strip">
+        <button class="kpi-status-chip active" data-filter="all">
+          All Deliverables <span class="kpi-chip-count" id="chipCountAll">0</span>
         </button>
-        <button class="kpi-pillar-tab" data-objective="editorial">
-          <span>📰</span> Editorial & Social <span class="pillar-score-badge" id="badgePillarEditorial">73%</span>
+        <button class="kpi-status-chip" data-filter="on_track">
+          🟢 On Track <span class="kpi-chip-count" id="chipCountOnTrack">0</span>
         </button>
-        <button class="kpi-pillar-tab" data-objective="dialogue">
-          <span>⚡</span> Power Dialogue <span class="pillar-score-badge" id="badgePillarDialogue">94%</span>
+        <button class="kpi-status-chip" data-filter="at_risk">
+          🟠 Needs Attention <span class="kpi-chip-count" id="chipCountAtRisk">0</span>
         </button>
-        <button class="kpi-pillar-tab" data-objective="podcast">
-          <span>🎙️</span> Power Podcast <span class="pillar-score-badge" id="badgePillarPodcast">67%</span>
-        </button>
-        <button class="kpi-pillar-tab" data-objective="regulatory">
-          <span>📊</span> Regulatory Intelligence <span class="pillar-score-badge" id="badgePillarRegulatory">72%</span>
+        <button class="kpi-status-chip" data-filter="completed">
+          ✅ Completed <span class="kpi-chip-count" id="chipCountCompleted">0</span>
         </button>
       </div>
 
-      <!-- 4. Quick Interactive Status Filters & View Controls -->
-      <div class="kpi-controls-strip">
-        <div class="kpi-filter-strip">
-          <button class="kpi-status-chip active" data-filter="all">
-            All Statuses <span class="kpi-chip-count" id="chipCountAll">0</span>
-          </button>
-          <button class="kpi-status-chip" data-filter="on_track">
-            🟢 On Track <span class="kpi-chip-count" id="chipCountOnTrack">0</span>
-          </button>
-          <button class="kpi-status-chip" data-filter="at_risk">
-            🟠 Needs Attention <span class="kpi-chip-count" id="chipCountAtRisk">0</span>
-          </button>
-          <button class="kpi-status-chip" data-filter="completed">
-            ✅ Completed <span class="kpi-chip-count" id="chipCountCompleted">0</span>
-          </button>
+      <!-- View Switcher & Search Toolbar -->
+      <div class="kpi-toolbar-row">
+        <div class="kpi-view-segmented">
+          <button class="kpi-tab-btn active" data-view="cards">📋 Deliverables</button>
+          <button class="kpi-tab-btn" data-view="grouped">📂 By Objective</button>
+          <button class="kpi-tab-btn" data-view="matrix">📊 Detailed Matrix</button>
         </div>
 
-        <div class="kpi-toolbar-right">
-          <div class="kpi-view-segmented">
-            <button class="kpi-tab-btn active" data-view="cards">📋 Cards</button>
-            <button class="kpi-tab-btn" data-view="grouped">📂 By Objective</button>
-            <button class="kpi-tab-btn" data-view="matrix">📊 Matrix Table</button>
-          </div>
-
-          <div class="kpi-search-box">
-            <span class="kpi-search-icon">🔍</span>
-            <input type="text" class="kpi-search-input" id="kpiSearchInput" placeholder="Search deliverables...">
-          </div>
+        <div class="kpi-search-box">
+          <span class="kpi-search-icon">🔍</span>
+          <input type="text" class="kpi-search-input" id="kpiSearchInput" placeholder="Search deliverables...">
         </div>
       </div>
 
@@ -477,6 +321,18 @@
               <!-- Dynamically populated by TasksManager -->
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Live iCalendar Feed Sync Box (Phase 1 Sync) -->
+      <div class="sync-feed-box">
+        <div class="sync-feed-text">
+          <h4>📅 Live Calendar Feed (.ICS Sync)</h4>
+          <p>Sync your task deadlines directly with Apple Calendar, Google Calendar, or Outlook.</p>
+        </div>
+        <div class="sync-feed-input-row">
+          <input type="text" id="icsFeedUrlInput" readonly value="" placeholder="Login to view feed URL">
+          <button type="button" class="btn btn-primary btn-sm" id="btnCopyIcsFeed">📋 Copy URL</button>
         </div>
       </div>
     </div>
@@ -517,18 +373,18 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <h4>The Electricity Hub</h4>
+          <h4>Nigeria & Energy Calendar</h4>
           <p>
-            Nextier's power sector intelligence and digital media platform &mdash; collating and disseminating credible energy data, statutory holidays, and clean power transition milestones across Nigeria and Africa.
+            An authoritative calendar capturing Nigerian public holidays, continental African Union observances, and renewable power sector milestones.
           </p>
         </div>
 
         <div class="footer-col">
           <h5>Observances</h5>
           <ul class="footer-links">
-            <li><a href="#" onclick="window.CalendarRenderer.setView('month'); window.CalendarRenderer.toggleLayer('energy'); return false;">Power & Energy Sector</a></li>
             <li><a href="#" onclick="window.CalendarRenderer.setView('month'); window.CalendarRenderer.toggleLayer('nigeria'); return false;">Nigeria Statutory Holidays</a></li>
             <li><a href="#" onclick="window.CalendarRenderer.setView('month'); window.CalendarRenderer.toggleLayer('africa'); return false;">African Union Observances</a></li>
+            <li><a href="#" onclick="window.CalendarRenderer.setView('month'); window.CalendarRenderer.toggleLayer('energy'); return false;">Power & Energy Sector</a></li>
             <li><a href="#" onclick="window.CalendarRenderer.setView('month'); window.CalendarRenderer.toggleLayer('global'); return false;">UN International Days</a></li>
           </ul>
         </div>
@@ -538,6 +394,7 @@
           <ul class="footer-links">
             <li><a href="#" id="footerManageAlerts">Manage Alert Preferences</a></li>
             <li><a href="#" onclick="window.Modals.openManageAlertsModal(); return false;">1-Click Unsubscribe</a></li>
+            <li><a href="#" id="footerAdminHub">Admin Hub & Outbox</a></li>
             <li><a href="#" id="footerPrivacy">Privacy Policy (NDPR)</a></li>
           </ul>
         </div>
@@ -545,7 +402,7 @@
 
       <div class="footer-bottom">
         <div>
-          © 2026 The Electricity Hub (A Nextier Initiative). All rights reserved.
+          © 2026 Nigeria & Energy Calendar.
         </div>
         <div>
           Automated scheduling via node-cron with RFC 5545 iCalendar sync.
@@ -1032,20 +889,23 @@
     </div>
   </div>
 
-  <!-- 7. Authentication Modal (Dedicated Single-View: Login, Sign Up, or Forgot Password) -->
+  <!-- 7. Authentication Modal (Login / Sign Up / Forgot Password) -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
       <button class="modal-close-btn">&times;</button>
       <div class="modal-header-banner">
         <div class="ankara-ribbon-subtle" style="position:absolute; top:0; left:0; right:0;"></div>
-        <div class="spotlight-tag" id="authModalTag"><span>🔐</span> SECURE ACCESS</div>
-        <h3 class="modal-title" id="authModalTitle">Log In to The Electricity Hub</h3>
-        <p class="modal-subtitle" id="authModalSubtitle" style="font-size:13px; color:var(--text-secondary); margin-top:4px;">
-          Access your personal productivity deliverables, NERC tracking, and calendar.
-        </p>
+        <div class="spotlight-tag"><span>🔐</span> SECURE ACCESS</div>
+        <h3 class="modal-title">Personal Productivity & KPI Hub</h3>
       </div>
       <div class="modal-body">
-        <!-- View 1: Log In (Default when clicking Log In) -->
+        <div class="auth-nav-tabs">
+          <button class="auth-tab-btn active" data-tab="login">Log In</button>
+          <button class="auth-tab-btn" data-tab="register">Sign Up</button>
+          <button class="auth-tab-btn" data-tab="forgot">Forgot Password</button>
+        </div>
+
+        <!-- Tab 1: Log In -->
         <div class="auth-form-panel active" id="authPanel_login">
           <form id="loginForm">
             <div class="form-group">
@@ -1053,16 +913,13 @@
               <input type="email" name="email" class="form-control" placeholder="adejumo@teh.energy" required>
             </div>
             <div class="form-group">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                <label class="form-label" style="margin-bottom:0;">Password <span class="required-star">*</span></label>
-                <a href="#" class="auth-switch-link" id="linkForgotPassword" style="font-size:12px;">Forgot password?</a>
-              </div>
+              <label class="form-label">Password <span class="required-star">*</span></label>
               <input type="password" name="password" class="form-control" placeholder="••••••••" required>
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
               <button type="button" class="btn btn-secondary btn-sm" id="btnFillDemoAccount">
-                ⚡ Quick Fill Demo (Adetomiwa Adejumo)
+                ⚡ Quick Fill Demo (Communications Analyst)
               </button>
             </div>
 
@@ -1070,14 +927,10 @@
               Log In to Workspace
             </button>
             <div id="loginStatus" style="margin-top:10px;"></div>
-
-            <div class="auth-footer-prompt">
-              Don't have an account? <a href="#" class="auth-switch-link" id="linkGoToRegister" style="color:var(--color-ng-green);">Sign up</a>
-            </div>
           </form>
         </div>
 
-        <!-- View 2: Sign Up (Dedicated view when clicking Sign up) -->
+        <!-- Tab 2: Sign Up -->
         <div class="auth-form-panel" id="authPanel_register">
           <form id="registerForm">
             <div class="form-group">
@@ -1107,18 +960,14 @@
               Create Account & Seed KPIs
             </button>
             <div id="registerStatus" style="margin-top:10px;"></div>
-
-            <div class="auth-footer-prompt">
-              Already have an account? <a href="#" class="auth-switch-link" id="linkRegisterBackToLogin" style="color:var(--color-ng-green);">Log in</a>
-            </div>
           </form>
         </div>
 
-        <!-- View 3: Forgot Password (Dedicated view when clicking Forgot password) -->
+        <!-- Tab 3: Forgot Password -->
         <div class="auth-form-panel" id="authPanel_forgot">
           <form id="forgotPasswordForm">
             <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
-              Enter your work email address and we'll send you secure password reset instructions.
+              Enter your email address to receive secure password reset instructions.
             </p>
             <div class="form-group">
               <label class="form-label">Email Address <span class="required-star">*</span></label>
@@ -1129,10 +978,6 @@
               Send Reset Link
             </button>
             <div id="forgotStatus" style="margin-top:10px;"></div>
-
-            <div class="auth-footer-prompt">
-              <a href="#" class="auth-switch-link" id="linkForgotBackToLogin" style="color:var(--text-secondary);">← Back to Log In</a>
-            </div>
           </form>
         </div>
       </div>

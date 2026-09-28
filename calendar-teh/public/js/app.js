@@ -276,22 +276,62 @@ function bindGlobalControls() {
 
 // ----------------- URL Routing -----------------
 function handleUrlRouting() {
+  const path = window.location.pathname.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get('view');
   const token = urlParams.get('token');
   const email = urlParams.get('email');
 
+  // Direct login route support: /login, #login, or ?view=login
+  if (path === '/login' || path === '/login/' || hash === '#login' || view === 'login') {
+    setTimeout(() => {
+      if (window.Auth && !window.Auth.isLoggedIn()) {
+        window.Auth.openAuthModal('login');
+      } else if (window.TasksManager) {
+        window.TasksManager.openDashboard();
+      }
+    }, 250);
+    return;
+  }
+
+  // Direct registration route support: /register, #register, or ?view=register
+  if (path === '/register' || path === '/register/' || hash === '#register' || view === 'register') {
+    setTimeout(() => {
+      if (window.Auth && !window.Auth.isLoggedIn()) {
+        window.Auth.openAuthModal('register');
+      }
+    }, 250);
+    return;
+  }
+
+  // Direct dashboard route support: /dashboard, #dashboard, or ?view=dashboard
+  if (path === '/dashboard' || path === '/dashboard/' || hash === '#dashboard' || view === 'dashboard' || view === 'tasks') {
+    setTimeout(() => {
+      if (window.Auth && window.Auth.isLoggedIn()) {
+        if (window.TasksManager) window.TasksManager.openDashboard();
+      } else if (window.Auth) {
+        window.Auth.openAuthModal('login');
+      }
+    }, 250);
+    return;
+  }
+
   if (view === 'manage-alerts' || view === 'unsubscribe' || (token && !view)) {
     setTimeout(() => {
       window.Modals.openManageAlertsModal(token, email);
     }, 400);
-  } else if (view === 'admin') {
+  } else if (view === 'admin' || path === '/admin' || hash === '#admin') {
     setTimeout(() => {
       window.AdminHub.openAdminModal();
     }, 400);
-  } else if (view === 'tasks') {
-    setTimeout(() => {
-      if (window.TasksManager) window.TasksManager.toggleDashboard();
-    }, 400);
   }
 }
+
+// Listen for browser navigation changes
+window.addEventListener('hashchange', () => {
+  handleUrlRouting();
+});
+window.addEventListener('popstate', () => {
+  handleUrlRouting();
+});

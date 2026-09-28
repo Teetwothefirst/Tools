@@ -1,5 +1,85 @@
 [
   {
+    "id": "906e927d-58bd-4f9b-a3ae-b53e95307b91",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-0fa612db",
+    "type": "warning",
+    "title": "⚠️ Status Alert: Live Event Community Engagement is now AT RISK",
+    "message": "Current progress: 5/7 live coverages. Due date: 2026-09-30.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:01.431Z"
+  },
+  {
+    "id": "89ab9eb3-2460-47e3-8617-ad0949bf0e16",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-c33bfedc",
+    "type": "warning",
+    "title": "⚠️ Status Alert: Monthly Social Media Content Strategy is now AT RISK",
+    "message": "Current progress: 2/3 content calendars. Due date: 2026-09-30.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:00.840Z"
+  },
+  {
+    "id": "997623cd-b6b2-4a69-a8e9-d25d62a9d00b",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-7c507127",
+    "type": "warning",
+    "title": "⚠️ Status Alert: Source Validation Compliance is now AT RISK",
+    "message": "Current progress: 2/3 audited batches. Due date: 2026-09-30.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:00.780Z"
+  },
+  {
+    "id": "bd1bf733-1f93-42de-a0d5-92fd021b078b",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-304de3f2",
+    "type": "warning",
+    "title": "⚠️ Status Alert: X-Space Content & Moderation is now AT RISK",
+    "message": "Current progress: 2/3 sessions. Due date: 2026-09-30.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:00.738Z"
+  },
+  {
+    "id": "bfca0ed8-0856-437c-9005-679e3ce6e484",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-f60883c3",
+    "type": "warning",
+    "title": "⚠️ Status Alert: Short-Form Video & Voiceover is now AT RISK",
+    "message": "Current progress: 2/3 videos. Due date: 2026-09-30.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:00.659Z"
+  },
+  {
+    "id": "cada7013-bd27-45ec-a8c9-485e53cef961",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-1f303409",
+    "type": "warning",
+    "title": "⚠️ Status Alert: Social Media & Public Engagement Copy is now AT RISK",
+    "message": "Current progress: 42/60 posts/scripts. Due date: 2026-09-30.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:00.366Z"
+  },
+  {
+    "id": "3f95668d-5ad8-4450-be2c-a4dc955dbacd",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-ea717f38",
+    "type": "warning",
+    "title": "⚠️ Status Alert: Newsletter & Blog Output is now AT RISK",
+    "message": "Current progress: 4/6 pieces. Due date: 2026-09-30.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:00.341Z"
+  },
+  {
+    "id": "ca706db8-a795-440d-9a0a-a2c34148ccc9",
+    "user_id": "usr-adejumo-001",
+    "task_id": "tsk-teh-002",
+    "type": "reminder",
+    "title": "⏰ Due in 2 day(s): Featured In-Depth Articles: Off-Grid Solar & Mini-Grids",
+    "message": "Objective: Content Creation & Editorial Support. Progress: 5/6 articles.",
+    "read": false,
+    "created_at": "2026-09-28T07:00:00.196Z"
+  },
+  {
     "id": "notif-teh-001",
     "user_id": "usr-adejumo-001",
     "task_id": "tsk-teh-003",

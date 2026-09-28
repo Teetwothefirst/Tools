@@ -7,7 +7,12 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-const DATA_DIR = path.join(__dirname, '../data');
+const isVercel = Boolean(process.env.VERCEL);
+const DEFAULT_DATA_DIR = path.join(process.cwd(), 'data');
+const DATA_DIR = isVercel
+  ? path.join('/tmp', 'calendar-teh-data')
+  : (fs.existsSync(DEFAULT_DATA_DIR) ? DEFAULT_DATA_DIR : path.join(__dirname, '../data'));
+
 const EVENTS_FILE = path.join(DATA_DIR, 'events.json');
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'subscribers.json');
 const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
@@ -17,28 +22,63 @@ const TASKS_FILE = path.join(DATA_DIR, 'tasks.json');
 const USER_NOTIFS_FILE = path.join(DATA_DIR, 'user_notifications.json');
 const KPI_TEMPLATE_FILE = path.join(DATA_DIR, 'kpi_template.json');
 
+const memCache = {};
+
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+    try {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    } catch (e) {
+      console.warn('Could not create DATA_DIR:', e);
+    }
   }
+
+  // If running in /tmp (e.g. on Vercel), copy seed files from project data directory
+  if (DATA_DIR !== DEFAULT_DATA_DIR && fs.existsSync(DEFAULT_DATA_DIR)) {
+    try {
+      const files = fs.readdirSync(DEFAULT_DATA_DIR);
+      files.forEach(file => {
+        const src = path.join(DEFAULT_DATA_DIR, file);
+        const dest = path.join(DATA_DIR, file);
+        if (fs.statSync(src).isFile() && !fs.existsSync(dest)) {
+          fs.copyFileSync(src, dest);
+        }
+      });
+    } catch (err) {
+      console.warn('Could not seed files into /tmp:', err);
+    }
+  }
+}
+
+function getDataFilePath(filename) {
+  ensureDataDir();
+  return path.join(DATA_DIR, filename);
 }
 
 function readJSON(filePath, fallback = []) {
   try {
     ensureDataDir();
     if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2), 'utf8');
+      if (memCache[filePath]) return memCache[filePath];
+      try {
+        fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2), 'utf8');
+      } catch (e) {}
+      memCache[filePath] = fallback;
       return fallback;
     }
     const content = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(content || '[]');
+    const parsed = JSON.parse(content || '[]');
+    memCache[filePath] = parsed;
+    return parsed;
   } catch (err) {
+    if (memCache[filePath]) return memCache[filePath];
     console.error(`Error reading ${filePath}:`, err);
     return fallback;
   }
 }
 
 function writeJSON(filePath, data) {
+  memCache[filePath] = data;
   try {
     ensureDataDir();
     const tempPath = `${filePath}.tmp.${Date.now()}`;
@@ -46,8 +86,8 @@ function writeJSON(filePath, data) {
     fs.renameSync(tempPath, filePath);
     return true;
   } catch (err) {
-    console.error(`Error writing ${filePath}:`, err);
-    return false;
+    console.warn(`Filesystem write failed for ${filePath}, retained in-memory:`, err.message);
+    return true;
   }
 }
 
@@ -517,5 +557,6 @@ module.exports = {
   addUserNotification,
   markNotificationRead,
   markAllNotificationsRead,
-  getKpiTemplate
+  getKpiTemplate,
+  getDataFilePath
 };

@@ -15,7 +15,8 @@ const Auth = {
         this.user = res.user;
         this.updateUI();
         if (window.TasksManager) {
-          window.TasksManager.init();
+          await window.TasksManager.init();
+          window.TasksManager.openDashboard();
         }
         if (window.NotificationsCenter) {
           window.NotificationsCenter.startPolling();
@@ -44,6 +45,7 @@ const Auth = {
   updateUI() {
     const authActions = document.getElementById('headerAuthActions');
     const userProfile = document.getElementById('headerUserProfile');
+    const workspaceNav = document.getElementById('workspaceNavSegmented');
     const taskNavBtn = document.getElementById('navTasksKpiBtn');
     const notifBell = document.getElementById('headerNotificationBell');
     const userTaskFilterChip = document.getElementById('userTaskFilterChip');
@@ -52,15 +54,17 @@ const Auth = {
       if (authActions) authActions.style.display = 'none';
       if (userProfile) {
         userProfile.style.display = 'flex';
-        document.getElementById('headerUserName').textContent = this.user.name || 'My Account';
+        document.getElementById('headerUserName').textContent = this.user.name || 'Adetomiwa Adejumo';
         document.getElementById('headerUserRole').textContent = this.user.role || 'Communications Analyst';
       }
-      if (taskNavBtn) taskNavBtn.style.display = 'inline-flex';
+      if (workspaceNav) workspaceNav.style.display = 'inline-flex';
+      if (taskNavBtn) taskNavBtn.style.display = 'none';
       if (notifBell) notifBell.style.display = 'inline-block';
       if (userTaskFilterChip) userTaskFilterChip.style.display = 'inline-flex';
     } else {
       if (authActions) authActions.style.display = 'flex';
       if (userProfile) userProfile.style.display = 'none';
+      if (workspaceNav) workspaceNav.style.display = 'none';
       if (taskNavBtn) taskNavBtn.style.display = 'none';
       if (notifBell) notifBell.style.display = 'none';
       if (userTaskFilterChip) userTaskFilterChip.style.display = 'none';
@@ -80,7 +84,8 @@ const Auth = {
     }
 
     if (window.TasksManager) {
-      window.TasksManager.init();
+      await window.TasksManager.init();
+      window.TasksManager.openDashboard();
     }
     if (window.NotificationsCenter) {
       window.NotificationsCenter.startPolling();
@@ -103,7 +108,8 @@ const Auth = {
     }
 
     if (window.TasksManager) {
-      window.TasksManager.init();
+      await window.TasksManager.init();
+      window.TasksManager.openDashboard();
     }
     if (window.NotificationsCenter) {
       window.NotificationsCenter.startPolling();
@@ -124,28 +130,83 @@ const Auth = {
       window.NotificationsCenter.stopPolling();
     }
 
-    // Hide task dashboard if open
-    const kpiSection = document.getElementById('kpiDashboardSection');
-    const calSection = document.querySelector('.main-content');
-    if (kpiSection) kpiSection.classList.remove('active');
-    if (calSection) calSection.style.display = 'block';
+    // Switch view back to public landing page & calendar
+    if (window.TasksManager) {
+      window.TasksManager.openCalendar();
+    }
 
     if (refreshCalendar && window.CalendarRenderer) {
       window.CalendarRenderer.refresh();
     }
   },
 
-  bindAuthForms() {
-    // Auth Modal tabs
-    document.querySelectorAll('.auth-tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.getAttribute('data-tab');
-        document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
-        document.querySelectorAll('.auth-form-panel').forEach(p => {
-          p.classList.toggle('active', p.getAttribute('id') === `authPanel_${tab}`);
-        });
-      });
+  showAuthView(viewName = 'login') {
+    const tagEl = document.getElementById('authModalTag');
+    const titleEl = document.getElementById('authModalTitle');
+    const subEl = document.getElementById('authModalSubtitle');
+
+    // Hide all panels
+    document.querySelectorAll('.auth-form-panel').forEach(p => p.classList.remove('active'));
+
+    const targetPanel = document.getElementById(`authPanel_${viewName}`);
+    if (targetPanel) {
+      targetPanel.classList.add('active');
+    }
+
+    // Reset status messages
+    ['loginStatus', 'registerStatus', 'forgotStatus'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '';
     });
+
+    if (viewName === 'login') {
+      if (tagEl) tagEl.innerHTML = '<span>🔐</span> SECURE ACCESS';
+      if (titleEl) titleEl.textContent = 'Log In to The Electricity Hub';
+      if (subEl) subEl.textContent = 'Access your personal productivity deliverables, NERC tracking, and calendar.';
+    } else if (viewName === 'register') {
+      if (tagEl) tagEl.innerHTML = '<span>✨</span> NEW WORKSPACE';
+      if (titleEl) titleEl.textContent = 'Create Your Account';
+      if (subEl) subEl.textContent = 'Register to track personal deliverables, milestones, and team KPIs.';
+    } else if (viewName === 'forgot') {
+      if (tagEl) tagEl.innerHTML = '<span>🔑</span> ACCOUNT RECOVERY';
+      if (titleEl) titleEl.textContent = 'Reset Your Password';
+      if (subEl) subEl.textContent = 'Enter your work email address and we\'ll send you secure password reset instructions.';
+    }
+  },
+
+  bindAuthForms() {
+    // Dedicated view switcher links
+    const linkForgot = document.getElementById('linkForgotPassword');
+    if (linkForgot) {
+      linkForgot.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showAuthView('forgot');
+      });
+    }
+
+    const linkGoRegister = document.getElementById('linkGoToRegister');
+    if (linkGoRegister) {
+      linkGoRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showAuthView('register');
+      });
+    }
+
+    const linkForgotBack = document.getElementById('linkForgotBackToLogin');
+    if (linkForgotBack) {
+      linkForgotBack.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showAuthView('login');
+      });
+    }
+
+    const linkRegBack = document.getElementById('linkRegisterBackToLogin');
+    if (linkRegBack) {
+      linkRegBack.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showAuthView('login');
+      });
+    }
 
     // Login Form Submit
     const loginForm = document.getElementById('loginForm');
@@ -232,9 +293,8 @@ const Auth = {
     }
   },
 
-  openAuthModal(defaultTab = 'login') {
-    const tabBtn = document.querySelector(`.auth-tab-btn[data-tab="${defaultTab}"]`);
-    if (tabBtn) tabBtn.click();
+  openAuthModal(defaultView = 'login') {
+    this.showAuthView(defaultView);
     window.Modals.open('authModal');
   }
 };
