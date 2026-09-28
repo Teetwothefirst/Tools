@@ -849,8 +849,11 @@ app.get(['/login', '/login/', '/register', '/register/', '/dashboard', '/dashboa
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Single Page App fallback for HTML
+// Single Page App fallback for HTML (non-API routes)
 app.use((req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
+  }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

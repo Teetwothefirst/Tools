@@ -15,27 +15,17 @@ function getLunarFilePath() {
 }
 
 function getLunarOverrides() {
-  const filePath = getLunarFilePath();
-  try {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Error reading lunar overrides:', err);
+  if (storage.getLunarOverrides) {
+    return storage.getLunarOverrides();
   }
   return { years: {} };
 }
 
 function saveLunarOverrides(data) {
-  const filePath = getLunarFilePath();
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-    return true;
-  } catch (err) {
-    console.error('Error saving lunar overrides:', err);
-    return false;
+  if (storage.saveLunarOverrides) {
+    return storage.saveLunarOverrides(data);
   }
+  return false;
 }
 
 /**

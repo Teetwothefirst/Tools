@@ -1,17 +1,39 @@
 /**
  * JSON File Storage Service with atomic write operations and validation
  * Supports Events, Public Alerts Subscribers, Users, Tasks & KPIs, and In-App Notifications.
+ * Resilient to Vercel Serverless Function execution with statically bundled seed data.
  */
 
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
+// Statically require all seed data so Vercel's Node File Trace (@vercel/nft)
+// automatically bundles them into the serverless deployment package.
+// This guarantees that all 68 public events and 20 deliverables are ALWAYS available.
+const SEED_DATA = {
+  events: require('../data/events.json'),
+  subscribers: require('../data/subscribers.json'),
+  notifications: require('../data/notifications.json'),
+  outbox: require('../data/outbox.json'),
+  users: require('../data/users.json'),
+  tasks: require('../data/tasks.json'),
+  user_notifications: require('../data/user_notifications.json'),
+  kpi_template: require('../data/kpi_template.json'),
+  lunar_overrides: require('../data/lunar_overrides.json')
+};
+
+// Deep clone helper so mutations in memory do not alter the static module export
+function cloneSeed(key) {
+  const seed = SEED_DATA[key];
+  if (seed === undefined || seed === null) return [];
+  return JSON.parse(JSON.stringify(seed));
+}
+
 const isVercel = Boolean(process.env.VERCEL);
-const DEFAULT_DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_DIR = isVercel
   ? path.join('/tmp', 'calendar-teh-data')
-  : (fs.existsSync(DEFAULT_DATA_DIR) ? DEFAULT_DATA_DIR : path.join(__dirname, '../data'));
+  : path.join(__dirname, '../data');
 
 const EVENTS_FILE = path.join(DATA_DIR, 'events.json');
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'subscribers.json');
@@ -21,31 +43,27 @@ const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const TASKS_FILE = path.join(DATA_DIR, 'tasks.json');
 const USER_NOTIFS_FILE = path.join(DATA_DIR, 'user_notifications.json');
 const KPI_TEMPLATE_FILE = path.join(DATA_DIR, 'kpi_template.json');
+const LUNAR_FILE = path.join(DATA_DIR, 'lunar_overrides.json');
 
-const memCache = {};
+// In-memory cache holding current state for all entities during lambda lifetime
+const memCache = {
+  events: null,
+  subscribers: null,
+  notifications: null,
+  outbox: null,
+  users: null,
+  tasks: null,
+  user_notifications: null,
+  kpi_template: null,
+  lunar_overrides: null
+};
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
     try {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     } catch (e) {
-      console.warn('Could not create DATA_DIR:', e);
-    }
-  }
-
-  // If running in /tmp (e.g. on Vercel), copy seed files from project data directory
-  if (DATA_DIR !== DEFAULT_DATA_DIR && fs.existsSync(DEFAULT_DATA_DIR)) {
-    try {
-      const files = fs.readdirSync(DEFAULT_DATA_DIR);
-      files.forEach(file => {
-        const src = path.join(DEFAULT_DATA_DIR, file);
-        const dest = path.join(DATA_DIR, file);
-        if (fs.statSync(src).isFile() && !fs.existsSync(dest)) {
-          fs.copyFileSync(src, dest);
-        }
-      });
-    } catch (err) {
-      console.warn('Could not seed files into /tmp:', err);
+      console.warn('Could not create DATA_DIR:', e.message);
     }
   }
 }
@@ -55,30 +73,59 @@ function getDataFilePath(filename) {
   return path.join(DATA_DIR, filename);
 }
 
-function readJSON(filePath, fallback = []) {
+/**
+ * Reads data with multi-layer fallback:
+ * 1. In-memory cache (fastest, keeps runtime mutations)
+ * 2. On-disk file (/tmp on Vercel or /data locally)
+ * 3. Preloaded static SEED_DATA (guarantees all 68 events and 20 tasks are present)
+ */
+function readData(key, filePath) {
+  // 1. Check in-memory cache first
+  if (memCache[key] !== null && memCache[key] !== undefined) {
+    return memCache[key];
+  }
+
+  // 2. Try reading persisted file from disk
   try {
     ensureDataDir();
-    if (!fs.existsSync(filePath)) {
-      if (memCache[filePath]) return memCache[filePath];
-      try {
-        fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2), 'utf8');
-      } catch (e) {}
-      memCache[filePath] = fallback;
-      return fallback;
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      if (content && content.trim()) {
+        const parsed = JSON.parse(content);
+        // Valid non-empty array or object
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          memCache[key] = parsed;
+          return parsed;
+        } else if (!Array.isArray(parsed) && Object.keys(parsed).length > 0) {
+          memCache[key] = parsed;
+          return parsed;
+        }
+      }
     }
-    const content = fs.readFileSync(filePath, 'utf8');
-    const parsed = JSON.parse(content || '[]');
-    memCache[filePath] = parsed;
-    return parsed;
   } catch (err) {
-    if (memCache[filePath]) return memCache[filePath];
-    console.error(`Error reading ${filePath}:`, err);
-    return fallback;
+    console.warn(`Filesystem read notice for ${filePath}:`, err.message);
   }
+
+  // 3. Fallback to bundled seed data
+  const seed = cloneSeed(key);
+  memCache[key] = seed;
+
+  // Persist seed data to /tmp so subsequent file operations succeed
+  try {
+    ensureDataDir();
+    fs.writeFileSync(filePath, JSON.stringify(seed, null, 2), 'utf8');
+  } catch (err) {
+    // Non-fatal if /tmp write fails; memory cache keeps everything functioning
+  }
+
+  return memCache[key];
 }
 
-function writeJSON(filePath, data) {
-  memCache[filePath] = data;
+/**
+ * Writes data atomically to memory and disk
+ */
+function writeData(key, filePath, data) {
+  memCache[key] = data;
   try {
     ensureDataDir();
     const tempPath = `${filePath}.tmp.${Date.now()}`;
@@ -86,14 +133,14 @@ function writeJSON(filePath, data) {
     fs.renameSync(tempPath, filePath);
     return true;
   } catch (err) {
-    console.warn(`Filesystem write failed for ${filePath}, retained in-memory:`, err.message);
+    console.warn(`Filesystem write notice for ${filePath}, retained in memory:`, err.message);
     return true;
   }
 }
 
 // ----------------- Public Events -----------------
 function getEvents() {
-  return readJSON(EVENTS_FILE, []);
+  return readData('events', EVENTS_FILE);
 }
 
 function getEventById(id) {
@@ -102,7 +149,7 @@ function getEventById(id) {
 }
 
 function saveEvents(events) {
-  return writeJSON(EVENTS_FILE, events);
+  return writeData('events', EVENTS_FILE, events);
 }
 
 function addEvent(eventData) {
@@ -153,7 +200,7 @@ function deleteEvent(id) {
 
 // ----------------- Public Subscribers -----------------
 function getSubscribers() {
-  return readJSON(SUBSCRIBERS_FILE, []);
+  return readData('subscribers', SUBSCRIBERS_FILE);
 }
 
 function getSubscriberByEmail(email) {
@@ -191,7 +238,7 @@ function addSubscriber(subData) {
       status: 'active',
       updated_at: now
     };
-    writeJSON(SUBSCRIBERS_FILE, subs);
+    writeData('subscribers', SUBSCRIBERS_FILE, subs);
     return { subscriber: subs[existingIndex], isNew: false };
   }
 
@@ -214,7 +261,7 @@ function addSubscriber(subData) {
   };
 
   subs.push(newSub);
-  writeJSON(SUBSCRIBERS_FILE, subs);
+  writeData('subscribers', SUBSCRIBERS_FILE, subs);
   return { subscriber: newSub, isNew: true };
 }
 
@@ -228,7 +275,7 @@ function updateSubscriber(idOrToken, updates) {
     ...updates,
     updated_at: new Date().toISOString()
   };
-  writeJSON(SUBSCRIBERS_FILE, subs);
+  writeData('subscribers', SUBSCRIBERS_FILE, subs);
   return subs[index];
 }
 
@@ -244,13 +291,13 @@ function unsubscribe(idOrTokenOrEmail) {
   if (index === -1) return false;
   subs[index].status = 'unsubscribed';
   subs[index].unsubscribed_at = new Date().toISOString();
-  writeJSON(SUBSCRIBERS_FILE, subs);
+  writeData('subscribers', SUBSCRIBERS_FILE, subs);
   return subs[index];
 }
 
 // ----------------- Notifications Log (Deduplication) -----------------
 function getNotifications() {
-  return readJSON(NOTIFICATIONS_FILE, []);
+  return readData('notifications', NOTIFICATIONS_FILE);
 }
 
 function recordNotification(subscriberId, eventId, year, leadTimeDays, email) {
@@ -265,7 +312,7 @@ function recordNotification(subscriberId, eventId, year, leadTimeDays, email) {
     sent_at: new Date().toISOString()
   };
   notifs.push(record);
-  writeJSON(NOTIFICATIONS_FILE, notifs);
+  writeData('notifications', NOTIFICATIONS_FILE, notifs);
   return record;
 }
 
@@ -281,7 +328,7 @@ function hasBeenNotified(subscriberId, eventId, year, leadTimeDays) {
 
 // ----------------- Outbox (In-App Email Inspector) -----------------
 function getOutbox() {
-  return readJSON(OUTBOX_FILE, []);
+  return readData('outbox', OUTBOX_FILE);
 }
 
 function logToOutbox(emailRecord) {
@@ -293,18 +340,18 @@ function logToOutbox(emailRecord) {
   };
   outbox.unshift(record);
   if (outbox.length > 200) outbox.pop();
-  writeJSON(OUTBOX_FILE, outbox);
+  writeData('outbox', OUTBOX_FILE, outbox);
   return record;
 }
 
 function clearOutbox() {
-  writeJSON(OUTBOX_FILE, []);
+  writeData('outbox', OUTBOX_FILE, []);
   return true;
 }
 
 // ----------------- Users (Authentication & Life Manager) -----------------
 function getUsers() {
-  return readJSON(USERS_FILE, []);
+  return readData('users', USERS_FILE);
 }
 
 function getUserById(id) {
@@ -353,7 +400,7 @@ function addUser(userData) {
   };
 
   users.push(newUser);
-  writeJSON(USERS_FILE, users);
+  writeData('users', USERS_FILE, users);
   return newUser;
 }
 
@@ -368,13 +415,13 @@ function updateUser(id, updates) {
     id,
     updated_at: new Date().toISOString()
   };
-  writeJSON(USERS_FILE, users);
+  writeData('users', USERS_FILE, users);
   return users[index];
 }
 
 // ----------------- Tasks & KPIs -----------------
 function getTasks() {
-  return readJSON(TASKS_FILE, []);
+  return readData('tasks', TASKS_FILE);
 }
 
 function getTaskById(id) {
@@ -388,7 +435,7 @@ function getTasksByUserId(userId) {
 }
 
 function saveTasks(tasks) {
-  return writeJSON(TASKS_FILE, tasks);
+  return writeData('tasks', TASKS_FILE, tasks);
 }
 
 function addTask(taskData) {
@@ -470,12 +517,12 @@ function deleteTask(id, userId) {
 
 // ----------------- User In-App Notifications -----------------
 function getUserNotifications(userId) {
-  const notifs = readJSON(USER_NOTIFS_FILE, []);
+  const notifs = readData('user_notifications', USER_NOTIFS_FILE);
   return notifs.filter(n => n.user_id === userId);
 }
 
 function addUserNotification(userId, notifData) {
-  const notifs = readJSON(USER_NOTIFS_FILE, []);
+  const notifs = readData('user_notifications', USER_NOTIFS_FILE);
   const newNotif = {
     id: uuidv4(),
     user_id: userId,
@@ -488,21 +535,21 @@ function addUserNotification(userId, notifData) {
   };
   notifs.unshift(newNotif);
   if (notifs.length > 500) notifs.pop();
-  writeJSON(USER_NOTIFS_FILE, notifs);
+  writeData('user_notifications', USER_NOTIFS_FILE, notifs);
   return newNotif;
 }
 
 function markNotificationRead(id, userId) {
-  const notifs = readJSON(USER_NOTIFS_FILE, []);
+  const notifs = readData('user_notifications', USER_NOTIFS_FILE);
   const item = notifs.find(n => n.id === id && n.user_id === userId);
   if (!item) return false;
   item.read = true;
-  writeJSON(USER_NOTIFS_FILE, notifs);
+  writeData('user_notifications', USER_NOTIFS_FILE, notifs);
   return true;
 }
 
 function markAllNotificationsRead(userId) {
-  const notifs = readJSON(USER_NOTIFS_FILE, []);
+  const notifs = readData('user_notifications', USER_NOTIFS_FILE);
   let changed = false;
   notifs.forEach(n => {
     if (n.user_id === userId && !n.read) {
@@ -510,13 +557,22 @@ function markAllNotificationsRead(userId) {
       changed = true;
     }
   });
-  if (changed) writeJSON(USER_NOTIFS_FILE, notifs);
+  if (changed) writeData('user_notifications', USER_NOTIFS_FILE, notifs);
   return true;
 }
 
 // ----------------- KPI Template -----------------
 function getKpiTemplate() {
-  return readJSON(KPI_TEMPLATE_FILE, { items: [] });
+  return readData('kpi_template', KPI_TEMPLATE_FILE);
+}
+
+// ----------------- Lunar / Moon-Sighting Overrides -----------------
+function getLunarOverrides() {
+  return readData('lunar_overrides', LUNAR_FILE);
+}
+
+function saveLunarOverrides(data) {
+  return writeData('lunar_overrides', LUNAR_FILE, data);
 }
 
 module.exports = {
@@ -558,5 +614,7 @@ module.exports = {
   markNotificationRead,
   markAllNotificationsRead,
   getKpiTemplate,
+  getLunarOverrides,
+  saveLunarOverrides,
   getDataFilePath
 };
